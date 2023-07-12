@@ -151,7 +151,7 @@ function SectionContainer({
           </div>
         </div>
 
-        <div className="subTitle mt-20">
+        <div className="subTitle mt-20 mb-30">
           <div className="subTitle mb-15">Min/Max Field</div>
 
           <div className="mb-15 flex-wrap">
