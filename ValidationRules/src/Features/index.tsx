@@ -40,11 +40,11 @@ const ParentComponent: React.FC = () => {
   return (
     <div>
       <div className="nestedBtns">
-        <Button onClick={addNestedComponent}> + Add </Button>
-        <Button onClick={addNestedComponent}> + Add Nested</Button>
+        <Button className="mr-10 btn-default"  onClick={addNestedComponent}> + Add </Button>
+        <Button className="btn-default"  onClick={addNestedComponent}> + Add Nested</Button>
       </div>
       {sections.map((section) => (
-        <div key={section.key}>
+        <div key={section.key} className="nested-wrap">
           <SectionContainer
             sectionLevel={section.key}
             conditionData={conditionData}

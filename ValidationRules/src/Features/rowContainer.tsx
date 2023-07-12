@@ -247,29 +247,31 @@ const _handleAddRow = (level: number, nestedLevel: number, hasNested: boolean, e
   const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
     return conditions.map((condition: any) => (
       <div key={condition.level}>
-        <div style={{marginBottom: "1%", marginTop: "2%", display: "flex"}}>
-          <div style={{marginRight: "15%"}}>And/Or </div>
-          <div style={{marginRight: "16%"}}>Field </div>
-          <div style={{marginRight: "16%"}}>Operator</div>
-          <div style={{marginRight: "20%"}}>Value </div>
-
+         <div style={{display:'flex', marginBottom: '3%'}}>
+          <Button className="mr-10 btn-default" onClick={() => _handleAddRow(condition.level, condition.level + 1, false, "AND")}>+ Add</Button>
+          <Button className="btn-default" onClick={() => _handleAddRow(condition.level, condition.level + 1, true, "AND")}>+ Add Nested</Button>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'row', marginBottom: '3%' }}>
-        <div style={{marginRight: "1%"}}><DropDown dropDownData={expressionSampleData} /> </div>
-          <div style={{marginRight: "2%"}}><FieldInput sampleData={sampleInputQuestion} selectedValue={condition.field} /> </div>
-          <div style={{marginRight: "2%"}}><DropDown dropDownData={operationalSampleData} /></div>
-          <div style={{ marginRight: "2%" }}><DropDown dropDownData={expressionSampleData} /> </div>
-        </div>
+        <div className="loop">
+          <div style={{marginBottom: "1%", marginTop: "2%", display: "flex"}}>
+            <div className="condition-label">And/Or </div>
+            <div className="condition-label">Field </div>
+            <div className="condition-label">Operator</div>
+            <div className="condition-label">Value </div>
 
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'row', marginBottom: '3%' }}>
+            <div className="condition-label"><DropDown dropDownData={expressionSampleData} /> </div>
+            <div className="condition-label"><FieldInput sampleData={sampleInputQuestion} selectedValue={condition.field} /> </div>
+            <div className="condition-label"><DropDown dropDownData={operationalSampleData} /></div>
+            <div className="condition-label"><DropDown dropDownData={expressionSampleData} /> </div>
+          </div>
+       </div>
         {condition.hasNested && (
-          <div style={{ marginLeft: "10%" }}>
+          <div style={{ paddingLeft: '30px' }}>
               {renderNestedConditions(condition.innerConditions, marginLeft + 5)}
           </div>
         )}
-        <div style={{display:'flex', marginBottom: '3%'}}>
-          <Button onClick={() => _handleAddRow(condition.level, condition.level + 1, false, "AND")}>+ Add</Button>
-          <Button onClick={() => _handleAddRow(condition.level, condition.level + 1, true, "AND")}>+ Add Nested</Button>
-        </div>
+       
       </div>
     ));
   };

@@ -128,7 +128,7 @@ function SectionContainer({
       ))}
 
       <div className="action-container">
-        <div className="mt-15">
+        <div>
           <div className="subTitle mb-15">Actions</div>
           <div>
             <CheckBox
