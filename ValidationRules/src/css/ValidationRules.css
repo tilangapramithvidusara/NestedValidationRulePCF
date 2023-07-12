@@ -36,6 +36,7 @@
     text-align: left;
     font-size: 17px;
     font-weight: 700;
+    margin-left: 5%;
   }
 
   .control-container .text-left {
@@ -121,4 +122,8 @@
     font-size: 14px;
     color: #0093FE;
     padding: 0;
+  }
+
+  .action-container {
+    display: flex;
   }

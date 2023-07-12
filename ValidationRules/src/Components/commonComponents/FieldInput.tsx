@@ -4,11 +4,10 @@ import sampleInputQuestion from '../../SampleData/sampleInputQuestion';
 
 interface SearchSortProps {
     sampleData: any[]; // Adjust the type/interface as needed
-    onSelectItem: (selectedItem: string) => void;
     selectedValue: any
 }
   
-const SearchWithSort: React.FC<SearchSortProps> = ({sampleData, onSelectItem, selectedValue}) => {
+const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue}) => {
 
     const searchFilterSort = (optionA: any, optionB: any) => {
         return (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase());
@@ -20,7 +19,7 @@ const SearchWithSort: React.FC<SearchSortProps> = ({sampleData, onSelectItem, se
     }
     
     const onChangeSearchEvent = (input: any, option: any) => {
-        onSelectItem(option)
+      
     }
     return (
         <div>
@@ -39,4 +38,4 @@ const SearchWithSort: React.FC<SearchSortProps> = ({sampleData, onSelectItem, se
     )
 }
 
-export default SearchWithSort;
+export default FieldInput;
