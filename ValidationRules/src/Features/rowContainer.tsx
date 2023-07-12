@@ -255,7 +255,7 @@ const RowContainer: React.FC<TableRowProps> = ({
           </div>
           <div style={{ display: 'flex', flexDirection: 'row', marginBottom: '3%' }}>
             <div className="condition-label"><DropDown dropDownData={expressionSampleData} /> </div>
-            <div className="condition-label"><FieldInput sampleData={sampleInputQuestion} selectedValue={condition.field} /> </div>
+            <div className="condition-label"><FieldInput sampleData={sampleInputQuestion} selectedValue={condition.field} overrideSearch={false} /> </div>
             <div className="condition-label"><DropDown dropDownData={operationalSampleData} /></div>
             <div className="condition-label"><DropDown dropDownData={expressionSampleData} /> </div>
           </div>
