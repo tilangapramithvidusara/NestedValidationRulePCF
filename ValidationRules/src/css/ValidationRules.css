@@ -184,7 +184,7 @@
 }
 
 .loop:after {
-  height: calc(50% + 33px);
+  height: calc(50% + 4px);
   top: calc(50% - 50px);
   border-style: dotted;
   content: "";
