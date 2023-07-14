@@ -1,4 +1,4 @@
-{
+[{
     "field": "Question01",
     "condition": "",
     "value": "",
@@ -51,15 +51,15 @@
                         }]
                     }
             ]
-        },
-        {
-            "field": "Question 02",
-            "condition": "",
-            "value": "",
-            "sort": 1,
-            "level": 12,
-            "hasNested": false,
-            "expression": "AND"
         }
-    ]  
-}
+    ] 
+},
+{
+    "field": "Question 02",
+    "condition": "",
+    "value": "",
+    "sort": 1,
+    "level": 12,
+    "hasNested": false,
+    "expression": "AND"
+} ]

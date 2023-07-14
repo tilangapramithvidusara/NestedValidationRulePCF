@@ -36,7 +36,7 @@ const FieldInput: React.FC<NumberInputField> = ({
         formatter={numberFormatter}
         parser={numberParser}
         onChange={handleNumberChange}
-        disabled={defaultDisabled}
+        disabled={defaultDisabled ? defaultDisabled : false}
         style={{width: "100%"}}
       />
     </div>

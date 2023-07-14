@@ -128,7 +128,7 @@ function SectionContainer({
       ))}
 
       <div className="action-container">
-        <div className="mt-15">
+        <div>
           <div className="subTitle mb-15">Actions</div>
           <div>
             <CheckBox
@@ -151,7 +151,7 @@ function SectionContainer({
           </div>
         </div>
 
-        <div className="subTitle mt-20">
+        <div className="subTitle mt-20 mb-30">
           <div className="subTitle mb-15">Min/Max Field</div>
 
           <div className="mb-15 flex-wrap">
@@ -179,7 +179,7 @@ function SectionContainer({
                 defaultDisabled={!minCheckboxEnabled}
               />
             ) : (
-              <DropDown dropDownData={sampleInputQuestion} />
+              <DropDown dropDownData={sampleInputQuestion} isDisabled={true} />
             )}
           </div>
 
@@ -208,7 +208,7 @@ function SectionContainer({
                 defaultDisabled={!maxCheckboxEnabled}
               />
             ) : (
-              <DropDown dropDownData={sampleInputQuestion} />
+              <DropDown dropDownData={sampleInputQuestion} isDisabled={false} />
             )}
           </div>
         </div>

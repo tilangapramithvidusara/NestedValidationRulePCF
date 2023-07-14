@@ -3,9 +3,10 @@ import { Select } from "antd";
 
 interface DropDownCommonProps {
   dropDownData: any[];
+  isDisabled: boolean
 }
 
-const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData }) => {
+const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled }) => {
   return (
     <div>
       <Select
@@ -20,6 +21,7 @@ const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData }) => {
             .localeCompare((optionB?.label ?? "").toLowerCase())
         }
         options={dropDownData}
+        disabled={isDisabled ? isDisabled : false}
       />
     </div>
   );
