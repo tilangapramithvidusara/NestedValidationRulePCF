@@ -20,262 +20,404 @@ interface TableRowProps {
   sectionLevel: number;
 }
 
+interface Condition {
+  field: string;
+  condition: string;
+  value: string;
+  sort: number;
+  level: number;
+  hasNested: boolean;
+  innerConditions: Condition[];
+}
+
 const RowContainer: React.FC<TableRowProps> = ({
   rowIndex,
   rowData,
   setRowData,
   addRow,
   addNestedRow,
-  sectionLevel
+  sectionLevel,
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [indexLevel, setIndexLevel] = useState<any>(1);
+  const [collapse, setCollapse] = useState<any>(false);
+
   const [_nestedRows, _setNestedRows] = useState<any>([
     // {
-    // "field": "Question01",
-    // "condition": "",
-    // "value": "",
-    // "sort": 1,
-    // "level": 1,
-    // "hasNested": true,
-    // "expression": "",
-    // "innerConditions": 
-    //     [
-    //         {
-    //             "field":  "Question 01 01",
-    //             "condition": "",
-    //             "value": "",
-    //             "sort": 1,
-    //             "level": 11,
-    //             "hasNested": true,
-    //             "expression": "AND",
-    //             "innerConditions": [
-    //                 {
-    //                     "field": "Question 01 01 01",
-    //                     "condition": "",
-    //                     "value": "",
-    //                     "sort": 1,
-    //                     "hasNested": false,
-    //                     "level": 111,
-    //                     "expression": ""
-    //                 },
-    //                 {
-    //                     "field": "Question 01 01 02",
-    //                     "condition": "",
-    //                     "value": "",
-    //                     "sort": 1,
-    //                     "level": 112,
-    //                     "expression": "AND"
-    //                 },
-    //                 {
-    //                     "field": "Question 01 01 03",
-    //                     "condition": "",
-    //                     "value": "",
-    //                     "sort": 1,
-    //                     "level": 113,
-    //                     "hasNested": true,
-    //                     "expression": "OR",
-    //                     "innerConditions": [{
-    //                         "field": "Question 01 01 03 01",
-    //                         "condition": "",
-    //                         "value": "",
-    //                         "sort": 1,
-    //                         "level": 1131
-    //                     }]
-    //                 }
-    //         ]
-    //     },
-    //     {
-    //         "field": "Question 02",
-    //         "condition": "",
-    //         "value": "",
-    //         "sort": 1,
-    //         "level": 12,
-    //         "hasNested": false,
-    //         "expression": "AND"
-    //     }
-    // ]  
+    //    "field":"",
+    //    "condition":"",
+    //    "value":"",
+    //    "level":1,
+    //    "hasNested":true,
+    //    "expression":"",
+    //    "collapse":false,
+    //    "innerConditions":[
+    //       {
+    //          "field":"",
+    //          "condition":"",
+    //          "value":"",
+    //          "sort":1,
+    //          "level":11,
+    //          "hasNested":true,
+    //          "collapse":false,
+    //          "innerConditions":[
+    //             {
+    //                "field":"",
+    //                "condition":"",
+    //                "value":"",
+    //                "sort":1,
+    //                "level":111,
+    //                "hasNested":true,
+    //                "collapse":true,
+    //                "innerConditions":[
+    //                   {
+    //                      "field":"",
+    //                      "condition":"",
+    //                      "value":"",
+    //                      "sort":1,
+    //                      "level":11111,
+    //                      "hasNested":true,
+    //                      "collapse":false,
+    //                      "innerConditions":[
+                            
+    //                      ]
+    //                   }
+    //                ]
+    //             },
+    //             {
+    //                "field":"",
+    //                "condition":"",
+    //                "value":"",
+    //                "sort":1,
+    //                "level":111,
+    //                "hasNested":true,
+    //                "collapse":true,
+    //                "innerConditions":[
+                      
+    //                ]
+    //             }
+    //          ]
+    //       }
+    //    ]
+    // },
+    // {
+    //    "field":"",
+    //    "condition":"",
+    //    "value":"",
+    //    "sort":1,
+    //    "level":2,
+    //    "hasNested":false,
+    //    "collapse":false,
+    //    "innerConditions":[
+          
+    //    ]
     // }
-  ]);
+ ]);
 
-  const NestedRow: React.FC<NestedRowProps> = ({ children }) => {
-    return (
-      <div style={{ display: "contents", flexDirection: "row", marginLeft: '5%' }}>{children}</div>
-    );
+  function containsOnlyOneDigit(str: string) {
+    return /^\d$/.test(str);
+  }
+
+  const findConditionByLevel = (
+    level: any,
+    conditions: any
+  ): Condition | null => {
+    for (const condition of conditions) {
+      if (condition.level === level) {
+        return condition;
+      } else if (condition.hasNested) {
+        const foundCondition = findConditionByLevel(
+          level,
+          condition.innerConditions
+        );
+        if (foundCondition) {
+          return foundCondition;
+        }
+      }
+    }
+    return null;
   };
 
-      // Function to add or replace object at the parent level 113
-// Function to add or replace object at the parent level 113
-  
-  function addConditionToNested(data: string | any[], targetLevel: any, newCondition: any) {
-    console.log("parentLevel", targetLevel);
-    console.log("newObj", newCondition)
-    console.log("conditionArray", data)
+  // This function is used to if the object has innerCondition at least one obj hasNested need to true
+  const updateHasNested = (data: Condition[]) => {
+    data.forEach((condition) => {
+      if (condition.innerConditions.length > 0) {
+        condition.hasNested = true;
+      }
+      updateHasNested(condition.innerConditions);
+    });
+  };
 
-  for (let i = 0; i < data.length; i++) {
-    const obj = data[i];
+  function addObjectToParentLevel(
+    conditionArray: any[],
+    newObj: any,
+    parentLevel: any
+  ) {
+    if (containsOnlyOneDigit(parentLevel.toString()) && !newObj.hasNested) {
+      const updatedArray = [...conditionArray, newObj];
+      _setNestedRows(updatedArray);
+    } else {
+      const parentCondition = findConditionByLevel(parentLevel, conditionArray);
 
+      if (parentCondition) {
+        if (newObj.hasNested) {
+          const updatedConditions = [
+            ...parentCondition.innerConditions,
+            newObj,
+          ];
+          parentCondition.innerConditions = updatedConditions;
+        } else {
+          const updatedConditions = [...conditionArray, newObj];
+          _setNestedRows(updatedConditions);
+        }
 
-      addConditionToNested(obj.innerConditions, targetLevel, newCondition);
-    
+        const updatedData = [...conditionArray];
 
-    if (obj.level === targetLevel) {
-      if (obj.hasNested) {
-        obj.innerConditions.push(newCondition);
+        updateHasNested(updatedData);
+        _setNestedRows(updatedData);
       } else {
-        console.log("DDD", obj)
-        obj.hasNested = true;
-        obj.innerConditions = [newCondition];
+        console.log("Parent condition not found!");
       }
     }
   }
-    return data;
-}
-  
-  function addObjectToParentLevel(conditionArray: any[], newObj: any, parentLevel: number) {
-    console.log("parentLevel", parentLevel);
-    console.log("newObj", newObj)
-    console.log("conditionArray", conditionArray)
-
-  const updatedArray = conditionArray.map((cond: { innerConditions: any[] }) => {
-      cond.innerConditions = cond.innerConditions.map((condition: any) => {
-        if (condition.level === parentLevel) {
-          const existingObjectIndex = condition.innerConditions.findIndex(
-            (item: { level: any }) => item.level === newObj.level
-          );
-          if (existingObjectIndex !== -1) {
-            condition.innerConditions[existingObjectIndex] = newObj;
-          } else {
-            if (!condition.innerConditions) {
-              condition.innerConditions = [];
-            }
-            condition.innerConditions.push(newObj);
-          }
-        } else {
-          addObjectToParentLevel(condition.innerConditions, newObj, parentLevel);
-        }
-        return condition;
-      });
-
-    return cond;
-  });
-
-  return updatedArray;
-  }
 
   const idGenerator = (parentLevel: number, hasNested: boolean) => {
-    let newKey 
-    if(hasNested) {
-      newKey = parseInt(parentLevel+`1`)
+    let newKey;
+    if (hasNested) {
+      newKey = parseInt(parentLevel + `1`);
+    } else {
+      const highestLevel = _nestedRows.reduce(
+        (maxLevel: number, obj: { level: number }) => {
+          return obj.level > maxLevel ? obj.level : maxLevel;
+        },
+        0
+      );
+      newKey = highestLevel + 1;
     }
-    else {
-      newKey = parentLevel + 1
-    }
-    console.log("New Key", newKey)
+    console.log("New Key", newKey);
     return newKey;
-  }
-
-
-  const _handleAddRow = (level: number, nestedLevel: number, hasNested: boolean, expression: string = "") => {
-  const newKey = idGenerator(level, hasNested);
-  let newRow = {
-    "field": "Question 01",
-    "condition": "sssssddds",
-    "value": "",
-    "sort": 1,
-    "level": newKey,
-    "hasNested": hasNested,
-    "innerConditions": []
   };
 
-  const parentLevelToAdd = level;
+  const _handleAddNestedRow = (
+    level: number,
+    nestedLevel: number,
+    hasNested: boolean,
+    expression: string = ""
+  ) => {
+    console.log("Clicked Level ", level);
 
-  // if (!_nestedRows[0]?.innerConditions?.length && hasNested) {
-  //   _setNestedRows([{
-  //     "field": "Question02",
-  //     "condition": "",
-  //     "value": "",
-  //     "sort": 1,
-  //     "level": 1,
-  //     "hasNested": true,
-  //     "expression": "",
-  //     "innerConditions": [
-  //       {
-  //         "field":  "Question 03",
-  //         "condition": "",
-  //         "value": "",
-  //         "sort": 1,
-  //         "level": 11,
-  //         "hasNested": true,
-  //         "expression": "AND",
-  //         "innerConditions": []
-  //       }
-  //     ]  
-  //   }]);
-  // } else {
-    _setNestedRows(addConditionToNested(_nestedRows, parentLevelToAdd, newRow));
-  // }
-};
-  useEffect(() => {
-    console.log("NESTED", _nestedRows)
-    
-  }, [_nestedRows])
+    const newKey = idGenerator(level, hasNested);
+    let newRow = {
+      field: "",
+      condition: "",
+      value: "",
+      sort: 1,
+      level: newKey,
+      hasNested: hasNested,
+      innerConditions: [],
+      collapse: false
+    };
+
+    addObjectToParentLevel(_nestedRows, newRow, level);
+  };
+
+
+
+  const addConditionToData = (
+    data: any[],
+    level: number,
+    condition: any
+  ): any[] => {
+    return data.map((item) => {
+      if (item.level === level) {
+        // If the item matches the specified level and has nested conditions
+        item.innerConditions.push(condition); // Add the newCondition to its innerConditions
+      } else if (item.innerConditions.length > 0) {
+        // If the item has nested conditions, recursively call the function on its innerConditions
+        item.innerConditions = addConditionToData(
+          item.innerConditions,
+          level,
+          condition
+        );
+      }
+      return item;
+    });
+  };
+
+  
+  const _handleAddRow = (
+    level: number,
+    nestedLevel: number,
+    hasNested: boolean,
+    expression: string = ""
+  ) => {
+    console.log("Clicked Level ", level);
+
+    const newKey = idGenerator(level, hasNested);
+    let newRow = {
+      field: "",
+      condition: "",
+      value: "",
+      sort: 1,
+      level: newKey+100,
+      hasNested: hasNested,
+      innerConditions: [],
+      collapse: false
+    };
+
+    // addObjectToParentLevel(_nestedRows, newRow, level);
+    const updatedData = addConditionToData(_nestedRows, level, newRow);
+    _setNestedRows(updatedData);
+  };
 
   useEffect(() => {
-    _setNestedRows([{
-      "field": "Question01",
-    "condition": "",
-    "value": "",
-    "level": sectionLevel,
-    "hasNested": true,
-    "expression": "",
-      "innerConditions": []
-  }])
+    console.log("NESTED", _nestedRows);
+  }, [_nestedRows]);
+
+  useEffect(() => {
+    console.log("SectionLevell");
+    _setNestedRows((prevNestedRows: any) => [
+      ...prevNestedRows,
+      {
+        field: "",
+        condition: "",
+        value: "",
+        level: sectionLevel,
+        hasNested: true,
+        expression: "",
+        innerConditions: [],
+        collapse: false
+      },
+    ]);
   }, [sectionLevel]);
 
   useEffect(() => {
     console.log("rowData", rowData);
   }, [rowData]);
 
+  const collapseHandle = (number: any, collapse: boolean) => {
+    console.log("Collapse number", number);
+    console.log("Collapse number", collapse);
 
-  const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
-    return conditions.map((condition: any) => (
-      <div key={condition.level}>
-         <div style={{display:'flex', marginBottom: '3%'}}>
-          <Button className="mr-10 btn-default" onClick={() => _handleAddRow(condition.level, condition.level + 1, false, "AND")}>+ Add</Button>
-          <Button className="btn-default" onClick={() => _handleAddRow(condition.level, condition.level + 1, true, "AND")}>+ Add Nested</Button>
-        </div>
-        <div className="loop">
-          <div style={{marginBottom: "1%", marginTop: "2%", display: "flex"}}>
-            <div className="condition-label">And/Or </div>
-            <div className="condition-label">Field </div>
-            <div className="condition-label">Operator</div>
-            <div className="condition-label">Value </div>
+    handleLevelCollapse(number, collapse)
+  }
 
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'row', marginBottom: '3%' }}>
-            <div className="condition-label"><DropDown dropDownData={expressionSampleData} /> </div>
-            <div className="condition-label"><FieldInput sampleData={sampleInputQuestion} selectedValue={condition.field} overrideSearch={false} /> </div>
-            <div className="condition-label"><DropDown dropDownData={operationalSampleData} /></div>
-            <div className="condition-label"><DropDown dropDownData={expressionSampleData} /> </div>
-          </div>
-       </div>
-        {condition.hasNested && (
-          <div style={{ paddingLeft: '30px' }}>
-              {renderNestedConditions(condition.innerConditions, marginLeft + 5)}
-          </div>
-        )}
-       
-      </div>
-    ));
+
+  const handleLevelCollapse = (level: number, collapse: boolean) => {
+    _setNestedRows(updateConditionCollapse(_nestedRows, level, collapse));
   };
   
+  const updateConditionCollapse = (conditions: any, level: number, collapse: boolean): Condition[] => {
+    return conditions.map((condition: any) => {
+      if (condition.level === level) {
+        return { ...condition, collapse };
+      }
+      if (condition.innerConditions.length > 0) {
+        const updatedInnerConditions = updateConditionCollapse(condition.innerConditions, level, collapse);
+        return { ...condition, innerConditions: updatedInnerConditions };
+      }
+      return condition;
+    });
+  };
+  
+  const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
+    console.log("conditions----->", conditions);
+    if (conditions && conditions.length) {
+      return conditions.map((condition: any) => (
+        <div key={condition.level}>
+          <div style={{ display: "flex", marginBottom: "2%" }}>
+            <Button onClick={() => collapseHandle(condition.level, true)}>Collapse</Button>
+            {/* <Button onClick={() => collapseHandle(condition.level, false)}>Expand</Button> */}
+          </div>
+          
+          {
+            !condition.collapse ? <div>
+            <div style={{ display: "flex", marginBottom: "3%" }}>
+              
+              <Button
+                className="mr-10 btn-default"
+                onClick={() =>
+                  _handleAddNestedRow(
+                    condition.level,
+                    condition.level + 1,
+                    false,
+                    "AND"
+                  )
+                }
+              >
+                + Add
+              </Button>
+              <Button
+                className="btn-default"
+                onClick={() =>
+                  _handleAddNestedRow(
+                    condition.level,
+                    condition.level + 1,
+                    true,
+                    "AND"
+                  )
+                }
+              >
+                + Add Nested
+              </Button>
+            </div>
+            <div className="loop">
+              <div
+                style={{ marginBottom: "1%", marginTop: "2%", display: "flex" }}
+              >
+                <div className="condition-label">And/Or </div>
+                <div className="condition-label">Field </div>
+                <div className="condition-label">Operator</div>
+                <div className="condition-label">Value </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  marginBottom: "3%",
+                }}
+              >
+  
+                <div className="condition-label">
+                    <DropDown dropDownData={expressionSampleData} isDisabled={condition.level === 1 ? true : false} />{" "}
+                </div>
+                
+                <div className="condition-label">
+                  <FieldInput
+                    sampleData={sampleInputQuestion}
+                    selectedValue={condition.field}
+                    overrideSearch={false}
+                  />{" "}
+                </div>
+                <div className="condition-label">
+                  <DropDown dropDownData={operationalSampleData} isDisabled={false} />
+                </div>
+                <div className="condition-label">
+                  <NumberInputField
+                    selectedValue={{}}
+                    handleNumberChange={{}}
+                    defaultDisabled={false}
+                  />{" "}
+                </div>
+              </div>
+              </div>
+            </div> : <div> </div>
+          }
 
-  return (
-    <div>
-        {renderNestedConditions(_nestedRows)}
-    </div>
-  );
+          {condition.hasNested && (
+            <div style={{ paddingLeft: "30px" }}>
+              {renderNestedConditions(
+                condition.innerConditions,
+                marginLeft + 5
+              )}
+            </div>
+          )}
+        </div>
+      ));
+    }
+  };
+
+  return <div>{renderNestedConditions(_nestedRows)}</div>;
 };
 
 export default RowContainer;

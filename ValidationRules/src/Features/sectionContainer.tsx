@@ -179,7 +179,7 @@ function SectionContainer({
                 defaultDisabled={!minCheckboxEnabled}
               />
             ) : (
-              <DropDown dropDownData={sampleInputQuestion} />
+              <DropDown dropDownData={sampleInputQuestion} isDisabled={true} />
             )}
           </div>
 
@@ -208,7 +208,7 @@ function SectionContainer({
                 defaultDisabled={!maxCheckboxEnabled}
               />
             ) : (
-              <DropDown dropDownData={sampleInputQuestion} />
+              <DropDown dropDownData={sampleInputQuestion} isDisabled={false} />
             )}
           </div>
         </div>
