@@ -26,7 +26,7 @@ function CheckBox({
           defaultValue={checkboxDefaultSelectedValues}
         >
           <Row>
-            <Col span={8}>
+            <Col span={24}>
               <Checkbox value={configAction.value}>{configAction?.displayName && <span className='checkboxLabel'>{configAction?.displayName}</span>} </Checkbox>
             </Col>
           </Row>

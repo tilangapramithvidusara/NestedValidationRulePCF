@@ -128,9 +128,9 @@ function SectionContainer({
       ))}
 
       <div className="action-container">
-        <div>
+        <div className="w-100">
           <div className="subTitle mb-15">Actions</div>
-          <div>
+          <div className="flex-row">
             <CheckBox
               checkboxDefaultSelectedValues={["", "outPutDoc"]}
               checkboxValuesFromConfig={[
@@ -151,10 +151,10 @@ function SectionContainer({
           </div>
         </div>
 
-        <div className="subTitle mt-20 mb-30">
+        <div className="subTitle mt-10 mb-30 w-100">
           <div className="subTitle mb-15">Min/Max Field</div>
-
-          <div className="mb-15 flex-wrap">
+          <div className="flex-row-start">
+          <div className="mb-15 flex-wrap w-33">
             <div style={{ marginRight: "10px" }}>
               {" "}
               <Checkbox
@@ -171,7 +171,7 @@ function SectionContainer({
               />
             </div>
 
-            <div className="minmaxText">Min Value:</div>
+            <div className="minmaxText">Min:</div>
             {toggleEnableMin ? (
               <NumberInputField
                 selectedValue={{}}
@@ -183,7 +183,7 @@ function SectionContainer({
             )}
           </div>
 
-          <div className="mb-15 flex-wrap">
+          <div className="mb-15 flex-wrap w-33">
             <div style={{ marginRight: "10px" }}>
               {" "}
               <Checkbox
@@ -200,7 +200,7 @@ function SectionContainer({
               />
             </div>
 
-            <div className="minmaxText">Max Value:</div>
+            <div className="minmaxText">Max:</div>
             {toggleEnableMax ? (
               <NumberInputField
                 selectedValue={{}}
@@ -210,6 +210,7 @@ function SectionContainer({
             ) : (
               <DropDown dropDownData={sampleInputQuestion} isDisabled={false} />
             )}
+          </div>
           </div>
         </div>
       </div>
