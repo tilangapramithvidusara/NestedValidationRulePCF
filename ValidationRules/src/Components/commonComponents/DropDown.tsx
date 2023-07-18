@@ -3,10 +3,13 @@ import { Select } from "antd";
 
 interface DropDownCommonProps {
   dropDownData: any[];
-  isDisabled: boolean
+  isDisabled: boolean;
+  setExpression: any;
+  changedId: any;
+  fieldName: any
 }
 
-const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled }) => {
+const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, setExpression, changedId, fieldName }) => {
   return (
     <div>
       <Select
@@ -22,6 +25,7 @@ const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled }) =
         }
         options={dropDownData}
         disabled={isDisabled ? isDisabled : false}
+        onChange={(input, option) => setExpression({input: option.value, changedId, fieldName })}
       />
     </div>
   );

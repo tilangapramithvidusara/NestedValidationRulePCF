@@ -21,6 +21,7 @@ const ParentComponent: React.FC = () => {
 
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
+  const [_nestedRows, _setNestedRows] = useState<any>([]);
 
   let addNestedComponent = () => {
     setSections([
@@ -49,6 +50,8 @@ const ParentComponent: React.FC = () => {
             sectionLevel={section.key}
             conditionData={conditionData}
             setConditionData={setConditionData}
+            _setNestedRows={_setNestedRows}
+            _nestedRows={_nestedRows}
           />
         </div>
       ))}
