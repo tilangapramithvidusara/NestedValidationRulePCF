@@ -1,40 +1,40 @@
-import React, { useEffect } from 'react';
-import { Checkbox, Col, Row } from 'antd';
-import type { CheckboxValueType } from 'antd/es/checkbox/Group';
+import React, { useEffect } from "react";
+import { Checkbox, Col, Row } from "antd";
+import type { CheckboxValueType } from "antd/es/checkbox/Group";
 
 interface CheckBoxProps {
-  checkboxDefaultSelectedValues: any,
-  checkboxValuesFromConfig: any
+  checkboxDefaultSelectedValues: any;
+  checkboxValuesFromConfig: any;
+  setCheckboxValues: any;
 }
 
 function CheckBox({
   checkboxDefaultSelectedValues,
   checkboxValuesFromConfig,
+  setCheckboxValues,
 }: CheckBoxProps) {
-
-  useEffect(() => {
-    console.log("checkboxValuesFromConfig", checkboxValuesFromConfig)
-  }, [checkboxValuesFromConfig])
-
+    const checkboxOnChange = (checkedValues: any) => {
+        console.log("CHECCCC", checkedValues);
+        setCheckboxValues(checkedValues.map((item: string) => {
+            return {
+              [item]: {
+                logicalName: item.toUpperCase() ,
+                value: item
+              }
+            };
+          }))
+    }
   return (
-   <>
-      {
-        checkboxValuesFromConfig && checkboxValuesFromConfig.length > 0 && checkboxValuesFromConfig.map((configAction: any) => (
+    <>
           <Checkbox.Group
-          style={{ display: 'block', marginBottom: '10px' }}
-          className="actionWrap"
-          defaultValue={checkboxDefaultSelectedValues}
-        >
-          <Row>
-            <Col span={8}>
-              <Checkbox value={configAction.value}>{configAction?.displayName && <span className='checkboxLabel'>{configAction?.displayName}</span>} </Checkbox>
-            </Col>
-          </Row>
-          
+            style={{ display: "block", marginBottom: "10px", textAlign: "left" }}
+            className="actionWrap"
+            defaultValue={checkboxDefaultSelectedValues}
+            onChange={checkboxOnChange}
+            options={checkboxValuesFromConfig}
+          >
           </Checkbox.Group>
-        ))
-      }
-       </>
+    </>
   );
 }
 

@@ -5,10 +5,13 @@ import sampleInputQuestion from '../../SampleData/sampleInputQuestion';
 interface SearchSortProps {
     sampleData: any[]; // Adjust the type/interface as needed
     selectedValue: any,
-    overrideSearch: boolean
+    overrideSearch: boolean,
+    setFieldValue: any,
+    changedId: any,
+    fieldName: any
 }
   
-const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overrideSearch}) => {
+const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overrideSearch, setFieldValue, changedId, fieldName}) => {
 
     const searchFilterSort = (optionA: any, optionB: any) => {
         return (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase());
@@ -20,7 +23,7 @@ const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overr
     }
     
     const onChangeSearchEvent = (input: any, option: any) => {
-      
+        setFieldValue({input, changedId, fieldName})
     }
     return (
         <div>
