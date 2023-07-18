@@ -34,9 +34,8 @@
 
   .control-container .subTitle {
     text-align: left;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 700;
-    margin-left: 5%;
   }
 
   .control-container .text-left {
@@ -52,26 +51,40 @@
   }
 
   .control-container table {
-    width: 1005;
+    width: 100%;
+  }
+
+  .w-100 {
+    width: 100%;
+  }
+
+  .actionWrap {
+    width: 33%;
   }
 
   .control-container .checkboxLabel {
-    width: 400px;
     border: 0.5px solid #C1BDBD;
-    margin-left: 10px;
+    margin-left: 2px;
     display: inline-block;
     border-radius: 4px;
     padding: 4px 8px;
     text-align: left;
+    width: 100%;
   }
 
   .control-container .actionWrap .ant-checkbox-wrapper {
     width: 100%;
     margin-bottom: 5px;
   }
-.visible-box {
-  display: flex;
-}
+
+  .visible-box {
+    display: flex;
+  }
+
+  .ant-select  {
+    width: 100% !important;
+  }
+
   .checkbox-switch-container {
     display: flex;
     align-items: center;
@@ -99,9 +112,8 @@
 
   .control-container .minmaxText {
     font-size: 14px;
-    min-width: 110px;
     text-align: left;
-
+    margin-right: 10px;
   }
 
   .control-container th {
@@ -126,6 +138,8 @@
 
   .action-container {
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .nestedBtns {
@@ -146,55 +160,109 @@
     margin-right: 10px;
   }
 
+  .mt-20 {
+    margin-top: 20px;
+  }
+
   .nested-wrap {
     border: 1px solid #dee2e6;
-    /* background-color: #fafafa; */
     padding: 20px;
     margin-bottom: 20px;
   }
 
-.condition-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #616161;
-  width: 20%;
-  text-align: left;
-  margin-right: 20px;
-}
+  .condition-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #616161;
+    width: 20%;
+    text-align: left;
+    margin-right: 20px;
+  }
 
-.loop {
-  position: relative;
-  background: #ececec;
+  .loop {
+    position: relative;
+    background: #f4f4f4;
     margin-left: 30px;
     padding: 0.1px 20px;
     margin-bottom: 20px;
-}
+  }
 
-.loop:before {
-  border-style: dotted;
+  .loop:before {
+    border-style: dotted;
+      content: "";
+      left: -12px;
+      position: absolute;
+      width: 10px;
+      border-width: 0 0 0 2px;
+      height: 40px;
+      top: -32px;
+      border-color: #dee2e6;
+      
+  }
+
+  .loop:after {
+    height: calc(50% + 4px);
+    top: calc(50% - 50px);
+    border-style: dotted;
     content: "";
     left: -12px;
     position: absolute;
     width: 10px;
-    border-width: 0 0 0 2px;
-    height: 40px;
-    top: -32px;
+    border-width: 0 0 2px 2px;
     border-color: #dee2e6;
-     
-}
+  }
 
-.loop:after {
-  height: calc(50% + 4px);
-  top: calc(50% - 50px);
-  border-style: dotted;
-  content: "";
-  left: -12px;
-  position: absolute;
-  width: 10px;
-  border-width: 0 0 2px 2px;
-  border-color: #dee2e6;
-}
+  .flex-row {
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+  }
 
-.action-container {
-  margin-top: 20px;
-}
+  .flex-row-start{
+    display: flex;
+    justify-content:flex-start;
+    align-items: center;
+  }
+
+  .w-33 {
+    width: 33.49%;
+  }
+
+  .action-container {
+    margin-top: 30px;
+  }
+
+  .action-container .ant-input-number {
+    width: 50% !important;
+  }
+
+  .action-container .ant-checkbox+span {
+    width: 80% !important;
+  }
+
+  /*rnd */
+  /* .loop:before {
+    border-style: dotted;
+      content: "";
+      left: -12px;
+      position: absolute;
+      width: 10px;
+      border-width: 0px 0 2px 2px;
+      height: 86px;
+      top: -30px;
+      border-color: #dee2e6;   
+  }
+
+  .loop:after {
+    height: calc(50% + 33px);
+    top: calc(50% - -3px);
+    border-style: dotted;
+    content: "";
+    left: -12px;
+    position: absolute;
+    width: 10px;
+    border-width: 0 0 2px 2px;
+    border-color: #dee2e6;
+  } */
+
+  
