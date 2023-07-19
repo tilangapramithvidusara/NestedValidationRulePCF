@@ -47,12 +47,17 @@ const ParentComponent: React.FC = () => {
             : 1,
       },
     ]);
+    // setSections(_nestedRows.map((item: {}) => Object.keys(item)).flat().map((key: any) => ({ key }))
+    // );
     setIsNested(false);
   };
 
   useEffect(() => {
     console.log("SECCCC", sections);
   }, [sections]);
+
+  useEffect(() => {
+  }, [_nestedRows])
   return (
     <div>
       <div className="nestedBtns">

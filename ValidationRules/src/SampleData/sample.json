@@ -1,6 +1,6 @@
 [ 
     {
-        "level1" : {
+        "1" : {
             "fields": [{
                 "field": "Question01",
                 "condition": "",
@@ -82,7 +82,7 @@
         }
     },
     {
-        "level2": {
+        "2": {
             "fields":[{
                 "field": "Question 02",
                 "condition": "",
