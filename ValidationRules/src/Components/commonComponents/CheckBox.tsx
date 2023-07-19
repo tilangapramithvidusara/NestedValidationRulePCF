@@ -28,7 +28,7 @@ function CheckBox({
     <>
           <Checkbox.Group
             style={{ display: "block", marginBottom: "10px", textAlign: "left" }}
-            className="actionWrap"
+            // className="actionWrap"
             defaultValue={checkboxDefaultSelectedValues}
             onChange={checkboxOnChange}
             options={checkboxValuesFromConfig}

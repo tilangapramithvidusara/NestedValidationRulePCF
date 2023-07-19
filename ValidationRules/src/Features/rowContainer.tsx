@@ -6,6 +6,8 @@ import { expressionSampleData } from "../SampleData/expressionSampleData";
 import { operationalSampleData } from "../SampleData/operationalSampleData";
 import { sampleInputQuestion } from "../SampleData/sampleInputQuestion";
 import NumberInputField from "../Components/commonComponents/NumberInputField";
+// import deleteImg from "../assets/delete.png";
+
 import {
   findGroupId,
   generateOutputString,
@@ -453,35 +455,39 @@ const RowContainer: React.FC<TableRowProps> = ({
         </div> */}
 
         {!condition?.collapse ? (
-          <div>
-            <div style={{ display: "flex", marginBottom: "3%" }}>
-
-            {
-                !condition.state && <CaretDownOutlined
-                  style={{ color: "#0093FE" }}
-                  onClick={() =>
-                    setCollapse({
-                      state: true,
-                      fieldId: condition?.level,
-                    })
-                  }
-                />
-              }
-              
-              <Button
-                className="mr-10 btn-default"
-                onClick={() => _handleAddRow(condition?.level, false, "AND")}
-              >
-                + Add
-              </Button>
-              <Button
-                className="btn-default"
-                onClick={() =>
-                  _handleAddNestedRow(condition?.level, true, "AND")
+          <div className="collapse-wrap">
+            <div className="flex-col-start">
+             <div className="flex-row-start mb-10">
+               {
+                  !condition.state && <CaretDownOutlined
+                    style={{ color: "#0093FE" }}
+                    onClick={() =>
+                      setCollapse({
+                        state: true,
+                        fieldId: condition?.level,
+                      })
+                    }
+                  />
+                  
                 }
-              >
-                + Add Nested
-              </Button>
+                <div className="validation-text">Collapse Validation Rules</div>
+              </div>
+              <div className="flex-row-start ml-20 mb-20">
+                <Button
+                  className="mr-10 btn-default"
+                  onClick={() => _handleAddRow(condition?.level, false, "AND")}
+                >
+                  + Add
+                </Button>
+                <Button
+                  className="btn-default"
+                  onClick={() =>
+                    _handleAddNestedRow(condition?.level, true, "AND")
+                  }
+                >
+                  + Add Nested
+                </Button>
+              </div>
             </div>
             <div className="loop">
               <div
@@ -550,24 +556,26 @@ const RowContainer: React.FC<TableRowProps> = ({
                     {" "}
                     Remove
                   </Button>
+                   {/* <a><img src={deleteImg} className="delete-img" alt="delete"/></a> */}
                 </div>
               </div>
             </div>
           </div>
         ) : (
-            <div> 
-              
-              {
-                !condition.state && <CaretRightOutlined
-                style={{color:"#0093FE"}}
-                onClick={() =>
-                  setCollapse({
-                    state: false,
-                    fieldId: condition?.level,
-                  })
+            
+           <div className="flex-row-start mb-10 collapse-wrap">
+            {
+                  !condition.state && <CaretRightOutlined
+                  style={{color:"#0093FE"}}
+                  onClick={() =>
+                    setCollapse({
+                      state: false,
+                      fieldId: condition?.level,
+                    })
+                  }
+                  />
                 }
-                />
-              }
+              <div className="validation-text">Expand Validation Rules</div>
           </div>
         )}
 
