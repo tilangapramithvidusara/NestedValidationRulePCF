@@ -67,20 +67,21 @@ const generateOutputString = (conditions: string | any[]) => {
     if (condition.hasNested) {
       const innerExpression = generateOutputString(condition.innerConditions);
       //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
+        console.log("DDDDDD", innerExpression)
       expression += `${
-        previousCondition?.expression ? previousCondition?.expression : ""
+        condition?.expression ? condition?.expression : ""
       } (${condition.field} ${condition.condition} ${
         condition.value
-      } ${innerExpression} )`;
+      } ${innerExpression && innerExpression.length ? ` ${innerExpression} ` : ""} )`;
     } else {
       //   expression += condition.field;
       expression += ` ${
-        previousCondition?.expression ? previousCondition?.expression : ""
+        condition?.expression ? condition?.expression : ""
       } ${condition.field} ${condition.condition} ${condition.value}`;
     }
 
     //   if (i !== conditions.length - 1) {
-    //     expression += ` ${condition.expression} ${condition.field} ${condition.condition} ${condition.value} `;
+    //     expression += ` ${condition.expression ? condition.expression : ""} `;
     //   }
   }
 
@@ -186,6 +187,58 @@ const removeByKey = (removeArray: any[], removingKey: any): any[] => {
       });
 };
   
+
+
+
+const findGroupId = (o: any, id: any): any => {
+    console.log("ooooooooooo", o)
+    console.log("ooooooooooo", id)
+
+    if (o?.level == id) {
+      return o;
+    }
+  
+    if (Array.isArray(o)) {
+      o = {
+        innerConditions: o
+      }
+    }
+  
+    let results = [];
+    for (let c of o.innerConditions ?? []) {
+      results.push(findGroupId(c, id))
+    }
+  
+    return results.filter(r => r !== undefined)[0];
+  }
+  
+  const getAllChildrenIDs = (o: any) : any => {
+    if (o?.innerConditions === undefined)
+      return [];
+    let ids = [];
+    for (let c of o.innerConditions ?? []) {
+      ids.push(c.level);
+      for (let id of getAllChildrenIDs(c))
+        ids.push(id);
+    }
+    return ids;
+  }
+
+
+  const updateCollapseByParentId = (data: any, parentId: any, collapse: any) => {
+    console.log("------------>", data, parentId, collapse);
+    data.forEach((i: { level: any; innerConditions: any[], collapse: any }) => {
+      if (i.level == parentId) {
+         i.collapse = collapse;
+      } else {
+        updateCollapseByParentId(i.innerConditions, parentId, collapse);
+      }
+    });
+    console.log("------------ data>", data);
+    const newArr = [...data];
+    return newArr;
+  };
+
 export {
   getAllIds,
   getParentIds,
@@ -195,5 +248,8 @@ export {
   updateFieldByLevel,
   updateAllLevelArray,
     updateAllLevelActionsArray,
-    removeByKey
+    removeByKey,
+    findGroupId,
+    getAllChildrenIDs,
+    updateCollapseByParentId
 };

@@ -12,6 +12,7 @@
     "refreshTypes": "pcf-scripts refreshTypes"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.1.4",
     "antd": "^5.5.1",
     "json-loader": "^0.5.7",
     "react-dom": "^17.0.2",

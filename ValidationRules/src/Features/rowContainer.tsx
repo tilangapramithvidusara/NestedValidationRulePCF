@@ -7,14 +7,18 @@ import { operationalSampleData } from "../SampleData/operationalSampleData";
 import { sampleInputQuestion } from "../SampleData/sampleInputQuestion";
 import NumberInputField from "../Components/commonComponents/NumberInputField";
 import {
+  findGroupId,
   generateOutputString,
+  getAllChildrenIDs,
   getNearestParentByItems,
   getParentIds,
   removeByKey,
   updateAllLevelArray,
   updateByParentId,
+  updateCollapseByParentId,
   updateFieldByLevel,
 } from "../Utils/utilsHelper";
+import { CaretDownOutlined, CaretRightOutlined, DownOutlined, RightOutlined } from "@ant-design/icons";
 interface NestedRowProps {
   children: React.ReactNode;
 }
@@ -24,11 +28,12 @@ interface TableRowProps {
   rowData: any;
   setRowData: any;
   addRow: any;
-  addNestedRow: any;
+  isNested: any;
   sectionLevel: number;
   setConditionData: any;
   _setNestedRows: any;
   _nestedRows: any;
+  questionList: any;
 }
 
 interface Condition {
@@ -38,7 +43,7 @@ interface Condition {
   sort: number;
   level: number;
   hasNested: boolean;
-  innerConditions: Condition[];
+  innerConditions: Condition[]
 }
 
 const RowContainer: React.FC<TableRowProps> = ({
@@ -46,11 +51,12 @@ const RowContainer: React.FC<TableRowProps> = ({
   rowData,
   setRowData,
   addRow,
-  addNestedRow,
+  isNested,
   sectionLevel,
   setConditionData,
   _setNestedRows,
   _nestedRows,
+  questionList,
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [indexLevel, setIndexLevel] = useState<any>(1);
@@ -290,8 +296,7 @@ const RowContainer: React.FC<TableRowProps> = ({
         )
         .filter((value: any) => value)
         .join(" && ") || null;
-    console.log("checkBoxValueString", checkBoxValueString);
-
+    
     const minValue = item?.minMax?.minValue
       ? `min=${item?.minMax?.minValue}`
       : null;
@@ -304,21 +309,9 @@ const RowContainer: React.FC<TableRowProps> = ({
     if (maxValue) displayArray.push(maxValue);
     if (checkBoxValueString) displayArray.push(checkBoxValueString);
 
-    // if (minValue != null ) {
-    //   minMaxString = ` min=${minValue}"`;
-    // }
-    // if (maxValue != null) {
-    //   minMaxString = ` max="${maxValue}"`;
-    // }
-    // if(minValue && maxValue) minMaxString = `min=${minValue} && max="${maxValue}"`;
-
     setShowActionOutput(displayArray.join(" && "));
     displayArray = [];
   }, [_nestedRows]);
-
-  useEffect(() => {
-    console.log("DDDDDDDD", showActionOutput);
-  }, [showActionOutput]);
 
   useEffect(() => {
     console.log("sectionLevelsectionLevel", sectionLevel);
@@ -330,7 +323,7 @@ const RowContainer: React.FC<TableRowProps> = ({
           value: "",
           sort: 1,
           level: 1,
-          hasNested: false,
+          hasNested: isNested,
           expression: "",
           innerConditions: [],
           collapse: false,
@@ -345,7 +338,47 @@ const RowContainer: React.FC<TableRowProps> = ({
     console.log("Collapse number", collapse);
 
     // handleLevelCollapse(number, collapse);
-    _setNestedRows(updateConditionCollapse(_nestedRows, number, collapse));
+   
+
+    let _collapseList = getAllChildrenIDs(findGroupId(_nestedRows?.find((x: any[]) => x[sectionLevel])?.[
+      sectionLevel
+    ]?.fields, number))
+    console.log("_collapseList number", [..._collapseList, number]);
+    _collapseList = [..._collapseList, number]
+    if (_collapseList && _collapseList.length) {
+      if(_nestedRows?.find((x: any[]) => x[sectionLevel])?.[
+        sectionLevel
+      ]?.fields?.length) {
+        const fields = _updateCollapseByParentId(_nestedRows?.find((x: any[]) => x[sectionLevel])?.[
+          sectionLevel
+        ]?.fields, _collapseList, collapse)
+        console.log("FIELDSSSSSSSS", fields)
+        _setNestedRows(
+          updateAllLevelArray(
+            _nestedRows,
+            sectionLevel,
+            fields
+          )
+        );
+      }
+    }
+  };
+
+  const _updateCollapseByParentId = (_data: any, parentIds: any, collapse: any) => {
+    console.log("------------>", _data, parentIds, collapse);
+    parentIds.forEach((x: any) => {
+      _data.map((i: { level: any; innerConditions: any[], collapse: any }) => {
+        if (x === i.level) {
+           i.collapse = collapse;
+        } else {
+          _updateCollapseByParentId(i.innerConditions, parentIds, collapse);
+        }
+      });
+    })
+   
+    console.log("------------ data>", _data);
+    const newArr = [..._data];
+    return newArr;
   };
 
   const updateConditionCollapse = (
@@ -394,29 +427,46 @@ const RowContainer: React.FC<TableRowProps> = ({
   };
   const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
     console.log("conditions----->", conditions);
-    // if (conditions && conditions.length) {
-    // let releatedFields = conditions.find((x) => x[sectionLevel]);
-    // if (releatedFields) {
-    //   releatedFields = releatedFields[sectionLevel].fields;
     return conditions.map((condition: any) => (
       <div key={condition.level}>
-        <div style={{ display: "flex", marginBottom: "2%" }}>
-          {/* <Button
-                onClick={() =>
-                  setCollapse({
-                    state: !condition.collapse?.state,
-                    fieldId: condition?.level,
-                  })
-                }
-              >
-                Collapse
-              </Button> */}
-          {/* <Button onClick={() => collapseHandle(condition.level, false)}>Expand</Button> */}
-        </div>
+        {/* <div style={{ display: "flex", marginBottom: "2%" }}>
+          {
+            !collapse.state ? <CaretDownOutlined
+              style={{color:"#0093FE"}}
+            onClick={() =>
+              setCollapse({
+                state: true,
+                fieldId: condition?.level,
+              })
+            }
+            /> : <CaretRightOutlined
+            style={{color:"#0093FE"}}
+            onClick={() =>
+              setCollapse({
+                state: false,
+                fieldId: condition?.level,
+              })
+            }
+              />
+          }
+        </div> */}
 
         {!condition?.collapse ? (
           <div>
             <div style={{ display: "flex", marginBottom: "3%" }}>
+
+            {
+                !condition.state && <CaretDownOutlined
+                  style={{ color: "#0093FE" }}
+                  onClick={() =>
+                    setCollapse({
+                      state: true,
+                      fieldId: condition?.level,
+                    })
+                  }
+                />
+              }
+              
               <Button
                 className="mr-10 btn-default"
                 onClick={() => _handleAddRow(condition?.level, false, "AND")}
@@ -464,7 +514,7 @@ const RowContainer: React.FC<TableRowProps> = ({
 
                 <div className="condition-label">
                   <FieldInput
-                    sampleData={sampleInputQuestion}
+                    sampleData={questionList && questionList.length ? questionList : sampleInputQuestion}
                     selectedValue={condition?.field}
                     overrideSearch={false}
                     setFieldValue={setFieldValue}
@@ -504,7 +554,20 @@ const RowContainer: React.FC<TableRowProps> = ({
             </div>
           </div>
         ) : (
-          <div> </div>
+            <div> 
+              
+              {
+                !condition.state && <CaretRightOutlined
+                style={{color:"#0093FE"}}
+                onClick={() =>
+                  setCollapse({
+                    state: false,
+                    fieldId: condition?.level,
+                  })
+                }
+                />
+              }
+          </div>
         )}
 
         {/* {condition.hasNested && (
@@ -535,7 +598,7 @@ const RowContainer: React.FC<TableRowProps> = ({
           ) +
           ")"}{" "}
       </div>
-      <div style={{ textAlign: "left" }}>
+      <div style={{ textAlign: "left", marginBottom: "3%" }}>
         {" "}
         {"{ " + showActionOutput + " }"}{" "}
       </div>
