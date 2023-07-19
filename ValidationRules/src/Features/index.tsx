@@ -22,6 +22,7 @@ const ParentComponent: React.FC = () => {
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
+  const [isNested, setIsNested] = useState<any>();
 
   let addNestedComponent = () => {
     setSections([
@@ -33,6 +34,20 @@ const ParentComponent: React.FC = () => {
             : 1,
       },
     ]);
+    setIsNested(true);
+  };
+
+  let addComponent = () => {
+    setSections([
+      ...sections,
+      {
+        key:
+          sections && sections.length
+            ? Math.max(...sections.map((item) => item.key)) + 1
+            : 1,
+      },
+    ]);
+    setIsNested(false);
   };
 
   useEffect(() => {
@@ -41,7 +56,7 @@ const ParentComponent: React.FC = () => {
   return (
     <div>
       <div className="nestedBtns">
-        <Button className="mr-10 btn-default"  onClick={addNestedComponent}> + Add </Button>
+        <Button className="mr-10 btn-default"  onClick={addComponent}> + Add </Button>
         <Button className="btn-default"  onClick={addNestedComponent}> + Add Nested</Button>
       </div>
       {sections.map((section) => (
@@ -52,6 +67,7 @@ const ParentComponent: React.FC = () => {
             setConditionData={setConditionData}
             _setNestedRows={_setNestedRows}
             _nestedRows={_nestedRows}
+            isNested={isNested}
           />
         </div>
       ))}
