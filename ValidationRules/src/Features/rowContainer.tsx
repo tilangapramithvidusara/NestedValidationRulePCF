@@ -425,6 +425,7 @@ const RowContainer: React.FC<TableRowProps> = ({
       );
     }
   };
+
   const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
     console.log("conditions----->", conditions);
     return conditions.map((condition: any) => (
