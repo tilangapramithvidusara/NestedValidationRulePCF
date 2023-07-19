@@ -166,7 +166,7 @@
 
   .nested-wrap {
     border: 1px solid #dee2e6;
-    padding: 20px;
+    padding: 20px 15px; 
     margin-bottom: 20px;
   }
 
@@ -181,7 +181,7 @@
 
   .loop {
     position: relative;
-    background: #f4f4f4;
+    background: #e5e5e5;
     margin-left: 30px;
     padding: 0.1px 20px;
     margin-bottom: 20px;
@@ -190,13 +190,13 @@
   .loop:before {
     border-style: dotted;
       content: "";
-      left: -12px;
+      left: -11px;
       position: absolute;
       width: 10px;
       border-width: 0 0 0 2px;
       height: 40px;
-      top: -32px;
-      border-color: #dee2e6;
+      top: -23px;
+      border-color: #d3d3d3;
       
   }
 
@@ -205,11 +205,11 @@
     top: calc(50% - 50px);
     border-style: dotted;
     content: "";
-    left: -12px;
+    left: -11px;
     position: absolute;
     width: 10px;
     border-width: 0 0 2px 2px;
-    border-color: #dee2e6;
+    border-color: #d3d3d3;
   }
 
   .flex-row {
@@ -243,19 +243,19 @@
   /*rnd */
   /* .loop:before {
     border-style: dotted;
-      content: "";
-      left: -12px;
-      position: absolute;
-      width: 10px;
-      border-width: 0px 0 2px 2px;
-      height: 86px;
-      top: -30px;
-      border-color: #dee2e6;   
+    content: "";
+    left: -12px;
+    position: absolute;
+    width: 10px;
+    border-width: 0 0 2px 2px;
+    height: 95px;
+    top: -32px;
+    border-color: #dee2e6;
   }
 
   .loop:after {
-    height: calc(50% + 33px);
-    top: calc(50% - -3px);
+    height: calc(50% + 84px);
+    top: calc(50% - -6px);
     border-style: dotted;
     content: "";
     left: -12px;
@@ -265,4 +265,44 @@
     border-color: #dee2e6;
   } */
 
-  
+  .flex-col-start {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .flex-row-start {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .validation-text {
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .mb-10 {
+    margin-bottom: 10px;
+  }
+
+  .mb-20 {
+    margin-bottom: 20px;
+  }
+
+  .ml-20 {
+    margin-left: 20px;
+  }
+
+  .collapse-wrap {
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e2e2;
+    background-color: #f4f4f4;
+  }
+
+  .delete-img {
+    height: 17px;
+  }
