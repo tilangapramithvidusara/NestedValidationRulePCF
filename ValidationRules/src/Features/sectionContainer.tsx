@@ -131,14 +131,14 @@ function SectionContainer({
     if (releatedFields) {
       releatedFields = releatedFields[sectionLevel].actions
       console.log("ACTSSSSS releatedFields", releatedFields);
-      let resultArray = [
-        {
-          checkBoxValues: actions,
-          minMax: releatedFields.map((x: { minMax: any; }) => x?.minMax)[0] || {}
-        }
-      ];
-      if (actions && actions.length) _setNestedRows(
-        updateAllLevelActionsArray(_nestedRows, sectionLevel, resultArray)
+      // if (actions && actions.length)
+        _setNestedRows(
+        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+          {
+            checkBoxValues: actions,
+            minMax: releatedFields.map((x: { minMax: any; }) => x?.minMax)[0] || {}
+          }
+        ])
       );
     }
    
@@ -212,7 +212,7 @@ function SectionContainer({
                 },
                 {
                   label: "Show in Document",
-                  value: "showInDocument",
+                  value: "OutPutDoc:Show",
                 },
               ]}
               setCheckboxValues={setActions}
@@ -252,12 +252,11 @@ function SectionContainer({
               />
             ) : (
                 <DropDown
-                  dropDownData={sampleInputQuestion}
-                  isDisabled={!minCheckboxEnabled}
-                  setExpression={setMinValue}
-                  changedId={undefined}
-                  fieldName={"minValue"}
-                />
+                    dropDownData={sampleInputQuestion}
+                    isDisabled={!minCheckboxEnabled}
+                    setExpression={setMinValue}
+                    changedId={undefined}
+                    fieldName={"minValue"} selectedValue={undefined}                />
             )}
           </div>
 
@@ -289,12 +288,11 @@ function SectionContainer({
                 fieldName={"maxValue"} />
             ) : (
                 <DropDown
-                  dropDownData={sampleInputQuestion}
-                  isDisabled={!maxCheckboxEnabled}
-                  setExpression={setMaxValue}
-                  changedId={undefined}
-                  fieldName={"maxValue"}
-                />
+                    dropDownData={sampleInputQuestion}
+                    isDisabled={!maxCheckboxEnabled}
+                    setExpression={setMaxValue}
+                    changedId={undefined}
+                    fieldName={"maxValue"} selectedValue={undefined}                />
             )}
           </div>
           </div>

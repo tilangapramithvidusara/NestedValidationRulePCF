@@ -13,7 +13,7 @@ const actionMapper = {
                 },
                 {
                     displayName: 'Show in Document',
-                    value: 'showInDocument'
+                    value: 'OutPutDoc:Show'
                 },
         ],
         else_actions: [

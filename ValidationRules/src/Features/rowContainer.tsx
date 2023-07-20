@@ -575,6 +575,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       setExpression={setFieldValue}
                       changedId={condition?.level}
                       fieldName={"expression"}
+                      selectedValue={condition?.expression}
                     />{" "}
                   </div>
 
@@ -599,11 +600,12 @@ const RowContainer: React.FC<TableRowProps> = ({
                       setExpression={setFieldValue}
                       changedId={condition?.level}
                       fieldName={"condition"}
+                      selectedValue={condition?.condition}
                     />
                   </div>
                   <div className="condition-label">
                     <NumberInputField
-                      selectedValue={{}}
+                      selectedValue={condition?.value}
                       handleNumberChange={{}}
                       defaultDisabled={false}
                       setInputNumber={setFieldValue}
