@@ -1,45 +1,33 @@
-const getAllIds = (data: any[] = [], result: any[] = []) => {
-  for (let item of data) {
-    if (item.level) {
-      result.push(item.level);
-    }
-    if (item.hasNested && item.innerConditions) {
-      getAllIds(item.innerConditions, result);
-    }
-  }
-  return result;
-};
-
-const getParentIds = (object: any, level: number) => {
-  let ids: number[] | undefined;
-  if (!object || typeof object !== "object") return; // no object
-  if (object.level === level) return []; // id found
-  return object.innerConditions.some((o: any) => (ids = getParentIds(o, level))) // call recursive function
-    ? [...ids!, object.level] // if found, take ids
-    : undefined; // otherwise return falsy
-};
-
 const updateByParentId = (data: any, parentId: any, newObj: any) => {
   console.log("------------>", data, parentId, newObj);
-  data.forEach((i: { level: any; innerConditions: any[], hasNested: any }) => {
+  data.forEach((i: { level: any; innerConditions: any[]; hasNested: any }) => {
     if (i.level == parentId) {
-        i.innerConditions = [...i.innerConditions, newObj];
-        if (i?.innerConditions?.length > 0) {
-            i.hasNested = true;
-          }
+      i.innerConditions = [...i.innerConditions, newObj];
+      if (i?.innerConditions?.length > 0) {
+        i.hasNested = true;
+      }
     } else {
       updateByParentId(i.innerConditions, parentId, newObj);
     }
   });
-    
-    
-
-    
-    
   console.log("------------ data>", data);
   const newArr = [...data];
   return newArr;
 };
+
+const getNestedParentLevel = (data: any, parentId: any) => {
+    console.log("------------>", data, parentId);
+    data.map((i: { level: any; innerConditions: any[]; hasNested: any }) => {
+      if (i.level == parentId) {
+          return i;
+      } else {
+        getNestedParentLevel(i.innerConditions, parentId);
+      }
+    });
+    console.log("------------ data>", data);
+    const newArr = [...data];
+    return newArr;
+  };
 
 const getNearestParentByItems = (
   items: any,
@@ -67,22 +55,36 @@ const generateOutputString = (conditions: string | any[]) => {
     if (condition.hasNested) {
       const innerExpression = generateOutputString(condition.innerConditions);
       //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
-        console.log("DDDDDD", innerExpression)
-      expression += `${
-        condition?.expression ? condition?.expression : ""
-      } (${condition.field} ${condition.condition} ${
-        condition.value
-      } ${innerExpression && innerExpression.length ? ` ${innerExpression} ` : ""} )`;
+      expression += `${condition?.expression ? condition?.expression : ""} (${
+        condition.field
+      } ${condition.condition} ${condition.value} ${
+        innerExpression && innerExpression.length ? ` ${innerExpression} ` : ""
+      } `;
     } else {
       //   expression += condition.field;
-      expression += ` ${
-        condition?.expression ? condition?.expression : ""
-      } ${condition.field} ${condition.condition} ${condition.value}`;
+      expression += ` ${condition?.expression ? condition?.expression : ""} ${
+        condition.field
+      } ${condition.condition} ${condition.value} `;
     }
+  }
+    
+  let openBrackets = 0;
+  let closeBrackets = 0;
 
-    //   if (i !== conditions.length - 1) {
-    //     expression += ` ${condition.expression ? condition.expression : ""} `;
-    //   }
+  for (let i = 0; i < expression.length; i++) {
+    const char = expression.charAt(i);
+    if (char === '(') {
+      openBrackets++;
+    } else if (char === ')') {
+      closeBrackets++;
+    }
+  }
+
+  const missingBrackets = openBrackets - closeBrackets;
+  if (missingBrackets > 0) {
+    for (let i = 0; i < missingBrackets; i++) {
+      expression += ')';
+    }
   }
 
   return expression;
@@ -124,7 +126,9 @@ const updateAllLevelArray = (
           ...prevData,
           [sectionLevel]: {
             fields: newRow,
-              actions: _nestedRows.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions || [],
+            actions:
+              _nestedRows.find((x: any) => x[sectionLevel])?.[sectionLevel]
+                ?.actions || [],
           },
         };
       }
@@ -135,7 +139,9 @@ const updateAllLevelArray = (
       {
         [sectionLevel]: {
           fields: newRow,
-              actions: _nestedRows.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions || [],
+          actions:
+            _nestedRows.find((x: any) => x[sectionLevel])?.[sectionLevel]
+              ?.actions || [],
         },
       },
       ..._nestedRows,
@@ -151,7 +157,7 @@ const updateAllLevelActionsArray = (
   const existingLevel1Index = _nestedRows.findIndex(
     (item: any) => sectionLevel in item
   );
-    console.log("actionListactionListactionList", actionList)
+  console.log("actionListactionListactionList", actionList);
   if (existingLevel1Index !== -1) {
     return _nestedRows.map((prevData: any, index: number) => {
       if (index === existingLevel1Index) {
@@ -169,9 +175,12 @@ const updateAllLevelActionsArray = (
   } else {
     return [
       {
-            [sectionLevel]: {
-                actions: actionList,
-                fields: _nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.fields || [],
+        [sectionLevel]: {
+          actions: actionList,
+          fields:
+            _nestedRows?.find((x: { [x: string]: any }) => x[sectionLevel])[
+              sectionLevel
+            ]?.fields || [],
         },
       },
       ..._nestedRows,
@@ -180,76 +189,54 @@ const updateAllLevelActionsArray = (
 };
 
 const removeByKey = (removeArray: any[], removingKey: any): any[] => {
-    return removeArray
-      .filter(a => a.level !== removingKey)
-      .map(e => {
-        return { ...e, innerConditions: removeByKey(e.innerConditions || [], removingKey) };
-      });
+  return removeArray
+    .filter((a) => a.level !== removingKey)
+    .map((e) => {
+      return {
+        ...e,
+        innerConditions: removeByKey(e.innerConditions || [], removingKey),
+      };
+    });
 };
-  
-
-
 
 const findGroupId = (o: any, id: any): any => {
-    console.log("ooooooooooo", o)
-    console.log("ooooooooooo", id)
-
-    if (o?.level == id) {
-      return o;
-    }
-  
-    if (Array.isArray(o)) {
-      o = {
-        innerConditions: o
-      }
-    }
-  
-    let results = [];
-    for (let c of o.innerConditions ?? []) {
-      results.push(findGroupId(c, id))
-    }
-  
-    return results.filter(r => r !== undefined)[0];
-  }
-  
-  const getAllChildrenIDs = (o: any) : any => {
-    if (o?.innerConditions === undefined)
-      return [];
-    let ids = [];
-    for (let c of o.innerConditions ?? []) {
-      ids.push(c.level);
-      for (let id of getAllChildrenIDs(c))
-        ids.push(id);
-    }
-    return ids;
+  if (o?.level == id) {
+    return o;
   }
 
+  if (Array.isArray(o)) {
+    o = {
+      innerConditions: o,
+    };
+  }
 
-  const updateCollapseByParentId = (data: any, parentId: any, collapse: any) => {
-    console.log("------------>", data, parentId, collapse);
-    data.forEach((i: { level: any; innerConditions: any[], collapse: any }) => {
-      if (i.level == parentId) {
-         i.collapse = collapse;
-      } else {
-        updateCollapseByParentId(i.innerConditions, parentId, collapse);
-      }
-    });
-    console.log("------------ data>", data);
-    const newArr = [...data];
-    return newArr;
-  };
+  let results = [];
+  for (let c of o.innerConditions ?? []) {
+    results.push(findGroupId(c, id));
+  }
+
+  return results.filter((r) => r !== undefined)[0];
+};
+
+const getAllChildrenIDs = (o: any): any => {
+  if (o?.innerConditions === undefined) return [];
+  let ids = [];
+  for (let c of o.innerConditions ?? []) {
+    ids.push(c.level);
+    for (let id of getAllChildrenIDs(c)) ids.push(id);
+  }
+  return ids;
+};
 
 export {
-  getAllIds,
-  getParentIds,
   updateByParentId,
   getNearestParentByItems,
   generateOutputString,
   updateFieldByLevel,
   updateAllLevelArray,
-    updateAllLevelActionsArray,
-    removeByKey,
-    findGroupId,
+  updateAllLevelActionsArray,
+  removeByKey,
+  findGroupId,
     getAllChildrenIDs,
-    updateCollapseByParentId
+    getNestedParentLevel
 };
