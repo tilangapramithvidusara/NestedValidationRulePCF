@@ -6,10 +6,11 @@ interface DropDownCommonProps {
   isDisabled: boolean;
   setExpression: any;
   changedId: any;
-  fieldName: any
+  fieldName: any;
+  selectedValue: any;
 }
 
-const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, setExpression, changedId, fieldName }) => {
+const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, setExpression, changedId, fieldName, selectedValue }) => {
   return (
     <div>
       <Select
@@ -25,7 +26,8 @@ const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, set
         }
         options={dropDownData}
         disabled={isDisabled ? isDisabled : false}
-        onChange={(input, option) => setExpression({input: option.value, changedId, fieldName })}
+        onChange={(input, option) => setExpression({ input: option.value, changedId, fieldName })}
+        defaultValue={selectedValue}
       />
     </div>
   );

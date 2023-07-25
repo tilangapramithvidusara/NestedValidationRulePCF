@@ -18,17 +18,20 @@ function CheckBox({
         setCheckboxValues(checkedValues.map((item: string) => {
             return {
               [item]: {
-                logicalName: item.toUpperCase() ,
+                logicalName: item.toUpperCase(),
                 value: item
               }
             };
           }))
     }
+  useEffect(() => {
+      console.log("checkboxDefaultSelectedValues", checkboxDefaultSelectedValues)
+  }, [checkboxDefaultSelectedValues])
   return (
     <>
           <Checkbox.Group
             style={{ display: "block", marginBottom: "10px", textAlign: "left" }}
-            className="actionWrap"
+            // className="actionWrap"
             defaultValue={checkboxDefaultSelectedValues}
             onChange={checkboxOnChange}
             options={checkboxValuesFromConfig}
