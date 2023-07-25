@@ -56,7 +56,9 @@ function SectionContainer({
   const [maxValue, setMaxValue] = useState<any>();
   const [minMaxValue, setMinMaxValue] = useState<any>();
   const [questionList, setQuestionList] = useState<any[]>([]);
+  const [defaultActions, setDefaultActions] = useState<any[]>([]);
 
+  // const [rows, setRows] = useState<Row[]>(_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.fields);
   const [rows, setRows] = useState<Row[]>([
     {
       level: 1,
@@ -69,7 +71,6 @@ function SectionContainer({
       innerConditions: "",
     },
   ]);
-
   const addRow = () => {
     setRows(
       (prevRows) =>
@@ -108,14 +109,66 @@ function SectionContainer({
     );
   };
 
+  // useEffect(() => {
+  //   console.log("nestedRows from sectionnnnn", _nestedRows);
+  //     if (_nestedRows) {
+  //       setRows(_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.fields || [])
+  //     }
+  // }, [_nestedRows]);
+
   useEffect(() => {
-    console.log("nestedRows from sectionnnnn", _nestedRows[sectionLevel]);
-    let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
-      if (releatedFields) {
-        releatedFields = releatedFields[sectionLevel].actions
-        console.log("Section actions from section field ", releatedFields)
-      }
+    // const releatedFields = _nestedRows.find((x: any[]) => x[sectionLevel])[sectionLevel];
+    // console.log("nestedRows from sectionnnnn", releatedFields?.actions);
+    
+    // const existingLevel1Index = defaultActions.findIndex(
+    //   (item) => sectionLevel in item
+    // );
+    // console.log("existingLevel1Index from sectionnnnn", existingLevel1Index);
+  
+    // // Create a copy of the current defaultActions to avoid directly modifying state
+    // let updatedDefaultActions = [...defaultActions];
+  
+    // if (existingLevel1Index !== -1) {
+    //   // Update the existing level1 object with new fields
+    //   const existanceFields = updatedDefaultActions[existingLevel1Index][sectionLevel];
+    //   updatedDefaultActions[existingLevel1Index] = {
+    //     ...updatedDefaultActions[existingLevel1Index],
+    //     [sectionLevel]: existanceFields,
+    //   };
+    // } else {
+    //   // Add a new level1 object at the beginning with the relevant fields
+    //   updatedDefaultActions = [
+    //     {
+    //       [sectionLevel]: releatedFields?.actions,
+    //     },
+    //     ...updatedDefaultActions,
+    //   ];
+    // }
+  
+    // // Set the modified defaultActions in the state
+    // setDefaultActions(updatedDefaultActions);
+    // const ref = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.actions[0]?.checkBoxValues || []
+    // console.log("RESSSSsdddd", ref);
+    // if (ref && ref?.length) setActions(Object.keys(ref))
+    
+    setDefaultActions([
+      {
+        label: "Show",
+        value: "show",
+      },
+      {
+        label: "Enable",
+        value: "enable",
+      },
+      {
+        label: "Show in Document",
+        value: "OutPutDoc:Show",
+      },
+    ]);
+
   }, [_nestedRows]);
+  
+
 
   useEffect(() => {
     loadQuestionHandler();
@@ -125,6 +178,10 @@ function SectionContainer({
       console.log("questionList", questionList)
   }, [questionList])
 
+  useEffect(() => {
+    console.log("questionList rowsrowsrows", rows)
+  }, [rows])
+  
   useEffect(() => {
     console.log("ACTSSSSS", actions);
     let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
@@ -139,7 +196,7 @@ function SectionContainer({
             minMax: releatedFields.map((x: { minMax: any; }) => x?.minMax)[0] || {}
           }
         ])
-      );
+        );
     }
    
   }, [actions]);
@@ -169,7 +226,7 @@ function SectionContainer({
     // Check if 'result.data' exists and has 'entities' property
     if (questionListArray && questionListArray.length) {
         const formattedQuestionList = questionListArray.map((quesNme:any) => {
-            return { label: quesNme.gyde_name, value: quesNme.gyde_name, questionType: 'numeric'}
+            return { label: quesNme.gyde_name, value: quesNme.gyde_name, questionType: quesNme.questionType}
         })
         formattedQuestionList && formattedQuestionList.length && setQuestionList(formattedQuestionList);
     } else {
@@ -178,9 +235,17 @@ function SectionContainer({
     }
   };
 
+  useEffect(() => {
+    console.log("DEFAULt ACTS", defaultActions);
+    setMinCheckboxEnabled(defaultActions[0]?.minMax?.minValue ? true : false);
+    setMaxCheckboxEnabled(defaultActions[0]?.minMax?.maxValue ? true : false);
+    setToggledEnableMin(defaultActions[0]?.minMax?.minValue ? true : false);
+    setToggledEnableMax(defaultActions[0]?.minMax?.maxValue ? true : false);
+  }, [defaultActions]);
+
   return (
     <div>
-      {rows.map((row, index) => (
+      {rows && rows.length && rows.map((row, index) => (
         <RowContainer
           rowIndex={index}
           rowData={rowData}
@@ -200,7 +265,7 @@ function SectionContainer({
           <div className="subTitle mb-15">Actions</div>
           <div className="flex-row">
             <CheckBox
-              checkboxDefaultSelectedValues={["", "outPutDoc"]}
+              checkboxDefaultSelectedValues={defaultActions?.length && defaultActions?.map(x => x.value)|| [] }
               checkboxValuesFromConfig={[
                 {
                   label: "Show",

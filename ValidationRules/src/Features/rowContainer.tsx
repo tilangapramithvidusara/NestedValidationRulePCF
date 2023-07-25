@@ -68,7 +68,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
   const [fieldValue, setFieldValue] = useState<any>();
   const [showActionOutput, setShowActionOutput] = useState<any>();
-
+  const [questionType, setQuestionType] = useState<any>();
   const findConditionByLevel = (
     level: any,
     conditions: any
@@ -127,7 +127,6 @@ const RowContainer: React.FC<TableRowProps> = ({
   ) => {
     console.log(" Nested Clicked Level ", level);
     let releatedFields = _nestedRows.find((x: any[]) => x[sectionLevel]);
-    console.log("KKKKKKKKKKK", releatedFields);
     if (releatedFields) {
       const nearestNestedIdParentId = getNestedParentLevel(
         releatedFields[sectionLevel].fields,
@@ -142,27 +141,13 @@ const RowContainer: React.FC<TableRowProps> = ({
         higestLevel = Math.max(...childArrays);
       }
 
-      console.log("KKKKKKKKKKK higestLevel", higestLevel);
-      console.log(
-        "KKKKKKKKKKK nearestIdParentObjectdddd",
-        nearestNestedIdParentId
-      );
-      console.log(
-        "KKKKKKKKKKK nearestIdParentObjectdddd childArrays",
-        childArrays
-      );
-
       if (
         higestLevel &&
         (higestLevel === idGenerator(level, hasNested, []) ||
           childArrays.includes(idGenerator(level, hasNested, [])))
       ) {
-        console.log("JJJJJJJJJJJJJJ");
-
         higestLevel = higestLevel + 1;
       } else {
-        console.log("JJJJJJJJJJJJJJ 1222222");
-
         higestLevel = idGenerator(level, hasNested, []);
       }
       let newRow = {
@@ -209,6 +194,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                 {
                   fieldName: fieldValue?.fieldName,
                   fieldValue: fieldValue.input,
+                  questionType: fieldValue?.questionType
                 }
               ),
               actions:
@@ -259,6 +245,8 @@ const RowContainer: React.FC<TableRowProps> = ({
         releatedFields,
         level
       );
+      console.log("Clicked Level normal nearestIdParentObject", nearestIdParentObject);
+
       let higestLevel;
       if (nearestIdParentObject?.innerConditions?.length)
         higestLevel = Math.max(
@@ -282,6 +270,7 @@ const RowContainer: React.FC<TableRowProps> = ({
       };
 
       const parentIds = releatedFields.map((lvl: { level: any }) => lvl.level);
+      console.log("parent Ids -----> ", parentIds);
       if (parentIds.includes(level)) {
         // _setNestedRows([..._nestedRows, newRow]);
 
@@ -296,11 +285,20 @@ const RowContainer: React.FC<TableRowProps> = ({
 
           _setNestedRows((prevData: any) => {
             const newData = [...prevData];
-            console.log("LLLLLLLL", newData);
             const newFields = [...releatedFields, newRow];
             console.log(
-              "newData[existingLevel1Index]",
-              newData[existingLevel1Index]
+              "prevData---->",
+              prevData
+            );
+
+            console.log(
+              "newData---->",
+              newData
+            );
+
+            console.log(
+              "newFields---->",
+              newFields
             );
 
             newData[existingLevel1Index] = {
@@ -345,7 +343,7 @@ const RowContainer: React.FC<TableRowProps> = ({
 
     const checkBoxValueString: string =
       item?.checkBoxValues
-        .map(
+        ?.map(
           (obj: { [key: string]: { value: any } }) =>
             Object.values(obj)[0]?.value
         )
@@ -489,7 +487,7 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
     console.log("conditions----->", conditions);
-    if (conditions) {
+    if (conditions && conditions?.length) {
       return conditions.map((condition: any) => (
         <div key={condition.level}>
           {/* <div style={{ display: "flex", marginBottom: "2%" }}>
@@ -604,14 +602,37 @@ const RowContainer: React.FC<TableRowProps> = ({
                     />
                   </div>
                   <div className="condition-label">
-                    <NumberInputField
-                      selectedValue={condition?.value}
-                      handleNumberChange={{}}
-                      defaultDisabled={false}
-                      setInputNumber={setFieldValue}
-                      changedId={condition?.level}
-                      fieldName={"value"}
-                    />{" "}
+                    {
+                      questionList.find((x: { value: string; }) => x.value === condition?.field)?.questionType === "numeric" ?
+                        <NumberInputField
+                          selectedValue={condition?.value}
+                          handleNumberChange={{}}
+                          defaultDisabled={false}
+                          setInputNumber={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"value"}
+                        /> : questionList.find((x: { value: string; }) => x.value === condition?.field)?.questionType === "text" ?
+                          <FieldInput
+                            sampleData={
+                              questionList && questionList.length
+                                ? questionList
+                                : sampleInputQuestion
+                            }
+                            selectedValue={condition?.field}
+                            overrideSearch={false}
+                            setFieldValue={setFieldValue}
+                            changedId={condition?.level}
+                            fieldName={"value"}
+                          /> :
+                          <NumberInputField
+                            selectedValue={condition?.value}
+                            handleNumberChange={{}}
+                            defaultDisabled={false}
+                            setInputNumber={setFieldValue}
+                            changedId={condition?.level}
+                            fieldName={"value"}
+                        />
+                    }
                   </div>
                   
                   <div className="condition-label">
@@ -662,23 +683,22 @@ const RowContainer: React.FC<TableRowProps> = ({
     // }
     // }
   };
-  // return<div><div> {generateOutputString(_nestedRows)}</div>{}</div>;
   return (
     <div>
       <div style={{ textAlign: "left" }}>
         {" "}
-        {"if(" +
-          generateOutputString(
+        {
+          _nestedRows && _nestedRows?.length && "if(" + generateOutputString(
             _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
               ?.fields || []
-          ) +
-          ")"}{" "}
+          ) + ")" 
+          }{" "}
       </div>
       <div style={{ textAlign: "left", marginBottom: "3%" }}>
         {" "}
-        {"{ " + showActionOutput + " }"}{" "}
+        { showActionOutput && ("{ " + showActionOutput + " }") }{" "}
       </div>
-      {renderNestedConditions(
+      {_nestedRows && _nestedRows?.length && renderNestedConditions(
         _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
           ?.fields || []
       )}

@@ -55,7 +55,6 @@ const generateOutputString = (conditions: string | any[]) => {
     if (condition.hasNested) {
       const innerExpression = generateOutputString(condition.innerConditions);
       //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
-      console.log("DDDDDD", innerExpression);
       expression += `${condition?.expression ? condition?.expression : ""} (${
         condition.field
       } ${condition.condition} ${condition.value} ${
@@ -63,19 +62,12 @@ const generateOutputString = (conditions: string | any[]) => {
       } `;
     } else {
       //   expression += condition.field;
-        console.log("LLLLL", condition)
       expression += ` ${condition?.expression ? condition?.expression : ""} ${
         condition.field
       } ${condition.condition} ${condition.value} `;
     }
-      
-    //   if (i !== conditions.length - 1) {
-    //     expression += ` ${condition.expression ? condition.expression : ""} `;
-    //   }
   }
     
-    
-      
   let openBrackets = 0;
   let closeBrackets = 0;
 

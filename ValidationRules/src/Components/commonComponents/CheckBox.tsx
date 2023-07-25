@@ -18,12 +18,15 @@ function CheckBox({
         setCheckboxValues(checkedValues.map((item: string) => {
             return {
               [item]: {
-                logicalName: item.toUpperCase() ,
+                logicalName: item.toUpperCase(),
                 value: item
               }
             };
           }))
     }
+  useEffect(() => {
+      console.log("checkboxDefaultSelectedValues", checkboxDefaultSelectedValues)
+  }, [checkboxDefaultSelectedValues])
   return (
     <>
           <Checkbox.Group
