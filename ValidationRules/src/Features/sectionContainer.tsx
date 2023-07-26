@@ -237,10 +237,10 @@ function SectionContainer({
 
   useEffect(() => {
     console.log("DEFAULt ACTS", defaultActions);
-    setMinCheckboxEnabled(defaultActions[0]?.minMax?.minValue ? true : false);
-    setMaxCheckboxEnabled(defaultActions[0]?.minMax?.maxValue ? true : false);
-    setToggledEnableMin(defaultActions[0]?.minMax?.minValue ? true : false);
-    setToggledEnableMax(defaultActions[0]?.minMax?.maxValue ? true : false);
+    // setMinCheckboxEnabled(defaultActions[0]?.minMax?.minValue ? true : false);
+    // setMaxCheckboxEnabled(defaultActions[0]?.minMax?.maxValue ? true : false);
+    // setToggledEnableMin(defaultActions[0]?.minMax?.minValue ? true : false);
+    // setToggledEnableMax(defaultActions[0]?.minMax?.maxValue ? true : false);
   }, [defaultActions]);
 
   return (
@@ -321,7 +321,8 @@ function SectionContainer({
                     isDisabled={!minCheckboxEnabled}
                     setExpression={setMinValue}
                     changedId={undefined}
-                    fieldName={"minValue"} selectedValue={undefined}                />
+                    fieldName={"minValue"} selectedValue={undefined}
+                  />
             )}
           </div>
 

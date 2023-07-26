@@ -11,13 +11,8 @@ import utilHelper from "../utilHelper/utilHelper";
 import { Button } from "antd";
 import RowContainer from "./rowContainer";
 import SectionContainer from "./sectionContainer";
-
-type MinMaxFieldValues = {
-  minValue: any;
-  maxValue: any;
-  sectionKey: any;
-  questionName: any;
-};
+import {updateDataRequest, getCurrentState, getCurrentId, fetchRequest, saveRequest} from "../XRMRequests/xrmRequests";
+import { dbConstants } from "../constants/dbConstants";
 
 const ParentComponent: React.FC = () => {
   const [conditionData, setConditionData] = useState<any[]>([]);
@@ -25,195 +20,8 @@ const ParentComponent: React.FC = () => {
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
   const [isLoadData, setIsLoadData] = useState<boolean>(false);
-  const [_nestedRows, _setNestedRows] = useState<any>([
-    //     {
-    //         1 : {
-    //             "fields": [
-    //               {
-    //                  "field":"Ques01",
-    //                  "condition":"==",
-    //                  "value":null,
-    //                  "sort":1,
-    //                  "level":1,
-    //                  "hasNested":true,
-    //                  "expression":"or",
-    //                  "collapse":false,
-    //                  "innerConditions":[
-    //                     {
-    //                        "field":"Ques02",
-    //                        "condition":"==",
-    //                        "value":21,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":false,
-    //                        "expression":"eq",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                        ]
-    //                     },
-    //                     {
-    //                        "field":"Ques03",
-    //                        "condition":"==",
-    //                        "value":31,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":false,
-    //                        "expression":"eq",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                        ]
-    //                     },
-    //                     {
-    //                        "field":"Ques04",
-    //                        "condition":"==",
-    //                        "value":null,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":true,
-    //                        "expression":"and",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                           {
-    //                              "field":"Ques05",
-    //                              "condition":"==",
-    //                              "value":41,
-    //                              "sort":1,
-    //                              "level":3,
-    //                              "hasNested":false,
-    //                              "expression":"eq",
-    //                              "collapse":false,
-    //                              "innerConditions":[
-    //                              ]
-    //                           },
-    //                           {
-    //                              "field":"Ques06",
-    //                              "condition":"==",
-    //                              "value":51,
-    //                              "sort":1,
-    //                              "level":3,
-    //                              "hasNested":false,
-    //                              "expression":"eq",
-    //                              "collapse":false,
-    //                              "innerConditions":[
-    //                              ]
-    //                           }
-    //                        ]
-    //                     }
-    //                  ]
-    //               },
-    //               {
-    //                  "field":"Ques07",
-    //                  "condition":"==",
-    //                  "value":null,
-    //                  "sort":1,
-    //                  "level":1,
-    //                  "hasNested":true,
-    //                  "expression":"and",
-    //                  "collapse":false,
-    //                  "innerConditions":[
-    //                     {
-    //                        "field":"Ques08",
-    //                        "condition":"==",
-    //                        "value":61,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":false,
-    //                        "expression":"eq",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                        ]
-    //                     },
-    //                     {
-    //                        "field":"Ques09",
-    //                        "condition":"==",
-    //                        "value":61,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":false,
-    //                        "expression":"eq",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                        ]
-    //                     }
-    //                  ]
-    //               },
-    //               {
-    //                  "field":"Ques10",
-    //                  "condition":"==",
-    //                  "value":71,
-    //                  "sort":1,
-    //                  "level":1,
-    //                  "hasNested":false,
-    //                  "expression":"eq",
-    //                  "collapse":false,
-    //                  "innerConditions":[
-    //                  ]
-    //               }
-    //            ],
-    //             "actions": [
-    //                         {
-    //                             "checkBoxValues": [{
-    //                                 "show":{
-    //                                     "logicalName": "Show",
-    //                                     "value": "show"
-    //                                 },
-    //                                 "outputDoc": {
-    //                                     "logicalName": "outputDoc",
-    //                                     "value": "outputDoc"
-    //                                 },
-    //                                 "enable": {
-    //                                     "logicalName": "EnableField",
-    //                                     "value": "enable"
-    //                                 }
-    //                             }],
-    //                             "minMax": {
-    //                                 "logicalName": "minMax",
-    //                                 "minValue":12,
-    //                                 "maxValue": 21
-    //                             }
-    //                         }
-    //                 ]
-    //         }
-    //     },
-    //     {
-    //         2: {
-    //             "fields":[{
-    //                 "field": "Question 02",
-    //                 "condition": "",
-    //                 "value": "",
-    //                 "sort": 1,
-    //                 "level": 2,
-    //                 "hasNested": false,
-    //                 "expression": "AND",
-    //                 "innerConditions": [],
-    //                 "collapse": false
-    //             }],
-    //             "actions": [
-    //               {
-    //                   "checkBoxValues": [{
-    //                       "show":{
-    //                           "logicalName": "Show",
-    //                           "value": "show"
-    //                       },
-    //                       "outputDoc": {
-    //                           "logicalName": "outputDoc",
-    //                           "value": "outputDoc"
-    //                       },
-    //                       "enable": {
-    //                           "logicalName": "EnableField",
-    //                           "value": "enable"
-    //                       }
-    //                   }],
-    //                   "minMax": {
-    //                       "logicalName": "minMax",
-    //                       "minValue":12222,
-    //                       "maxValue": 2122
-    //                   }
-    //               }
-    //       ]
-    //     }
-    // }
-  ]);
+  const [currentId, setCurrentId] = useState<any>();
+  const [_nestedRows, _setNestedRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
 
   let addNestedComponent = () => {
@@ -246,6 +54,7 @@ const ParentComponent: React.FC = () => {
   useEffect(() => {
     console.log("SECCCC", sections);
   }, [sections]);
+
   useEffect(() => {
     console.log("SECCCC _nestedRows", _nestedRows);
   }, [_nestedRows]);
@@ -258,33 +67,41 @@ const ParentComponent: React.FC = () => {
         .flat()
         .map((key: any) => ({ key: parseInt(key) }))
     );
+    _getCurrentState()
   }, []);
 
-  const handleSaveLogic = () => {
-    const minMaxDBFormatArray: any = [];
-    const visibilityRule: any = [];
-    const sampleRetrieveFormat: any = [];
+  const getRequestedData = async () => {
+    const currentState = await _getCurrentState();
+    let result
+    let _result;
+    let logicalName;
+    if (currentState === 'c') { 
+      logicalName = dbConstants.chapter.fieldName;
+    } else if (currentState === 's') {
+      logicalName = dbConstants.section.fieldName;
+    } else if (currentState === 'q') {
+      logicalName = dbConstants.question.fieldName;
+    } else {
+      logicalName = dbConstants.section.fieldName;
+    }
 
-    _nestedRows.forEach((sectionResult: any) => {
-      const key = Object.keys(sectionResult)[0];
-      const minMax = sectionResult[key]?.actions[0]?.minMax;
-      minMaxDBFormatArray.push({
-        if: [
-          convertJSONFormatToDBFormat(sectionResult[key], false),
-          minMax?.minValue,
-        ],
-      });
-      visibilityRule.push(
-        convertJSONFormatToDBFormat(sectionResult[key], false)
-      );
-    });
-    console.log("Save MinMax Reqq ------> ", minMaxDBFormatArray);
-    console.log("Save Visibility Rule Reqq ------> ", visibilityRule);
-    if (visibilityRule && visibilityRule.length) {
-      visibilityRule?.forEach((x: any, index: any) => {
-        console.log("sample Retrieve Format xxxxReqq ------> ", x);
+    result = await fetchRequest(logicalName, "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", `?$select=${dbConstants.common.gyde_visibilityrule}`);
+    _result = await fetchRequest(logicalName, "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", `?$select=${dbConstants.common.gyde_min}`);
+    console.log("resultresult -----> ", result);
+    console.log("resultresult _result -----> ", _result);
+
+    if (result?.data || _result?.data) {
+      const formattedData = JSON.parse(result?.data);
+      const _formattedData = JSON.parse(_result?.data);
+
+      let sampleRetrieveFormat: any = [];
+      let _sampleRetrieveFormat: any = [];
+      let secKey = 0;
+      formattedData?.forEach((x: any, index: any) => {
+        console.log("sample Retrieve Format xxxxReqqqqqq ------> ", x);
+        secKey++
         sampleRetrieveFormat.push({
-          [index + 1]: {
+          [secKey]: {
             fields: convertMinMaxDBFormatToJSON(x),
             actions: [
               {
@@ -301,9 +118,140 @@ const ParentComponent: React.FC = () => {
           },
         });
       });
+
+
+      _formattedData?.forEach((x: any, index: any) => {
+        console.log("sample Retrieve Format xxxxReqqqqqq 1234c ------> ", x);
+        secKey++
+        _sampleRetrieveFormat.push({
+          [secKey]: {
+            fields: convertMinMaxDBFormatToJSON(x[0]),
+            actions: [
+              {
+                checkBoxValues: [
+                  {
+                    minMax: {
+                      logicalName: "minMax",
+                      minValue: x?.if[1]?.value,
+                      maxValue: x?.if[1]?.value
+                  }
+                  },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      
+      if (sampleRetrieveFormat
+        && sampleRetrieveFormat.length
+        && _sampleRetrieveFormat
+        && _sampleRetrieveFormat.length) _setNestedRows([...sampleRetrieveFormat, ..._sampleRetrieveFormat])
+
     }
-    // if(sampleRetrieveFormat && sampleRetrieveFormat.length) _setNestedRows(sampleRetrieveFormat);
+    console.log("KKKKKKKKK", result);
+  }
+  useEffect(() => {
+    console.log("currentId ----->", currentId);
+    getRequestedData()
+  }, [currentId]);
+
+  const _getCurrentState = async () => {
+    const result = await getCurrentState();
+    const currentId = await getCurrentId();
+    console.log("REDDDDDDD", result);
+    console.log("REDDDDDDD", JSON.stringify(result));
+    console.log("REDDDDDDD currentId", currentId);
+
+    if (currentId?.data) setCurrentId(currentId?.data);
+    if (result.data.includes('question')) {
+      console.log("Question -------> ");
+      return "q"
+    } else if (result.data.includes('section')) {
+      console.log("Section -------> ");
+      return "s"
+    } else if (result.data.includes('chapter')) {
+      console.log("Chapter -------> ");
+      return "c"
+    }
+}
+
+  const saveVisibilityData = async (visibilityRule: any, minMaxRule: any) => {
+    const currentState = await _getCurrentState();
+    const currentId = await getCurrentId();
+    console.log("REDDDDDDD", currentState);
+    console.log("REDDDDDDD q1111 ", currentId);
+    console.log("REDDDDDDD currentId", currentId);
+
+    if (currentId?.data) setCurrentId(currentId?.data);
+    let logicalName;
+    if (currentState === 'q') {
+      logicalName = dbConstants.question.fieldName;
+    } else if (currentState === 's') {
+      logicalName = dbConstants.section.fieldName;
+    } 
+    else if (currentState === 'c') { 
+      logicalName = dbConstants.chapter.fieldName;
+    } else {
+      logicalName = dbConstants.section.fieldName;
+    }
+
+    await saveRequest(logicalName, currentId ? currentId : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", { [dbConstants.question.minMax]: JSON.stringify(minMaxRule) });
+    await saveRequest(logicalName, currentId ? currentId : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", { [dbConstants.common.gyde_validationrule]: JSON.stringify(visibilityRule) })
+    await saveRequest(logicalName, currentId ? currentId : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", { [dbConstants.common.gyde_visibilityrule]: JSON.stringify(visibilityRule) });
+
+  }
+  const handleSaveLogic = () => {
+    const minMaxDBFormatArray: any = [];
+    const visibilityRule: any = [];
+    const sampleRetrieveFormat: any = [];
+
+    _nestedRows.forEach((sectionResult: any) => {
+      const key = Object.keys(sectionResult)[0];
+      const minMax = sectionResult[key]?.actions[0]?.minMax;
+      let minValue = minMax?.min;
+      let maxValue = minMax?.max;
+      if (minMax) {
+        if (typeof minMax.min === "string") {
+          minValue = {
+              "var": minMax?.min
+          }
+        } else if (typeof minMax.max === "string") {
+          maxValue = {
+            "var": minMax?.max
+        }
+        }
+      }
+      minMaxDBFormatArray.push({
+        if: [
+          convertJSONFormatToDBFormat(sectionResult[key], false),
+          [
+            {
+               "type":"MINIMUM_LENGTH",
+               "value": minValue,
+               "inclusive":true
+            },
+            {
+               "type":"MAXIMUM_LENGTH",
+               "value": maxValue,
+               "inclusive":true
+            }
+         ]
+        ],
+      });
+      visibilityRule.push(
+        convertJSONFormatToDBFormat(sectionResult[key], false)
+      );
+    });
+    console.log("Save MinMax Reqq ------> ", minMaxDBFormatArray);
+    console.log("Save Visibility Rule Reqq ------> ", visibilityRule);
+    if (visibilityRule && visibilityRule.length || minMaxDBFormatArray && minMaxDBFormatArray.length) {
+      saveVisibilityData(visibilityRule, minMaxDBFormatArray);
+    }
   };
+
+
 
   return (
     <div>

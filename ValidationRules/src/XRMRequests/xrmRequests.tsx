@@ -38,7 +38,6 @@ export const loadAllQuestionsInSurvey = async () => {
 }
 
 export const getCurrentState = async () => {
-  const type = 'gyde_surveytemplatechaptersectionquestion';
   try {    
     const result = await window.parent.Xrm.Page.ui._formContext.contextToken.entityTypeName;
     console.log("Current State ===========> ", result);
@@ -51,8 +50,7 @@ export const getCurrentState = async () => {
     console.log("error ========> ", operationsSampleData);
     return {
       error: true,
-      // data: [],
-      data: type
+      data: []
     }
   }
 }
@@ -117,38 +115,37 @@ export const saveValidationRules = async(validationRuleData: object) => {
 //     }
 //   };
   
-//   export const fetchRequest = async (
-//     entityLogicalName: any,
-//     id: string,
-//     columnsNames:string
-//   ): Promise<any> => {
-//     try {
-//       const result = await window.parent.Xrm.WebApi.retrieveRecord(entityLogicalName,id,columnsNames);
-//       console.log("result in fetch request json parse..",result);
-//       console.log("gyde_name..",result.gyde_name);
-//       console.log("gyde_jsoncolumn..",result.gyde_jsoncolumn);
-//       return { error: false, data: result, loading: false };
-//     } catch (error: any) {
-//       // handle error conditions
-//       console.log("error",error);
-//       return { error: true, data: [], loading: false };
-//     }
-//   };
+  export const fetchRequest = async (
+    entityLogicalName: any,
+    id: string,
+    columnsNames:string
+  ): Promise<any> => {
+    try {
+      const result = await window.parent.Xrm.WebApi.retrieveRecord(entityLogicalName,id,columnsNames);
+      console.log("result in fetch request json parse..",result);
+      console.log("gyde_name..",result.gyde_visibilityrule);
+      return { error: false, data: result?.gyde_visibilityrule, loading: false };
+    } catch (error: any) {
+      // handle error conditions
+      console.log("error",error);
+      return { error: true, data: [], loading: false };
+    }
+  };
   
-//   export const saveRequest = async (
-//     entityLogicalName: any,
-//     id: string,
-//     data:any
-//   ): Promise<any> => {
-//     try {
-//       const result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName,id,{"gyde_jsondata": data});
-//       return { error: false, data: result, loading: false };
-//     } catch (error: any) {
-//       // handle error conditions
-//       console.log("error",error);
-//       return { error: true, data: [], loading: false };
-//     }
-//   };
+  export const saveRequest = async (
+    entityLogicalName: any,
+    id: string,
+    data:any
+  ): Promise<any> => {
+    try {
+      const result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName,id,data);
+      return { error: false, data: result, loading: false };
+    } catch (error: any) {
+      // handle error conditions
+      console.log("error",error);
+      return { error: true, data: [], loading: false };
+    }
+  };
 
 export const updateDataRequest = async (
   entityLogicalName: any,
@@ -165,6 +162,19 @@ export const updateDataRequest = async (
     return { error: false, data: result };
   } catch (error: any) {
     console.log("update error",error);
+    return { error: true, data: {} };
+  }
+};
+
+export const getCurrentId = async (
+): Promise<any> => {
+  try {
+    let id = await window.parent.Xrm.Page.ui.formContext.data.entity.getId();
+    console.log("GUILDD", id);
+    id = id.replace("{", "").replace("}", "");
+    return { error: false, data: id };
+  } catch (e) {
+    console.log("GetId error", e);
     return { error: true, data: {} };
   }
 };
