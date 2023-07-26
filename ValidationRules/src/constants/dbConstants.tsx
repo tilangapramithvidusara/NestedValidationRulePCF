@@ -12,6 +12,6 @@ export const dbConstants = {
         common: {
             gyde_validationrule: "gyde_validationrule",
             gyde_visibilityrule: "gyde_visibilityrule",
-            gyde_min: "gyde_min"
+            gyde_minmaxvalidationrule: "gyde_minmaxvalidationrule"
         }
 };

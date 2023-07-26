@@ -39,8 +39,18 @@ export const loadAllQuestionsInSurvey = async () => {
 
 export const getCurrentState = async () => {
   try {    
-    const result = await window.parent.Xrm.Page.ui._formContext.contextToken.entityTypeName;
+    let result = await window.parent.Xrm.Page.ui._formContext.getAttribute("gyde_relatedsurveytemplateitem").getValue()
     console.log("Current State ===========> ", result);
+    result = result?.map((obj: any) => {
+      const updatedId = obj?.id.replace("{", "").replace("}", "");
+      let currentPosition;
+      
+      if (obj?.entityType.includes('question')) currentPosition = 'question';
+      else if (obj?.entityType.includes('section')) currentPosition = 'section';
+      else if (obj?.entityType.includes('chapter')) currentPosition = 'chapter';
+      return { ...obj, id: updatedId, currentPosition };
+    });
+
     return {
       error: false,
       data: result

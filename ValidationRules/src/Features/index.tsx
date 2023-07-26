@@ -23,6 +23,7 @@ const ParentComponent: React.FC = () => {
   const [currentId, setCurrentId] = useState<any>();
   const [_nestedRows, _setNestedRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
 
   let addNestedComponent = () => {
     setSections([
@@ -71,22 +72,19 @@ const ParentComponent: React.FC = () => {
   }, []);
 
   const getRequestedData = async () => {
-    const currentState = await _getCurrentState();
     let result
     let _result;
     let logicalName;
-    if (currentState === 'c') { 
+    if (currentPossitionDetails?.currentPosition === 'chapter') { 
       logicalName = dbConstants.chapter.fieldName;
-    } else if (currentState === 's') {
+    } else if (currentPossitionDetails?.currentPosition === 'section') {
       logicalName = dbConstants.section.fieldName;
-    } else if (currentState === 'q') {
+    } else if (currentPossitionDetails?.currentPosition === 'question') {
       logicalName = dbConstants.question.fieldName;
-    } else {
-      logicalName = dbConstants.section.fieldName;
     }
 
-    result = await fetchRequest(logicalName, "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", `?$select=${dbConstants.common.gyde_visibilityrule}`);
-    _result = await fetchRequest(logicalName, "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", `?$select=${dbConstants.common.gyde_min}`);
+    result = await fetchRequest(logicalName, currentPossitionDetails?.id ? currentPossitionDetails?.id : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", `?$select=${dbConstants.common.gyde_visibilityrule}`);
+    _result = await fetchRequest(logicalName, currentPossitionDetails?.id ? currentPossitionDetails?.id : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", `?$select=${dbConstants.common.gyde_minmaxvalidationrule}`);
     console.log("resultresult -----> ", result);
     console.log("resultresult _result -----> ", _result);
 
@@ -153,53 +151,30 @@ const ParentComponent: React.FC = () => {
     console.log("KKKKKKKKK", result);
   }
   useEffect(() => {
-    console.log("currentId ----->", currentId);
-    getRequestedData()
-  }, [currentId]);
+    console.log("currentId ----->", currentPossitionDetails);
+    getRequestedData();
+  }, [currentPossitionDetails]);
 
   const _getCurrentState = async () => {
     const result = await getCurrentState();
-    const currentId = await getCurrentId();
-    console.log("REDDDDDDD", result);
-    console.log("REDDDDDDD", JSON.stringify(result));
-    console.log("REDDDDDDD currentId", currentId);
-
-    if (currentId?.data) setCurrentId(currentId?.data);
-    if (result.data.includes('question')) {
-      console.log("Question -------> ");
-      return "q"
-    } else if (result.data.includes('section')) {
-      console.log("Section -------> ");
-      return "s"
-    } else if (result.data.includes('chapter')) {
-      console.log("Chapter -------> ");
-      return "c"
-    }
-}
-
+    console.log("Current State Details ----> ", result);
+    if(result?.data) setCurrentPossitionDetails(result?.data[0]);
+  }
+  
   const saveVisibilityData = async (visibilityRule: any, minMaxRule: any) => {
-    const currentState = await _getCurrentState();
-    const currentId = await getCurrentId();
-    console.log("REDDDDDDD", currentState);
-    console.log("REDDDDDDD q1111 ", currentId);
-    console.log("REDDDDDDD currentId", currentId);
-
-    if (currentId?.data) setCurrentId(currentId?.data);
     let logicalName;
-    if (currentState === 'q') {
+    if (currentPossitionDetails?.currentPosition === 'question') {
       logicalName = dbConstants.question.fieldName;
-    } else if (currentState === 's') {
+    } else if (currentPossitionDetails?.currentPosition === 'section') {
       logicalName = dbConstants.section.fieldName;
     } 
-    else if (currentState === 'c') { 
+    else if (currentPossitionDetails?.currentPosition === 'chapter') { 
       logicalName = dbConstants.chapter.fieldName;
-    } else {
-      logicalName = dbConstants.section.fieldName;
     }
 
-    await saveRequest(logicalName, currentId ? currentId : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", { [dbConstants.question.minMax]: JSON.stringify(minMaxRule) });
-    await saveRequest(logicalName, currentId ? currentId : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", { [dbConstants.common.gyde_validationrule]: JSON.stringify(visibilityRule) })
-    await saveRequest(logicalName, currentId ? currentId : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", { [dbConstants.common.gyde_visibilityrule]: JSON.stringify(visibilityRule) });
+    await saveRequest(logicalName, currentPossitionDetails?.id ? currentPossitionDetails?.id  : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", { [dbConstants.question.minMax]: JSON.stringify(minMaxRule) });
+    await saveRequest(logicalName, currentPossitionDetails?.id  ? currentPossitionDetails?.id  : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", { [dbConstants.common.gyde_validationrule]: JSON.stringify(visibilityRule) })
+    await saveRequest(logicalName, currentPossitionDetails?.id  ? currentPossitionDetails?.id  : "a4ef3ba6-bc26-ee11-9965-6045bdd0ef22", { [dbConstants.common.gyde_visibilityrule]: JSON.stringify(visibilityRule) });
 
   }
   const handleSaveLogic = () => {
@@ -274,6 +249,7 @@ const ParentComponent: React.FC = () => {
               _setNestedRows={_setNestedRows}
               _nestedRows={_nestedRows}
               isNested={isNested}
+              currentPossitionDetails={currentPossitionDetails}
             />
           </div>
         ))}

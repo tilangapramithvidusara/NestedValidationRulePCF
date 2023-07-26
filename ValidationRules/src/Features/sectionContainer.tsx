@@ -30,6 +30,7 @@ interface SectionProps {
   _setNestedRows: any;
   _nestedRows: any;
   isNested: any;
+  currentPossitionDetails: any;
 }
 
 function SectionContainer({
@@ -38,7 +39,8 @@ function SectionContainer({
   setConditionData,
   _setNestedRows,
   _nestedRows,
-  isNested
+  isNested,
+  currentPossitionDetails
 }: SectionProps) {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [rowData, setRowData] = useState<any>();
@@ -284,85 +286,88 @@ function SectionContainer({
             />
           </div>
         </div>
+        {
+          currentPossitionDetails && currentPossitionDetails?.currentPosition === "question" &&
+              
+          <div className="subTitle mt-10 mb-30 w-100">
+            <div className="subTitle mb-15">Min/Max Field</div>
+            <div className="flex-row-start">
+              <div className="mb-15 flex-wrap w-33">
+                <div style={{ marginRight: "10px" }}>
+                  {" "}
+                  <Checkbox
+                    onChange={(e) => setMinCheckboxEnabled(e.target.checked)}
+                  />{" "}
+                </div>
+                <div style={{ marginRight: "10px" }}>
+                  <Switch
+                    className="custom-toggle"
+                    checkedChildren="Value"
+                    unCheckedChildren="Question"
+                    onChange={() => setToggledEnableMin(!toggleEnableMin)}
+                    disabled={!minCheckboxEnabled}
+                  />
+                </div>
 
-        <div className="subTitle mt-10 mb-30 w-100">
-          <div className="subTitle mb-15">Min/Max Field</div>
-          <div className="flex-row-start">
-          <div className="mb-15 flex-wrap w-33">
-            <div style={{ marginRight: "10px" }}>
-              {" "}
-              <Checkbox
-                onChange={(e) => setMinCheckboxEnabled(e.target.checked)}
-              />{" "}
-            </div>
-            <div style={{ marginRight: "10px" }}>
-              <Switch
-                className="custom-toggle"
-                checkedChildren="Value"
-                unCheckedChildren="Question"
-                onChange={() => setToggledEnableMin(!toggleEnableMin)}
-                disabled={!minCheckboxEnabled}
-              />
-            </div>
-
-            <div className="minmaxText">Min:</div>
-            {toggleEnableMin ? (
-              <NumberInputField
-                selectedValue={{}}
-                handleNumberChange={{}}
-                defaultDisabled={!minCheckboxEnabled}
-                setInputNumber={setMinValue}
-                changedId={undefined}
-                fieldName={"minValue"}
-              />
-            ) : (
-                <DropDown
+                <div className="minmaxText">Min:</div>
+                {toggleEnableMin ? (
+                  <NumberInputField
+                    selectedValue={{}}
+                    handleNumberChange={{}}
+                    defaultDisabled={!minCheckboxEnabled}
+                    setInputNumber={setMinValue}
+                    changedId={undefined}
+                    fieldName={"minValue"}
+                  />
+                ) : (
+                  <DropDown
                     dropDownData={sampleInputQuestion}
                     isDisabled={!minCheckboxEnabled}
                     setExpression={setMinValue}
                     changedId={undefined}
                     fieldName={"minValue"} selectedValue={undefined}
                   />
-            )}
-          </div>
+                )}
+              </div>
 
-          <div className="mb-15 flex-wrap w-33">
-            <div style={{ marginRight: "10px" }}>
-              {" "}
-              <Checkbox
-                onChange={(e) => setMaxCheckboxEnabled(e.target.checked)}
-              />{" "}
-            </div>
-            <div style={{ marginRight: "10px" }}>
-              <Switch
-                className="custom-toggle"
-                checkedChildren="Value"
-                unCheckedChildren="Question"
-                onChange={() => setToggledEnableMax(!toggleEnableMax)}
-                disabled={!maxCheckboxEnabled}
-              />
-            </div>
+              <div className="mb-15 flex-wrap w-33">
+                <div style={{ marginRight: "10px" }}>
+                  {" "}
+                  <Checkbox
+                    onChange={(e) => setMaxCheckboxEnabled(e.target.checked)}
+                  />{" "}
+                </div>
+                <div style={{ marginRight: "10px" }}>
+                  <Switch
+                    className="custom-toggle"
+                    checkedChildren="Value"
+                    unCheckedChildren="Question"
+                    onChange={() => setToggledEnableMax(!toggleEnableMax)}
+                    disabled={!maxCheckboxEnabled}
+                  />
+                </div>
 
-            <div className="minmaxText">Max:</div>
-            {toggleEnableMax ? (
-              <NumberInputField
-                selectedValue={{}}
-                handleNumberChange={{}}
-                defaultDisabled={!maxCheckboxEnabled}
-                setInputNumber={setMaxValue}
-                changedId={undefined}
-                fieldName={"maxValue"} />
-            ) : (
-                <DropDown
+                <div className="minmaxText">Max:</div>
+                {toggleEnableMax ? (
+                  <NumberInputField
+                    selectedValue={{}}
+                    handleNumberChange={{}}
+                    defaultDisabled={!maxCheckboxEnabled}
+                    setInputNumber={setMaxValue}
+                    changedId={undefined}
+                    fieldName={"maxValue"} />
+                ) : (
+                  <DropDown
                     dropDownData={sampleInputQuestion}
                     isDisabled={!maxCheckboxEnabled}
                     setExpression={setMaxValue}
                     changedId={undefined}
-                    fieldName={"maxValue"} selectedValue={undefined}                />
-            )}
+                    fieldName={"maxValue"} selectedValue={undefined} />
+                )}
+              </div>
+            </div>
           </div>
-          </div>
-        </div>
+        }
       </div>
     </div>
   );
