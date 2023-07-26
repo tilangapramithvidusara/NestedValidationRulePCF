@@ -7,11 +7,10 @@ export const dbConstants = {
         },
         question: {
             fieldName: "gyde_surveytemplatechaptersectionquestion",
-            minMax: "gyde_min"
+            gyde_minmaxvalidationrule: "gyde_minmaxvalidationrule"
         },
         common: {
             gyde_validationrule: "gyde_validationrule",
-            gyde_visibilityrule: "gyde_visibilityrule",
-            gyde_minmaxvalidationrule: "gyde_minmaxvalidationrule"
+            gyde_visibilityrule: "gyde_visibilityrule"
         }
 };
