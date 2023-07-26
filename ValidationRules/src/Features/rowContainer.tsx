@@ -549,8 +549,6 @@ const RowContainer: React.FC<TableRowProps> = ({
               <div className="loop">
                 <div
                   style={{
-                    marginBottom: "1%",
-                    marginTop: "2%",
                     display: "flex",
                   }}
                 >
@@ -563,7 +561,6 @@ const RowContainer: React.FC<TableRowProps> = ({
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    marginBottom: "3%",
                   }}
                 >
                   <div className="condition-label">
@@ -694,7 +691,7 @@ const RowContainer: React.FC<TableRowProps> = ({
           ) + ")" 
           }{" "}
       </div>
-      <div style={{ textAlign: "left", marginBottom: "3%" }}>
+      <div style={{ textAlign: "left", marginBottom: "10px" }}>
         {" "}
         { showActionOutput && ("{ " + showActionOutput + " }") }{" "}
       </div>
