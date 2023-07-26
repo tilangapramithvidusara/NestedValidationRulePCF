@@ -264,7 +264,7 @@ function SectionContainer({
 
       <div className="action-container">
         <div className="w-100">
-          <div className="subTitle mb-15">Actions</div>
+          <div className="subTitle">Actions</div>
           <div className="flex-row">
             <CheckBox
               checkboxDefaultSelectedValues={defaultActions?.length && defaultActions?.map(x => x.value)|| [] }
@@ -290,7 +290,7 @@ function SectionContainer({
           currentPossitionDetails && currentPossitionDetails?.currentPosition === "question" &&
               
           <div className="subTitle mt-10 mb-30 w-100">
-            <div className="subTitle mb-15">Min/Max Field</div>
+            <div className="subTitle">Min/Max Field</div>
             <div className="flex-row-start">
               <div className="mb-15 flex-wrap w-33">
                 <div style={{ marginRight: "10px" }}>
