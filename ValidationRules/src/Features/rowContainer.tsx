@@ -529,7 +529,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                   )}
                   <div className="validation-text">Collapse Validation Rules</div>
                 </div>
-                <div className="flex-row-start ml-20 mb-20">
+                <div className="flex-row-start ml-20 mb-15">
                   <Button
                     className="mr-10 btn-default"
                     onClick={() => _handleAddRow(condition?.level, false, "AND")}
@@ -549,8 +549,6 @@ const RowContainer: React.FC<TableRowProps> = ({
               <div className="loop">
                 <div
                   style={{
-                    marginBottom: "1%",
-                    marginTop: "2%",
                     display: "flex",
                   }}
                 >
@@ -563,7 +561,6 @@ const RowContainer: React.FC<TableRowProps> = ({
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    marginBottom: "3%",
                   }}
                 >
                   <div className="condition-label">
@@ -694,7 +691,7 @@ const RowContainer: React.FC<TableRowProps> = ({
           ) + ")" 
           }{" "}
       </div>
-      <div style={{ textAlign: "left", marginBottom: "3%" }}>
+      <div style={{ textAlign: "left", marginBottom: "10px" }}>
         {" "}
         { showActionOutput && ("{ " + showActionOutput + " }") }{" "}
       </div>

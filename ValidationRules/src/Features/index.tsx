@@ -331,8 +331,8 @@ const ParentComponent: React.FC = () => {
         ))}
 
       {_nestedRows?.length > 0 && (
-        <div className="text-left">
-          <Button onClick={handleSaveLogic} className="mr-10 btn-default">
+        <div className="text-right">
+          <Button onClick={handleSaveLogic} className="mr-10 btn-primary">
             Save
           </Button>
         </div>
