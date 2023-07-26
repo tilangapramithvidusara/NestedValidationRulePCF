@@ -529,7 +529,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                   )}
                   <div className="validation-text">Collapse Validation Rules</div>
                 </div>
-                <div className="flex-row-start ml-20 mb-20">
+                <div className="flex-row-start ml-20 mb-15">
                   <Button
                     className="mr-10 btn-default"
                     onClick={() => _handleAddRow(condition?.level, false, "AND")}

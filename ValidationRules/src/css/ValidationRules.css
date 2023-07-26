@@ -200,9 +200,13 @@
     width: 10px;
     border-width: 0 0 0 1px;
     height: 40px;
-    top: -20px;
+    top: -15px;
     border-color: rgb(153, 187, 255);
       
+  }
+
+  .control-container .mb-15 {
+    margin-bottom: 15px;
   }
 
   .control-container .loop:after {
@@ -312,4 +316,18 @@
 
   .control-container .anticon-caret-down path,   .control-container .anticon-caret-right path {
     fill: #0958d9;
+  }
+
+  .control-container .ant-select-selector {
+    height: 30px;
+    border-radius: 2px;
+  }
+
+  .control-container .ant-input-number-input {
+    height: 30px;
+    border-radius: 2px;
+  }
+
+  .control-container .ant-input-number {
+    border-radius: 2px;
   }
