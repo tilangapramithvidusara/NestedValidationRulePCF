@@ -224,7 +224,7 @@ function convertMinMaxDBFormatToJSON(obj: { and: any }, level = 1) {
             condition: "",
             value,
             sort: 1,
-            level,
+            level: level++,
             hasNested: innerConditions.length > 0,
             expression,
             collapse: false,

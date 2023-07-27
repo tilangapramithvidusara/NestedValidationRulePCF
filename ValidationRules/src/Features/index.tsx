@@ -11,13 +11,14 @@ import utilHelper from "../utilHelper/utilHelper";
 import { Button } from "antd";
 import RowContainer from "./rowContainer";
 import SectionContainer from "./sectionContainer";
-
-type MinMaxFieldValues = {
-  minValue: any;
-  maxValue: any;
-  sectionKey: any;
-  questionName: any;
-};
+import {
+  updateDataRequest,
+  getCurrentState,
+  getCurrentId,
+  fetchRequest,
+  saveRequest,
+} from "../XRMRequests/xrmRequests";
+import { dbConstants } from "../constants/dbConstants";
 
 const ParentComponent: React.FC = () => {
   const [conditionData, setConditionData] = useState<any[]>([]);
@@ -25,196 +26,142 @@ const ParentComponent: React.FC = () => {
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
   const [isLoadData, setIsLoadData] = useState<boolean>(false);
-  const [_nestedRows, _setNestedRows] = useState<any>([
-    //     {
-    //         1 : {
-    //             "fields": [
-    //               {
-    //                  "field":"Ques01",
-    //                  "condition":"==",
-    //                  "value":null,
-    //                  "sort":1,
-    //                  "level":1,
-    //                  "hasNested":true,
-    //                  "expression":"or",
-    //                  "collapse":false,
-    //                  "innerConditions":[
-    //                     {
-    //                        "field":"Ques02",
-    //                        "condition":"==",
-    //                        "value":21,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":false,
-    //                        "expression":"eq",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                        ]
-    //                     },
-    //                     {
-    //                        "field":"Ques03",
-    //                        "condition":"==",
-    //                        "value":31,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":false,
-    //                        "expression":"eq",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                        ]
-    //                     },
-    //                     {
-    //                        "field":"Ques04",
-    //                        "condition":"==",
-    //                        "value":null,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":true,
-    //                        "expression":"and",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                           {
-    //                              "field":"Ques05",
-    //                              "condition":"==",
-    //                              "value":41,
-    //                              "sort":1,
-    //                              "level":3,
-    //                              "hasNested":false,
-    //                              "expression":"eq",
-    //                              "collapse":false,
-    //                              "innerConditions":[
-    //                              ]
-    //                           },
-    //                           {
-    //                              "field":"Ques06",
-    //                              "condition":"==",
-    //                              "value":51,
-    //                              "sort":1,
-    //                              "level":3,
-    //                              "hasNested":false,
-    //                              "expression":"eq",
-    //                              "collapse":false,
-    //                              "innerConditions":[
-    //                              ]
-    //                           }
-    //                        ]
-    //                     }
-    //                  ]
-    //               },
-    //               {
-    //                  "field":"Ques07",
-    //                  "condition":"==",
-    //                  "value":null,
-    //                  "sort":1,
-    //                  "level":1,
-    //                  "hasNested":true,
-    //                  "expression":"and",
-    //                  "collapse":false,
-    //                  "innerConditions":[
-    //                     {
-    //                        "field":"Ques08",
-    //                        "condition":"==",
-    //                        "value":61,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":false,
-    //                        "expression":"eq",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                        ]
-    //                     },
-    //                     {
-    //                        "field":"Ques09",
-    //                        "condition":"==",
-    //                        "value":61,
-    //                        "sort":1,
-    //                        "level":2,
-    //                        "hasNested":false,
-    //                        "expression":"eq",
-    //                        "collapse":false,
-    //                        "innerConditions":[
-    //                        ]
-    //                     }
-    //                  ]
-    //               },
-    //               {
-    //                  "field":"Ques10",
-    //                  "condition":"==",
-    //                  "value":71,
-    //                  "sort":1,
-    //                  "level":1,
-    //                  "hasNested":false,
-    //                  "expression":"eq",
-    //                  "collapse":false,
-    //                  "innerConditions":[
-    //                  ]
-    //               }
-    //            ],
-    //             "actions": [
-    //                         {
-    //                             "checkBoxValues": [{
-    //                                 "show":{
-    //                                     "logicalName": "Show",
-    //                                     "value": "show"
-    //                                 },
-    //                                 "outputDoc": {
-    //                                     "logicalName": "outputDoc",
-    //                                     "value": "outputDoc"
-    //                                 },
-    //                                 "enable": {
-    //                                     "logicalName": "EnableField",
-    //                                     "value": "enable"
-    //                                 }
-    //                             }],
-    //                             "minMax": {
-    //                                 "logicalName": "minMax",
-    //                                 "minValue":12,
-    //                                 "maxValue": 21
-    //                             }
-    //                         }
-    //                 ]
-    //         }
-    //     },
-    //     {
-    //         2: {
-    //             "fields":[{
-    //                 "field": "Question 02",
-    //                 "condition": "",
-    //                 "value": "",
-    //                 "sort": 1,
-    //                 "level": 2,
-    //                 "hasNested": false,
-    //                 "expression": "AND",
-    //                 "innerConditions": [],
-    //                 "collapse": false
-    //             }],
-    //             "actions": [
-    //               {
-    //                   "checkBoxValues": [{
-    //                       "show":{
-    //                           "logicalName": "Show",
-    //                           "value": "show"
-    //                       },
-    //                       "outputDoc": {
-    //                           "logicalName": "outputDoc",
-    //                           "value": "outputDoc"
-    //                       },
-    //                       "enable": {
-    //                           "logicalName": "EnableField",
-    //                           "value": "enable"
-    //                       }
-    //                   }],
-    //                   "minMax": {
-    //                       "logicalName": "minMax",
-    //                       "minValue":12222,
-    //                       "maxValue": 2122
-    //                   }
-    //               }
-    //       ]
-    //     }
-    // }
-  ]);
+  const [_nestedRows, _setNestedRows] = useState<any>(
+[ 
+//     {
+//         "1" : {
+//             "fields": [{
+//                 "field": "Question01",
+//                 "condition": "==",
+//                 "value": "123",
+//                 "sort": 1,
+//                 "level": 1,
+//                 "hasNested": true,
+//                 "expression": "",
+//                 "collapse": false,
+//                 "innerConditions":[
+//                         {
+//                             "field":  "Question 01 01",
+//                             "condition": "==",
+//                             "value": "22",
+//                             "sort": 1,
+//                             "level": 11,
+//                             "hasNested": true,
+//                             "expression": "&&",
+//                             "collapse": false,
+//                             "innerConditions": [
+//                                 {
+//                                     "field": "Question 01 01 01",
+//                                     "condition": "==",
+//                                     "value": "12",
+//                                     "sort": 1,
+//                                     "hasNested": false,
+//                                     "level": 111,
+//                                     "expression": "&&",
+//                                     "innerConditions": [],
+//                                     "collapse": false
+//                                 },
+//                                 {
+//                                     "field": "Question 01 01 02",
+//                                     "condition": ">=",
+//                                     "value": "211",
+//                                     "sort": 1,
+//                                     "level": 112,
+//                                     "expression": "&&",
+//                                     "innerConditions": [],
+//                                     "collapse": false
+//                                 },
+//                                 {
+//                                     "field": "Question 01 01 03",
+//                                     "condition": "==",
+//                                     "value": "34",
+//                                     "sort": 1,
+//                                     "level": 113,
+//                                     "hasNested": true,
+//                                     "expression": "&&",
+//                                     "collapse": false,
+//                                     "innerConditions": [{
+//                                         "field": "Question 01 01 03 01",
+//                                         "condition": "==",
+//                                         "value": "76",
+//                                         "sort": 1,
+//                                         "level": 1131,
+//                                         "innerConditions": [],
+//                                         "expression": "&&",
+//                                         "collapse": false
+//                                     }]
+//                                 }
+//                         ]
+//                     }
+//                 ] 
+//             }],
+//             "actions": [
+//                         {
+//                             "checkBoxValues": [{
+//                                 "show":{
+//                                     "logicalName": "Show",
+//                                     "value": "show"
+//                                 },
+//                                 "outputDoc": {
+//                                     "logicalName": "outputDoc",
+//                                     "value": "outputDoc"
+//                                 },
+//                                 "enable": {
+//                                     "logicalName": "EnableField",
+//                                     "value": "enable"
+//                                 }
+//                             }],
+//                             "minMax": {
+//                                 "logicalName": "minMax",
+//                                 "minValue":12,
+//                                 "maxValue": 21
+//                             }
+//                         }
+//                 ]
+//         }
+//     },
+//     {
+//         "2": {
+//             "fields":[{
+//                 "field": "Question 02",
+//                 "condition": ">=",
+//                 "value": "21",
+//                 "sort": 1,
+//                 "level": 1,
+//                 "hasNested": false,
+//                 "expression": "",
+//                 "innerConditions": [],
+//                 "collapse": false
+//             }],
+//             "actions": [{
+//               "checkBoxValues": [{
+//                   "outputDoc": {
+//                       "logicalName": "outputDoc",
+//                       "value": "OutPutDoc:Show"
+//                   },
+//                   "enable": {
+//                       "logicalName": "EnableField",
+//                       "value": "enable"
+//                   }
+//               }],
+//               "minMax": {
+//                   "logicalName": "minMax",
+//                   "minValue":1222,
+//                   "maxValue": 2121
+//               }
+//           }]
+//     }
+// }
+]
+
+
+
+);
   const [isNested, setIsNested] = useState<any>();
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({currentPosition:"question"});
+  const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
+  const [_minMaxPrev, _setMinMaxPrev] = useState<any[]>([]);
+  const [_validationRulePrev, _setValidationRulePrev] = useState<any[]>([]);
 
   let addNestedComponent = () => {
     setSections([
@@ -246,8 +193,15 @@ const ParentComponent: React.FC = () => {
   useEffect(() => {
     console.log("SECCCC", sections);
   }, [sections]);
+
   useEffect(() => {
     console.log("SECCCC _nestedRows", _nestedRows);
+    setSections(
+      _nestedRows
+        .map((item: {}) => Object.keys(item))
+        .flat()
+        .map((key: any) => ({ key: parseInt(key) }))
+    );
   }, [_nestedRows]);
 
   // for retrieve purpose
@@ -258,83 +212,326 @@ const ParentComponent: React.FC = () => {
         .flat()
         .map((key: any) => ({ key: parseInt(key) }))
     );
+    _getCurrentState();
   }, []);
 
+  useEffect(() => {
+    if (_visibilityRulePrev?.length) {
+      let key = 1
+      _visibilityRulePrev.forEach((dbData) => {
+        _setNestedRows((prevData: any) => { 
+
+          if (dbData?.validation) { 
+            console.log("LKKJJJDDDD", dbData?.validation);
+            const validationFormattedData : any = []
+            dbData?.validation?.forEach((valData:any) => {
+              validationFormattedData.push(...convertMinMaxDBFormatToJSON(valData))
+            })
+            console.log("LKKJJJDDDD ddd", validationFormattedData);
+
+            return [
+              ...prevData, {
+                [key++]: {
+                  actions: [
+                    {
+                      checkBoxValues: [
+                        {
+                          show: {
+                            logicalName: "Enable",
+                            value: "enable",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                  fields: validationFormattedData,
+                }
+              }
+            ]
+          }
+          if (dbData?.visibility) {
+            console.log("LKKJJJDDDD", dbData?.visibility);
+            const validationFormattedData : any = []
+            dbData?.visibility?.forEach((valData:any) => {
+              validationFormattedData.push(...convertMinMaxDBFormatToJSON(valData))
+            })
+            console.log("LKKJJJDDDD ddd", validationFormattedData);
+
+            return [
+              ...prevData, {
+                [key++]: {
+                  actions: [
+                    {
+                      checkBoxValues: [
+                        {
+                          show: {
+                            logicalName: "Show",
+                            value: "show",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                  fields: validationFormattedData,
+                }
+              }
+            ]
+          }
+          if (dbData?.minMax) {
+            console.log("LKKJJJDDDD", dbData?.minMax);
+            const validationFormattedData : any = []
+            dbData?.minMax?.forEach((valData:any) => {
+              validationFormattedData.push(...convertMinMaxDBFormatToJSON(valData))
+            })
+            console.log("LKKJJJDDDD ddd", validationFormattedData);
+            return [
+              ...prevData, {
+                [key++]: {
+                  actions: [
+                    {
+                      minMax: {
+                        logicalName: "minMax",
+                        minValue: 12,
+                        maxValue: 21,
+                      },
+                    },
+                  ],
+                  fields: validationFormattedData,
+                }
+              }
+            ]
+          }          
+        });
+      })
+        
+    }
+  }, [_visibilityRulePrev]); 
+
+  const getRequestedData = async () => {
+    let visibilityRulePreviousValues: any = '[{"and":[{"eq":[{"var":"NTemp_C01_04_Q_04"},3]},{"eq":[{"var":"NTemp_C01_04_Q_04"},4]}]}]';
+    let minMaxPreviousValues: any = '[{"and":[{"eq":[{"var":"NTemp_C01_04_Q_04"},3]},{"eq":[{"var":"NTemp_C01_04_Q_04"},4]}]}]'
+    let validationRulePreviousValues: any = '[{"and":[{"eq":[{"var":"NTemp_C01_04_Q_04"},3]},{"eq":[{"var":"NTemp_C01_04_Q_04"},4]}]}]'
+
+    let logicalName;
+    if (currentPossitionDetails?.currentPosition === "chapter") {
+      logicalName = dbConstants.chapter.fieldName;
+    } else if (currentPossitionDetails?.currentPosition === "section") {
+      logicalName = dbConstants.section.fieldName;
+    } else if (currentPossitionDetails?.currentPosition === "question") {
+      logicalName = dbConstants.question.fieldName;
+    }
+
+    if (logicalName && currentPossitionDetails?.id && (currentPossitionDetails?.currentPosition === "chapter" || currentPossitionDetails?.currentPosition === "section")) {
+      visibilityRulePreviousValues = await fetchRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        `?$select=${dbConstants.common.gyde_visibilityrule}`
+      );
+      validationRulePreviousValues = await fetchRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        `?$select=${dbConstants.common.gyde_validationrule}`
+      );
+    } else if (logicalName && currentPossitionDetails?.id && currentPossitionDetails?.currentPosition === "question") {
+      minMaxPreviousValues = await fetchRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        `?$select=${dbConstants.question.gyde_minmaxvalidationrule}`
+      );
+
+      visibilityRulePreviousValues = await fetchRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        `?$select=${dbConstants.common.gyde_visibilityrule}`
+      );
+
+      validationRulePreviousValues = await fetchRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        `?$select=${dbConstants.common.gyde_validationrule}`
+      );
+    }
+    
+    console.log("visibilityRulePreviousValues -----> ", visibilityRulePreviousValues);
+    console.log("minMaxPreviousValues _result -----> ", minMaxPreviousValues);
+    console.log("validationRulePreviousValues _result -----> ", validationRulePreviousValues);
+
+    if (visibilityRulePreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {visibility: JSON.parse(visibilityRulePreviousValues?.data)}]);
+    if(minMaxPreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {minMax: JSON.parse(minMaxPreviousValues?.data)}]);
+    if(validationRulePreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {validation: JSON.parse(validationRulePreviousValues?.data)}]);
+  };
+  useEffect(() => {
+    console.log("currentId ----->", currentPossitionDetails);
+    getRequestedData();
+  }, [currentPossitionDetails]);
+
+  const _getCurrentState = async () => {
+    const result = await getCurrentState();
+    console.log("Current State Details ----> ", result);
+    if (result?.data?.length) setCurrentPossitionDetails(result?.data[0]);
+  };
+  const saveVisibilityData = async (visibilityRule: any, minMaxRule: any, outputDocShow:any, minMaxDBFormatArray:any) => {
+    let logicalName;
+    if (currentPossitionDetails?.currentPosition === "question") {
+      logicalName = dbConstants.question.fieldName;
+    } else if (currentPossitionDetails?.currentPosition === "section") {
+      logicalName = dbConstants.section.fieldName;
+    } else if (currentPossitionDetails?.currentPosition === "chapter") {
+      logicalName = dbConstants.chapter.fieldName;
+    }
+
+    if (currentPossitionDetails?.id && (currentPossitionDetails.section === "section" || currentPossitionDetails?.currentPosition === "chapter")) {
+      await saveRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        {
+          [dbConstants.common.gyde_visibilityrule]:
+            JSON.stringify(visibilityRule),
+        }
+      );
+    } else if(currentPossitionDetails?.id && currentPossitionDetails?.currentPosition === "question") {
+      await saveRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        {
+          [dbConstants.common.gyde_visibilityrule]:
+            JSON.stringify(visibilityRule),
+        }
+      );
+      await saveRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        { [dbConstants.question.gyde_minmaxvalidationrule]: JSON.stringify(minMaxRule) }
+      );
+      await saveRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        {
+          [dbConstants.common.gyde_validationrule]:
+            JSON.stringify(visibilityRule),
+        }
+      );
+      await saveRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        {
+          [dbConstants.question.gyde_documentOutputRule]:
+            JSON.stringify(outputDocShow),
+        }
+      );
+    }
+  };
   const handleSaveLogic = () => {
     const minMaxDBFormatArray: any = [];
     const visibilityRule: any = [];
+    const outputDocShow: any = [];
+    const validationRule: any = [];
     const sampleRetrieveFormat: any = [];
 
-    _nestedRows.forEach((sectionResult: any) => {
-      const key = Object.keys(sectionResult)[0];
-      const minMax = sectionResult[key]?.actions[0]?.minMax;
-      minMaxDBFormatArray.push({
-        if: [
-          convertJSONFormatToDBFormat(sectionResult[key], false),
-          minMax?.minValue,
-        ],
-      });
-      visibilityRule.push(
-        convertJSONFormatToDBFormat(sectionResult[key], false)
-      );
-    });
-    console.log("Save MinMax Reqq ------> ", minMaxDBFormatArray);
-    console.log("Save Visibility Rule Reqq ------> ", visibilityRule);
-    if (visibilityRule && visibilityRule.length) {
-      visibilityRule?.forEach((x: any, index: any) => {
-        console.log("sample Retrieve Format xxxxReqq ------> ", x);
-        sampleRetrieveFormat.push({
-          [index + 1]: {
-            fields: convertMinMaxDBFormatToJSON(x),
-            actions: [
-              {
-                checkBoxValues: [
+      _nestedRows.forEach((sec: any) => {
+        console.log("SECCCC", sec);
+        const key = Object.keys(sec)[0]
+        if (sec[key]?.actions[0]?.checkBoxValues) {
+          console.log("checkBoxValues when saving ----> " , sec[key]?.actions[0]?.checkBoxValues[0]);
+          if (sec[key]?.actions[0]?.checkBoxValues[0]["show"]) {
+            console.log("Show");
+            visibilityRule.push(convertJSONFormatToDBFormat(sec[key], false))
+          }
+          if (sec[key]?.actions[0]?.checkBoxValues[0]["outputDoc"]) {
+            console.log("outputDoc");
+            outputDocShow.push(convertJSONFormatToDBFormat(sec[key], false))
+          }
+          if (sec[key]?.actions[0]?.checkBoxValues[0]["enable"]) {
+            console.log("enable");
+            validationRule.push(convertJSONFormatToDBFormat(sec[key], false))
+          }
+        }  
+
+        if (sec[key]?.actions[0]?.minMax) {
+          console.log("Min Max when saving ----> " , sec[key].actions[0]?.minMax);
+
+          const minMax = sec[key]?.actions[0]?.minMax;
+          let minValue = minMax?.min;
+          let maxValue = minMax?.max;
+          if (minMax) {
+            if (typeof minMax.min === "string") {
+              minValue = {
+                var: minMax?.min,
+              };
+            } else if (typeof minMax.max === "string") {
+              maxValue = {
+                var: minMax?.max,
+              };
+            }
+            minMaxDBFormatArray.push({
+              if: [
+                convertJSONFormatToDBFormat(sec[key], false),
+                [
                   {
-                    show: {
-                      logicalName: "Show",
-                      value: "show",
-                    },
+                    type: "MINIMUM_LENGTH",
+                    value: minValue,
+                    inclusive: true,
+                  },
+                  {
+                    type: "MAXIMUM_LENGTH",
+                    value: maxValue,
+                    inclusive: true,
                   },
                 ],
-              },
-            ],
-          },
-        });
-      });
+              ],
+            });
+          }
+        }
+      })
+    console.log("Save MinMax Reqq ------> ", minMaxDBFormatArray);
+    console.log("Save Visibility Rule Reqq ------> ", visibilityRule);
+    console.log("Save outputDocShow Rule Reqq ------> ", outputDocShow);
+    console.log("Save validationRule Rule Reqq ------> ", validationRule);
+
+    if (
+      (visibilityRule && visibilityRule.length) ||
+      (minMaxDBFormatArray && minMaxDBFormatArray.length) ||
+      (outputDocShow && outputDocShow.length) ||
+      (validationRule && validationRule.length)
+    ) {
+      saveVisibilityData(visibilityRule, validationRule, outputDocShow, minMaxDBFormatArray);
     }
-    // if(sampleRetrieveFormat && sampleRetrieveFormat.length) _setNestedRows(sampleRetrieveFormat);
   };
 
   return (
     <div>
-      <div className="nestedBtns">
-        <Button className="mr-10 btn-default" onClick={addComponent}>
-          + Add
-        </Button>
-        <Button className="btn-default" onClick={addNestedComponent}>
-          + Add Nested
-        </Button>
-      </div>
-      {
-        sections?.length > 0 &&
-        sections.map((section) => (
-          <div key={section.key} className="nested-wrap">
-            <SectionContainer
-              sectionLevel={section.key}
-              conditionData={conditionData}
-              setConditionData={setConditionData}
-              _setNestedRows={_setNestedRows}
-              _nestedRows={_nestedRows}
-              isNested={isNested}
-            />
+      {currentPossitionDetails && (
+        <div>
+          <div className="nestedBtns">
+            <Button className="mr-10 btn-default" onClick={addComponent}>
+              + Add
+            </Button>
+            <Button className="btn-default" onClick={addNestedComponent}>
+              + Add Nested
+            </Button>
           </div>
-        ))}
+          {sections?.length > 0 &&
+            sections.map((section) => (
+              <div key={section.key} className="nested-wrap">
+                <SectionContainer
+                  sectionLevel={section.key}
+                  conditionData={conditionData}
+                  setConditionData={setConditionData}
+                  _setNestedRows={_setNestedRows}
+                  _nestedRows={_nestedRows}
+                  isNested={isNested}
+                  currentPossitionDetails={currentPossitionDetails}
+                />
+              </div>
+            ))}
 
-      {_nestedRows?.length > 0 && (
-        <div className="text-right">
-          <Button onClick={handleSaveLogic} className="mr-10 btn-primary">
-            Save
-          </Button>
+          {_nestedRows?.length > 0 && (
+            <div className="text-right">
+              <Button onClick={handleSaveLogic} className="mr-10 btn-primary">
+                Save
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -30,6 +30,7 @@ interface SectionProps {
   _setNestedRows: any;
   _nestedRows: any;
   isNested: any;
+  currentPossitionDetails: any;
 }
 
 function SectionContainer({
@@ -38,7 +39,8 @@ function SectionContainer({
   setConditionData,
   _setNestedRows,
   _nestedRows,
-  isNested
+  isNested,
+  currentPossitionDetails
 }: SectionProps) {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [rowData, setRowData] = useState<any>();
@@ -237,10 +239,10 @@ function SectionContainer({
 
   useEffect(() => {
     console.log("DEFAULt ACTS", defaultActions);
-    setMinCheckboxEnabled(defaultActions[0]?.minMax?.minValue ? true : false);
-    setMaxCheckboxEnabled(defaultActions[0]?.minMax?.maxValue ? true : false);
-    setToggledEnableMin(defaultActions[0]?.minMax?.minValue ? true : false);
-    setToggledEnableMax(defaultActions[0]?.minMax?.maxValue ? true : false);
+    // setMinCheckboxEnabled(defaultActions[0]?.minMax?.minValue ? true : false);
+    // setMaxCheckboxEnabled(defaultActions[0]?.minMax?.maxValue ? true : false);
+    // setToggledEnableMin(defaultActions[0]?.minMax?.minValue ? true : false);
+    // setToggledEnableMax(defaultActions[0]?.minMax?.maxValue ? true : false);
   }, [defaultActions]);
 
   return (
@@ -265,8 +267,11 @@ function SectionContainer({
           <div className="subTitle">Actions</div>
           <div className="flex-row">
             <CheckBox
-              checkboxDefaultSelectedValues={defaultActions?.length && defaultActions?.map(x => x.value)|| [] }
-              checkboxValuesFromConfig={[
+  checkboxDefaultSelectedValues={
+    _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.checkBoxValues
+      ?.map((obj: any) => ({ value: obj[Object.keys(obj)[0]]?.value }))
+      ?.map((x: any) => x?.value) || []
+  }              checkboxValuesFromConfig={[
                 {
                   label: "Show",
                   value: "show",
@@ -284,84 +289,96 @@ function SectionContainer({
             />
           </div>
         </div>
+        {
+          currentPossitionDetails && currentPossitionDetails?.currentPosition === "question" &&
+              
+          <div className="subTitle mt-10 mb-30 w-100">
+            <div className="subTitle">Min/Max Field</div>
+            <div className="flex-row-start">
+              <div className="mb-15 flex-wrap w-33">
+                <div style={{ marginRight: "10px" }}>
+                  {" "}
+                  <Checkbox
+                      onChange={(e) => setMinCheckboxEnabled(e.target.checked)}
+                      // defaultChecked={_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.actions[0]?.minMax?.minValue}
+                      defaultChecked={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue || false}
+                  />{" "}
+                </div>
+                <div style={{ marginRight: "10px" }}>
+                  <Switch
+                    className="custom-toggle"
+                    checkedChildren="Value"
+                    unCheckedChildren="Question"
+                    onChange={() => setToggledEnableMin(!toggleEnableMin)}
+                      disabled={!minCheckboxEnabled}
+                      defaultChecked={typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue !== 'string'}
+                  />
+                </div>
 
-        <div className="subTitle mt-10 mb-30 w-100">
-          <div className="subTitle">Min/Max Field</div>
-          <div className="flex-row-start">
-          <div className="mb-15 flex-wrap w-33">
-            <div style={{ marginRight: "10px" }}>
-              {" "}
-              <Checkbox
-                onChange={(e) => setMinCheckboxEnabled(e.target.checked)}
-              />{" "}
-            </div>
-            <div style={{ marginRight: "10px" }}>
-              <Switch
-                className="custom-toggle"
-                checkedChildren="Value"
-                unCheckedChildren="Question"
-                onChange={() => setToggledEnableMin(!toggleEnableMin)}
-                disabled={!minCheckboxEnabled}
-              />
-            </div>
-
-            <div className="minmaxText">Min:</div>
-            {toggleEnableMin ? (
-              <NumberInputField
-                selectedValue={{}}
-                handleNumberChange={{}}
-                defaultDisabled={!minCheckboxEnabled}
-                setInputNumber={setMinValue}
-                changedId={undefined}
-                fieldName={"minValue"}
-              />
-            ) : (
-                <DropDown
+                <div className="minmaxText">Min:</div>
+                {toggleEnableMin ? (
+                  <NumberInputField
+                    selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue}
+                    handleNumberChange={{}}
+                    defaultDisabled={!minCheckboxEnabled}
+                    setInputNumber={setMinValue}
+                    changedId={undefined}
+                    fieldName={"minValue"}
+                  />
+                ) : (
+                  <DropDown
                     dropDownData={sampleInputQuestion}
                     isDisabled={!minCheckboxEnabled}
                     setExpression={setMinValue}
                     changedId={undefined}
-                    fieldName={"minValue"} selectedValue={undefined}                />
-            )}
-          </div>
+                    fieldName={"minValue"}
+                    selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue || ''}
+                  />
+                )}
+              </div>
 
-          <div className="mb-15 flex-wrap w-33">
-            <div style={{ marginRight: "10px" }}>
-              {" "}
-              <Checkbox
-                onChange={(e) => setMaxCheckboxEnabled(e.target.checked)}
-              />{" "}
-            </div>
-            <div style={{ marginRight: "10px" }}>
-              <Switch
-                className="custom-toggle"
-                checkedChildren="Value"
-                unCheckedChildren="Question"
-                onChange={() => setToggledEnableMax(!toggleEnableMax)}
-                disabled={!maxCheckboxEnabled}
-              />
-            </div>
+              <div className="mb-15 flex-wrap w-33">
+                <div style={{ marginRight: "10px" }}>
+                  {" "}
+                  <Checkbox
+                      onChange={(e) => setMaxCheckboxEnabled(e.target.checked)}
+                      defaultChecked={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue}
+                  />{" "}
+                </div>
+                <div style={{ marginRight: "10px" }}>
+                  <Switch
+                    className="custom-toggle"
+                    checkedChildren="Value"
+                    unCheckedChildren="Question"
+                    onChange={() => setToggledEnableMax(!toggleEnableMax)}
+                      disabled={!maxCheckboxEnabled}
+                      defaultChecked={typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue !== 'string'}
+                  />
+                </div>
 
-            <div className="minmaxText">Max:</div>
-            {toggleEnableMax ? (
-              <NumberInputField
-                selectedValue={{}}
-                handleNumberChange={{}}
-                defaultDisabled={!maxCheckboxEnabled}
-                setInputNumber={setMaxValue}
-                changedId={undefined}
-                fieldName={"maxValue"} />
-            ) : (
-                <DropDown
+                <div className="minmaxText">Max:</div>
+                {toggleEnableMax ? (
+                  <NumberInputField
+                    selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || ''}
+                    handleNumberChange={{}}
+                    defaultDisabled={!maxCheckboxEnabled}
+                    setInputNumber={setMaxValue}
+                    changedId={undefined}
+                    fieldName={"maxValue"} />
+                ) : (
+                  <DropDown
                     dropDownData={sampleInputQuestion}
                     isDisabled={!maxCheckboxEnabled}
                     setExpression={setMaxValue}
                     changedId={undefined}
-                    fieldName={"maxValue"} selectedValue={undefined}                />
-            )}
+                    fieldName={"maxValue"}
+                    selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || ''}
+                      />
+                )}
+              </div>
+            </div>
           </div>
-          </div>
-        </div>
+        }
       </div>
     </div>
   );
