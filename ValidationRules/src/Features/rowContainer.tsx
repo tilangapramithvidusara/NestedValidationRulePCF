@@ -527,7 +527,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       }
                     />
                   )}
-                  <div className="validation-text">Collapse Validation Rules</div>
+                  <div className="validation-text"></div>
                 </div>
                 <div className="flex-row-start ml-20 mb-15">
                   <Button
@@ -659,7 +659,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                   }
                 />
               )}
-              <div className="validation-text">Expand Validation Rules</div>
+              <div className="validation-text"></div>
             </div>
           )}
 

@@ -26,7 +26,137 @@ const ParentComponent: React.FC = () => {
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
   const [isLoadData, setIsLoadData] = useState<boolean>(false);
-  const [_nestedRows, _setNestedRows] = useState<any>([]);
+  const [_nestedRows, _setNestedRows] = useState<any>(
+[ 
+//     {
+//         "1" : {
+//             "fields": [{
+//                 "field": "Question01",
+//                 "condition": "==",
+//                 "value": "123",
+//                 "sort": 1,
+//                 "level": 1,
+//                 "hasNested": true,
+//                 "expression": "",
+//                 "collapse": false,
+//                 "innerConditions":[
+//                         {
+//                             "field":  "Question 01 01",
+//                             "condition": "==",
+//                             "value": "22",
+//                             "sort": 1,
+//                             "level": 11,
+//                             "hasNested": true,
+//                             "expression": "&&",
+//                             "collapse": false,
+//                             "innerConditions": [
+//                                 {
+//                                     "field": "Question 01 01 01",
+//                                     "condition": "==",
+//                                     "value": "12",
+//                                     "sort": 1,
+//                                     "hasNested": false,
+//                                     "level": 111,
+//                                     "expression": "&&",
+//                                     "innerConditions": [],
+//                                     "collapse": false
+//                                 },
+//                                 {
+//                                     "field": "Question 01 01 02",
+//                                     "condition": ">=",
+//                                     "value": "211",
+//                                     "sort": 1,
+//                                     "level": 112,
+//                                     "expression": "&&",
+//                                     "innerConditions": [],
+//                                     "collapse": false
+//                                 },
+//                                 {
+//                                     "field": "Question 01 01 03",
+//                                     "condition": "==",
+//                                     "value": "34",
+//                                     "sort": 1,
+//                                     "level": 113,
+//                                     "hasNested": true,
+//                                     "expression": "&&",
+//                                     "collapse": false,
+//                                     "innerConditions": [{
+//                                         "field": "Question 01 01 03 01",
+//                                         "condition": "==",
+//                                         "value": "76",
+//                                         "sort": 1,
+//                                         "level": 1131,
+//                                         "innerConditions": [],
+//                                         "expression": "&&",
+//                                         "collapse": false
+//                                     }]
+//                                 }
+//                         ]
+//                     }
+//                 ] 
+//             }],
+//             "actions": [
+//                         {
+//                             "checkBoxValues": [{
+//                                 "show":{
+//                                     "logicalName": "Show",
+//                                     "value": "show"
+//                                 },
+//                                 "outputDoc": {
+//                                     "logicalName": "outputDoc",
+//                                     "value": "outputDoc"
+//                                 },
+//                                 "enable": {
+//                                     "logicalName": "EnableField",
+//                                     "value": "enable"
+//                                 }
+//                             }],
+//                             "minMax": {
+//                                 "logicalName": "minMax",
+//                                 "minValue":12,
+//                                 "maxValue": 21
+//                             }
+//                         }
+//                 ]
+//         }
+//     },
+//     {
+//         "2": {
+//             "fields":[{
+//                 "field": "Question 02",
+//                 "condition": ">=",
+//                 "value": "21",
+//                 "sort": 1,
+//                 "level": 1,
+//                 "hasNested": false,
+//                 "expression": "",
+//                 "innerConditions": [],
+//                 "collapse": false
+//             }],
+//             "actions": [{
+//               "checkBoxValues": [{
+//                   "outputDoc": {
+//                       "logicalName": "outputDoc",
+//                       "value": "OutPutDoc:Show"
+//                   },
+//                   "enable": {
+//                       "logicalName": "EnableField",
+//                       "value": "enable"
+//                   }
+//               }],
+//               "minMax": {
+//                   "logicalName": "minMax",
+//                   "minValue":1222,
+//                   "maxValue": 2121
+//               }
+//           }]
+//     }
+// }
+]
+
+
+
+);
   const [isNested, setIsNested] = useState<any>();
   const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({currentPosition:"question"});
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
@@ -95,7 +225,7 @@ const ParentComponent: React.FC = () => {
             console.log("LKKJJJDDDD", dbData?.validation);
             const validationFormattedData : any = []
             dbData?.validation?.forEach((valData:any) => {
-              validationFormattedData.push(convertMinMaxDBFormatToJSON(valData))
+              validationFormattedData.push(...convertMinMaxDBFormatToJSON(valData))
             })
             console.log("LKKJJJDDDD ddd", validationFormattedData);
 
@@ -123,7 +253,7 @@ const ParentComponent: React.FC = () => {
             console.log("LKKJJJDDDD", dbData?.visibility);
             const validationFormattedData : any = []
             dbData?.visibility?.forEach((valData:any) => {
-              validationFormattedData.push(convertMinMaxDBFormatToJSON(valData))
+              validationFormattedData.push(...convertMinMaxDBFormatToJSON(valData))
             })
             console.log("LKKJJJDDDD ddd", validationFormattedData);
 
@@ -151,7 +281,7 @@ const ParentComponent: React.FC = () => {
             console.log("LKKJJJDDDD", dbData?.minMax);
             const validationFormattedData : any = []
             dbData?.minMax?.forEach((valData:any) => {
-              validationFormattedData.push(convertMinMaxDBFormatToJSON(valData))
+              validationFormattedData.push(...convertMinMaxDBFormatToJSON(valData))
             })
             console.log("LKKJJJDDDD ddd", validationFormattedData);
             return [
@@ -161,8 +291,8 @@ const ParentComponent: React.FC = () => {
                     {
                       minMax: {
                         logicalName: "minMax",
-                        min: 12,
-                        max: 21,
+                        minValue: 12,
+                        maxValue: 21,
                       },
                     },
                   ],
@@ -226,13 +356,13 @@ const ParentComponent: React.FC = () => {
     console.log("minMaxPreviousValues _result -----> ", minMaxPreviousValues);
     console.log("validationRulePreviousValues _result -----> ", validationRulePreviousValues);
 
-    if (visibilityRulePreviousValues?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {visibility: JSON.parse(visibilityRulePreviousValues)}]);
-    if(minMaxPreviousValues?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {minMax: JSON.parse(minMaxPreviousValues)}]);
-    if(validationRulePreviousValues?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {validation: JSON.parse(validationRulePreviousValues)}]);
+    if (visibilityRulePreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {visibility: JSON.parse(visibilityRulePreviousValues?.data)}]);
+    if(minMaxPreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {minMax: JSON.parse(minMaxPreviousValues?.data)}]);
+    if(validationRulePreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {validation: JSON.parse(validationRulePreviousValues?.data)}]);
   };
   useEffect(() => {
     console.log("currentId ----->", currentPossitionDetails);
-    // getRequestedData();
+    getRequestedData();
   }, [currentPossitionDetails]);
 
   const _getCurrentState = async () => {
@@ -240,8 +370,7 @@ const ParentComponent: React.FC = () => {
     console.log("Current State Details ----> ", result);
     if (result?.data?.length) setCurrentPossitionDetails(result?.data[0]);
   };
-
-  const saveVisibilityData = async (visibilityRule: any, minMaxRule: any) => {
+  const saveVisibilityData = async (visibilityRule: any, minMaxRule: any, outputDocShow:any, minMaxDBFormatArray:any) => {
     let logicalName;
     if (currentPossitionDetails?.currentPosition === "question") {
       logicalName = dbConstants.question.fieldName;
@@ -282,11 +411,21 @@ const ParentComponent: React.FC = () => {
             JSON.stringify(visibilityRule),
         }
       );
+      await saveRequest(
+        logicalName,
+        currentPossitionDetails?.id,
+        {
+          [dbConstants.question.gyde_documentOutputRule]:
+            JSON.stringify(outputDocShow),
+        }
+      );
     }
   };
   const handleSaveLogic = () => {
     const minMaxDBFormatArray: any = [];
     const visibilityRule: any = [];
+    const outputDocShow: any = [];
+    const validationRule: any = [];
     const sampleRetrieveFormat: any = [];
 
       _nestedRows.forEach((sec: any) => {
@@ -300,11 +439,11 @@ const ParentComponent: React.FC = () => {
           }
           if (sec[key]?.actions[0]?.checkBoxValues[0]["outputDoc"]) {
             console.log("outputDoc");
-            visibilityRule.push(convertJSONFormatToDBFormat(sec[key], false))
+            outputDocShow.push(convertJSONFormatToDBFormat(sec[key], false))
           }
           if (sec[key]?.actions[0]?.checkBoxValues[0]["enable"]) {
             console.log("enable");
-            visibilityRule.push(convertJSONFormatToDBFormat(sec[key], false))
+            validationRule.push(convertJSONFormatToDBFormat(sec[key], false))
           }
         }  
 
@@ -346,14 +485,18 @@ const ParentComponent: React.FC = () => {
       })
     console.log("Save MinMax Reqq ------> ", minMaxDBFormatArray);
     console.log("Save Visibility Rule Reqq ------> ", visibilityRule);
+    console.log("Save outputDocShow Rule Reqq ------> ", outputDocShow);
+    console.log("Save validationRule Rule Reqq ------> ", validationRule);
+
     if (
       (visibilityRule && visibilityRule.length) ||
-      (minMaxDBFormatArray && minMaxDBFormatArray.length)
+      (minMaxDBFormatArray && minMaxDBFormatArray.length) ||
+      (outputDocShow && outputDocShow.length) ||
+      (validationRule && validationRule.length)
     ) {
-      saveVisibilityData(visibilityRule, minMaxDBFormatArray);
+      saveVisibilityData(visibilityRule, validationRule, outputDocShow, minMaxDBFormatArray);
     }
   };
-
 
   return (
     <div>
