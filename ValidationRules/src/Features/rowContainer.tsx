@@ -563,7 +563,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     flexDirection: "row",
                   }}
                 >
-                  {/* <div className="condition-label">
+                  <div className="condition-label">
                     <DropDown
                       dropDownData={expressionSampleData}
                       isDisabled={condition?.level === 1 ? true : false}
@@ -572,7 +572,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       fieldName={"expression"}
                       selectedValue={condition?.expression}
                     />{" "}
-                  </div> */}
+                  </div>
 
                   <div className="condition-label">
                     <FieldInput
