@@ -647,7 +647,7 @@ const RowContainer: React.FC<TableRowProps> = ({
               </div>
             </div>
           ) : (
-            <div className="flex-row-start mb-10 collapse-wrap">
+            <div className="flex-row-start mb-10 collapse-wrap custom-width">
                 {!condition.state && (
                   <div>
                 <CaretRightOutlined
