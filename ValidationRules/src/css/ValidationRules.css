@@ -161,6 +161,23 @@
     border-radius: 2px;
   }
 
+  .control-container .mr-20 {
+    margin-right: 20px;
+  }
+
+  .control-container .mr-30 {
+    margin-right: 30px;
+  }
+
+
+  .control-container .flex-start {
+    display: flex;
+  }
+
+  .control-container .w-10 {
+   width: 10%;
+  }
+
   .control-container .mr-10 {
     margin-right: 10px;
   }
@@ -339,4 +356,8 @@
 
   .control-container .custom-width {
     width: 250px;
+  }
+
+  .control-container .ant-select-selector {
+    min-width: 200px;
   }

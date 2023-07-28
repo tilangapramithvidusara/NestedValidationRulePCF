@@ -263,8 +263,8 @@ function SectionContainer({
       ))}
 
       <div className="action-container">
-        <div className="w-100">
-          <div className="subTitle">Actions</div>
+        <div className="w-100 flex-start">
+          <div className="subTitle w-10">Actions</div>
           <div className="flex-row">
             <CheckBox
   checkboxDefaultSelectedValues={
@@ -292,10 +292,10 @@ function SectionContainer({
         {
           currentPossitionDetails && currentPossitionDetails?.currentPosition === "question" &&
               
-          <div className="subTitle mt-10 mb-30 w-100">
-            <div className="subTitle">Min/Max Field</div>
-            <div className="flex-row-start">
-              <div className="mb-15 flex-wrap w-33">
+          <div className="subTitle mt-10 mb-30 w-100 flex-start">
+            <div className="subTitle w-10">Min/Max Field</div>
+            <div className="flex-start">
+              <div className="flex-start mr-30">
                 <div style={{ marginRight: "10px" }}>
                   {" "}
                   <Checkbox
@@ -337,7 +337,7 @@ function SectionContainer({
                 )}
               </div>
 
-              <div className="mb-15 flex-wrap w-33">
+              <div className="flex-start">
                 <div style={{ marginRight: "10px" }}>
                   {" "}
                   <Checkbox
