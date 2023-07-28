@@ -563,7 +563,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     flexDirection: "row",
                   }}
                 >
-                  <div className="condition-label">
+                  {/* <div className="condition-label">
                     <DropDown
                       dropDownData={expressionSampleData}
                       isDisabled={condition?.level === 1 ? true : false}
@@ -572,7 +572,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       fieldName={"expression"}
                       selectedValue={condition?.expression}
                     />{" "}
-                  </div>
+                  </div> */}
 
                   <div className="condition-label">
                     <FieldInput
@@ -648,7 +648,8 @@ const RowContainer: React.FC<TableRowProps> = ({
             </div>
           ) : (
             <div className="flex-row-start mb-10 collapse-wrap">
-              {!condition.state && (
+                {!condition.state && (
+                  <div>
                 <CaretRightOutlined
                   style={{ color: "#0093FE" }}
                   onClick={() =>
@@ -657,7 +658,18 @@ const RowContainer: React.FC<TableRowProps> = ({
                       fieldId: condition?.level,
                     })
                   }
-                />
+                    />
+                    <div className="condition-label">
+                    <DropDown
+                      dropDownData={expressionSampleData}
+                      isDisabled={condition?.level === 1 ? true : false}
+                      setExpression={setFieldValue}
+                      changedId={condition?.level}
+                      fieldName={"expression"}
+                      selectedValue={condition?.expression}
+                    />{" "}
+                  </div>
+                  </div>
               )}
               <div className="validation-text"></div>
             </div>
