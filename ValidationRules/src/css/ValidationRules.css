@@ -161,6 +161,23 @@
     border-radius: 2px;
   }
 
+  .control-container .mr-20 {
+    margin-right: 20px;
+  }
+
+  .control-container .mr-30 {
+    margin-right: 30px;
+  }
+
+
+  .control-container .flex-start {
+    display: flex;
+  }
+
+  .control-container .w-10 {
+   width: 10%;
+  }
+
   .control-container .mr-10 {
     margin-right: 10px;
   }
@@ -181,7 +198,6 @@
     color: #616161;
     width: 200px;
     text-align: left;
-    margin-bottom: 5px;
     margin-right: 20px;
   }
 
@@ -281,9 +297,10 @@
   }
 
   .control-container .collapse-wrap {
-    padding: 10px 10px 15px;
+    padding: 10px 10px;
     margin-bottom: 10px;
     background-color: #f2f2f2;
+    position: relative;
   }
 
   .control-container .delete-img {
@@ -330,4 +347,17 @@
 
   .control-container .ant-input-number {
     border-radius: 2px;
+  }
+
+  .control-container .anticon {
+    position: absolute;
+    right: 10px;
+  }
+
+  .control-container .custom-width {
+    width: 250px;
+  }
+
+  .control-container .ant-select-selector {
+    min-width: 200px;
   }

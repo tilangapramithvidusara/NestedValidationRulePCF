@@ -515,7 +515,7 @@ const RowContainer: React.FC<TableRowProps> = ({
           {!condition?.collapse ? (
             <div className="collapse-wrap">
               <div className="flex-col-start">
-                <div className="flex-row-start mb-10">
+                <div className="flex-row-start">
                   {!condition.state && (
                     <CaretDownOutlined
                       style={{ color: "#0093FE" }}
@@ -529,7 +529,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                   )}
                   <div className="validation-text"></div>
                 </div>
-                <div className="flex-row-start ml-20 mb-15">
+                <div className="flex-row-start mb-15">
                   <Button
                     className="mr-10 btn-default"
                     onClick={() => _handleAddRow(condition?.level, false, "AND")}
@@ -563,7 +563,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     flexDirection: "row",
                   }}
                 >
-                  {/* <div className="condition-label">
+                  <div className="condition-label">
                     <DropDown
                       dropDownData={expressionSampleData}
                       isDisabled={condition?.level === 1 ? true : false}
@@ -572,7 +572,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       fieldName={"expression"}
                       selectedValue={condition?.expression}
                     />{" "}
-                  </div> */}
+                  </div>
 
                   <div className="condition-label">
                     <FieldInput
@@ -647,7 +647,7 @@ const RowContainer: React.FC<TableRowProps> = ({
               </div>
             </div>
           ) : (
-            <div className="flex-row-start mb-10 collapse-wrap">
+            <div className="flex-row-start mb-10 collapse-wrap custom-width">
                 {!condition.state && (
                   <div>
                 <CaretRightOutlined
