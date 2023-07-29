@@ -53,7 +53,7 @@ const generateOutputString = (conditions: string | any[]) => {
     const previousCondition = conditions[i - 1];
 
     if (condition.hasNested) {
-      const innerExpression = generateOutputString(condition.innerConditions);
+      const innerExpression = generateOutputString(condition?.innerConditions || []);
       //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
       expression += `${condition?.expression ? condition?.expression : ""} (${
         condition.field

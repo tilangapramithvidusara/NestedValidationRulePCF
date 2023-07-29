@@ -19,6 +19,7 @@ import {
   saveRequest,
 } from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
+import { convertDbFormatToJSON, normalConverter } from "../Utils/dbFormatToJson";
 
 const ParentComponent: React.FC = () => {
   const [conditionData, setConditionData] = useState<any[]>([]);
@@ -222,12 +223,111 @@ const ParentComponent: React.FC = () => {
         _setNestedRows((prevData: any) => { 
 
           if (dbData?.validation) { 
-            console.log("LKKJJJDDDD", dbData?.validation);
+            console.log("dbData?.validation", dbData?.validation);
             const validationFormattedData : any = []
-            dbData?.validation?.forEach((valData:any) => {
-              validationFormattedData.push(...convertMinMaxDBFormatToJSON(valData))
+            dbData?.validation?.forEach((valData: any) => {
+              console.log("VALLLLLLLLLLLLLLL", valData);
+              validationFormattedData.push(...normalConverter({
+                "and":[
+                   {
+                      "or":[
+                         {
+                            "eq":[
+                               {
+                                  "var":"Q_110_100_111"
+                               },
+                               "22"
+                            ]
+                         },
+                         {
+                            "and":[
+                               {
+                                  "eq":[
+                                     {
+                                        "var":"Q_110_100_222"
+                                     },
+                                     "2"
+                                  ]
+                               },
+                               {
+                                  "eq":[
+                                     {
+                                        "var":"Q_120_100_333"
+                                     },
+                                     "3"
+                                  ]
+                               }
+                            ]
+                         },
+                         {
+                            "eq":[
+                               {
+                                  "var":"Q_120_100_444"
+                               },
+                               "32"
+                            ]
+                         },
+                         {
+                            "and":[
+                               {
+                                  "eq":[
+                                     {
+                                        "var":"Q_110_100_555"
+                                     },
+                                     "2"
+                                  ]
+                               },
+                               {
+                                  "eq":[
+                                     {
+                                        "var":"Q_120_100_666"
+                                     },
+                                     "3"
+                                  ]
+                               },
+                               {
+                                  "and":[
+                                     {
+                                        "eq":[
+                                           {
+                                              "var":"Q_110_100_777"
+                                           },
+                                           "2"
+                                        ]
+                                     },
+                                     {
+                                        "eq":[
+                                           {
+                                              "var":"Q_120_100_888"
+                                           },
+                                           "3"
+                                        ]
+                                     }
+                                  ]
+                               }
+                            ]
+                         }
+                      ]
+                   }
+                  //  {
+                  //     "eq":[
+                  //        {
+                  //           "var":"Q_130_100_999"
+                  //        },
+                  //        "10"
+                  //     ]
+                  //  },
+                  //  {
+                  //     "eq":[
+                  //        {
+                  //           "var":"Q_140_101111100"
+                  //        },
+                  //        "101"
+                  //     ]
+                  //  }
+                ]
+              }))
             })
-            console.log("LKKJJJDDDD ddd", validationFormattedData);
 
             return [
               ...prevData, {
@@ -250,13 +350,10 @@ const ParentComponent: React.FC = () => {
             ]
           }
           if (dbData?.visibility) {
-            console.log("LKKJJJDDDD", dbData?.visibility);
             const validationFormattedData : any = []
             dbData?.visibility?.forEach((valData:any) => {
               validationFormattedData.push(...convertMinMaxDBFormatToJSON(valData))
             })
-            console.log("LKKJJJDDDD ddd", validationFormattedData);
-
             return [
               ...prevData, {
                 [key++]: {
@@ -278,12 +375,10 @@ const ParentComponent: React.FC = () => {
             ]
           }
           if (dbData?.minMax) {
-            console.log("LKKJJJDDDD", dbData?.minMax);
             const validationFormattedData : any = []
             dbData?.minMax?.forEach((valData:any) => {
               validationFormattedData.push(...convertMinMaxDBFormatToJSON(valData))
             })
-            console.log("LKKJJJDDDD ddd", validationFormattedData);
             return [
               ...prevData, {
                 [key++]: {
@@ -308,7 +403,7 @@ const ParentComponent: React.FC = () => {
   }, [_visibilityRulePrev]); 
 
   const getRequestedData = async () => {
-    let visibilityRulePreviousValues: any = '[{"and":[{"eq":[{"var":"NTemp_C01_04_Q_04"},3]},{"eq":[{"var":"NTemp_C01_04_Q_04"},4]}]}]';
+    let visibilityRulePreviousValues: any = '[{"and":[{"eq":[{"var":"NTemp_C01_04_Q_04_3333333333"},3]},{"eq":[{"var":"NTemp_C01_04_Q_04"},4]}]}]';
     let minMaxPreviousValues: any = '[{"and":[{"eq":[{"var":"NTemp_C01_04_Q_04"},3]},{"eq":[{"var":"NTemp_C01_04_Q_04"},4]}]}]'
     let validationRulePreviousValues: any = '[{"and":[{"eq":[{"var":"NTemp_C01_04_Q_04"},3]},{"eq":[{"var":"NTemp_C01_04_Q_04"},4]}]}]'
 
@@ -356,9 +451,9 @@ const ParentComponent: React.FC = () => {
     console.log("minMaxPreviousValues _result -----> ", minMaxPreviousValues);
     console.log("validationRulePreviousValues _result -----> ", validationRulePreviousValues);
 
-    if (visibilityRulePreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {visibility: JSON.parse(visibilityRulePreviousValues?.data)}]);
-    if(minMaxPreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {minMax: JSON.parse(minMaxPreviousValues?.data)}]);
-    if(validationRulePreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {validation: JSON.parse(validationRulePreviousValues?.data)}]);
+    if (visibilityRulePreviousValues?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {visibility: JSON.parse(visibilityRulePreviousValues)}]);
+    if(minMaxPreviousValues?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {minMax: JSON.parse(minMaxPreviousValues)}]);
+    if(validationRulePreviousValues?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {validation: JSON.parse(validationRulePreviousValues)}]);
   };
   useEffect(() => {
     console.log("currentId ----->", currentPossitionDetails);
@@ -428,61 +523,62 @@ const ParentComponent: React.FC = () => {
     const validationRule: any = [];
     const sampleRetrieveFormat: any = [];
 
-      _nestedRows.forEach((sec: any) => {
-        console.log("SECCCC", sec);
-        const key = Object.keys(sec)[0]
-        if (sec[key]?.actions[0]?.checkBoxValues) {
-          console.log("checkBoxValues when saving ----> " , sec[key]?.actions[0]?.checkBoxValues[0]);
-          if (sec[key]?.actions[0]?.checkBoxValues[0]["show"]) {
-            console.log("Show");
-            visibilityRule.push(convertJSONFormatToDBFormat(sec[key], false))
-          }
-          if (sec[key]?.actions[0]?.checkBoxValues[0]["outputDoc"]) {
-            console.log("outputDoc");
-            outputDocShow.push(convertJSONFormatToDBFormat(sec[key], false))
-          }
-          if (sec[key]?.actions[0]?.checkBoxValues[0]["enable"]) {
-            console.log("enable");
-            validationRule.push(convertJSONFormatToDBFormat(sec[key], false))
-          }
-        }  
-
-        if (sec[key]?.actions[0]?.minMax) {
-          console.log("Min Max when saving ----> " , sec[key].actions[0]?.minMax);
-
-          const minMax = sec[key]?.actions[0]?.minMax;
-          let minValue = minMax?.min;
-          let maxValue = minMax?.max;
-          if (minMax) {
-            if (typeof minMax.min === "string") {
-              minValue = {
-                var: minMax?.min,
-              };
-            } else if (typeof minMax.max === "string") {
-              maxValue = {
-                var: minMax?.max,
-              };
-            }
-            minMaxDBFormatArray.push({
-              if: [
-                convertJSONFormatToDBFormat(sec[key], false),
-                [
-                  {
-                    type: "MINIMUM_LENGTH",
-                    value: minValue,
-                    inclusive: true,
-                  },
-                  {
-                    type: "MAXIMUM_LENGTH",
-                    value: maxValue,
-                    inclusive: true,
-                  },
-                ],
-              ],
-            });
-          }
+    _nestedRows.forEach((sec: any) => {
+      console.log("SECCCC", sec);
+      const key = Object.keys(sec)[0]
+      if (sec[key]?.actions[0]?.checkBoxValues) {
+        console.log("checkBoxValues when saving ----> ", sec[key]?.actions[0]?.checkBoxValues[0]);
+        if (sec[key]?.actions[0]?.checkBoxValues[0]["show"]) {
+          console.log("Show");
+          visibilityRule.push(convertJSONFormatToDBFormat(sec[key], false))
         }
-      })
+        if (sec[key]?.actions[0]?.checkBoxValues[0]["outputDoc"]) {
+          console.log("outputDoc");
+          outputDocShow.push(convertJSONFormatToDBFormat(sec[key], false))
+        }
+        if (sec[key]?.actions[0]?.checkBoxValues[0]["enable"]) {
+          console.log("enable");
+          validationRule.push(convertJSONFormatToDBFormat(sec[key], false))
+        }
+      }
+
+      if (sec[key]?.actions[0]?.minMax) {
+        console.log("Min Max when saving ----> ", sec[key].actions[0]?.minMax);
+
+        const minMax = sec[key]?.actions[0]?.minMax;
+        let minValue = minMax?.min;
+        let maxValue = minMax?.max;
+        if (minMax) {
+          if (typeof minMax.min === "string") {
+            minValue = {
+              var: minMax?.min,
+            };
+          } else if (typeof minMax.max === "string") {
+            maxValue = {
+              var: minMax?.max,
+            };
+          }
+          minMaxDBFormatArray.push({
+            if: [
+              convertJSONFormatToDBFormat(sec[key], false),
+              [
+                {
+                  type: "MINIMUM_LENGTH",
+                  value: minValue,
+                  inclusive: true,
+                },
+                {
+                  type: "MAXIMUM_LENGTH",
+                  value: maxValue,
+                  inclusive: true,
+                },
+              ],
+            ],
+          });
+        }
+      }
+    });
+
     console.log("Save MinMax Reqq ------> ", minMaxDBFormatArray);
     console.log("Save Visibility Rule Reqq ------> ", visibilityRule);
     console.log("Save outputDocShow Rule Reqq ------> ", outputDocShow);

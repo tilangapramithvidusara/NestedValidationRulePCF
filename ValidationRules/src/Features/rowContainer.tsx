@@ -424,18 +424,18 @@ const RowContainer: React.FC<TableRowProps> = ({
     collapse: any
   ) => {
     console.log("------------>", _data, parentIds, collapse);
-    parentIds.forEach((x: any) => {
-      _data.map((i: { level: any; innerConditions: any[]; collapse: any }) => {
+    parentIds?.forEach((x: any) => {
+      _data?.map((i: { level: any; innerConditions: any[]; collapse: any }) => {
         if (x === i.level) {
           i.collapse = collapse;
         } else {
-          _updateCollapseByParentId(i.innerConditions, parentIds, collapse);
+          _updateCollapseByParentId(i?.innerConditions, parentIds, collapse);
         }
       });
     });
 
     console.log("------------ data>", _data);
-    const newArr = [..._data];
+    const newArr = _data ? [..._data] : [];
     return newArr;
   };
 
@@ -563,7 +563,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     flexDirection: "row",
                   }}
                 >
-                  {/* <div className="condition-label">
+                  <div className="condition-label">
                     <DropDown
                       dropDownData={expressionSampleData}
                       isDisabled={condition?.level === 1 ? true : false}
@@ -572,7 +572,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       fieldName={"expression"}
                       selectedValue={condition?.expression}
                     />{" "}
-                  </div> */}
+                  </div>
 
                   <div className="condition-label">
                     <FieldInput
@@ -716,3 +716,5 @@ const RowContainer: React.FC<TableRowProps> = ({
 };
 
 export default RowContainer;
+
+
