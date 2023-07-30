@@ -1,232 +1,84 @@
-const sampleArr = {
-  and: [
-    {
-      or: [
-        {
-          eq: [
-            {
-              var: "Q_110_100_111",
-            },
-            "22",
-          ],
-        },
-        {
-          and: [
-            {
-              eq: [
-                {
-                  var: "Q_110_100_222",
-                },
-                "2",
-              ],
-            },
-            {
-              eq: [
-                {
-                  var: "Q_120_100_333",
-                },
-                "3",
-              ],
-            },
-          ],
-        },
-        {
-          eq: [
-            {
-              var: "Q_120_100_444",
-            },
-            "32",
-          ],
-        },
-        {
-          and: [
-            {
-              eq: [
-                {
-                  var: "Q_110_100_555",
-                },
-                "2",
-              ],
-            },
-            {
-              eq: [
-                {
-                  var: "Q_120_100_666",
-                },
-                "3",
-              ],
-            },
-            {
-              and: [
-                {
-                  eq: [
-                    {
-                      var: "Q_110_100_777",
-                    },
-                    "2",
-                  ],
-                },
-                {
-                  eq: [
-                    {
-                      var: "Q_120_100_888",
-                    },
-                    "3",
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    }
-    // {
-    //   eq: [
-    //     {
-    //       var: "Q_130_100_999",
-    //     },
-    //     "10",
-    //   ],
-    // },
-    // {
-    //   eq: [
-    //     {
-    //       var: "Q_140_101111100",
-    //     },
-    //     "101",
-    //   ],
-    // },
-  ],
-};
+// let sampleArr = { "or": [{ "and": [{ "==": [{ "var": "Q_120_100" }, "3"] }, { "==": [{ "var": "Q_140_100" }, "10"] }, { "==": [{ "var": "Q_130_100" }, "10"] } ] }, { "==": [{ "var": "Q_110_100" }, "3"] } ] };
 
 // Break to levels
 
-const convertDbFormatToJSON = (_sampleArr: any, level: any) => {
-    const resArray: any= [];
-    const travese = (arr: any) => {
-      const key = Object.keys(arr)[0]
-      console.log("KEYYYY", key)
-      if (key === 'and' || key === 'or') {
-        let primaryKey: string;
-        arr[key].forEach((x: { [x: string]: any[]; }, index: any) => {
-          const childKey = Object.keys(x)[0]
-          if (Object.keys(x)[0] === "and" || Object.keys(x)[0] === "or") {
-            primaryKey = Object.keys(x)[0]
-          }
-          if (x[primaryKey]) {
-            const rqObjs = x[primaryKey].filter((x: { eq: any; }) => x.eq);
-            // console.log("rqObjs", rqObjs);
-            resArray.push({ operator: primaryKey, values: rqObjs, level: level++ });
-          }
-          travese(x)
-        })
-      }
-      return resArray
-    }
-    const gg = travese(_sampleArr)
-    console.log("GGGG", gg)
-  
-    // //
-    function buildNestedStructure(arr: any[], parentLevel: number) : any {
-      // console.log("SDDDDDDDD", arr)
-      const children = arr.filter((item: { level: any; }) => item.level === parentLevel + 1);
-      if (children.length === 0) {
-        return [];
-      }
-  
-      return children.map((child: { level: any; }) => {
-        return {
-          ...child,
-          children: buildNestedStructure(arr, child.level),
-        };
-      });
-    }
-  
-    const _structeredArr = buildNestedStructure(travese(sampleArr), 0)
-
-    const convertObj = (inputJSON: any[]) => {
-  
-      inputJSON.forEach((parentObj: { values?: any; level?: any; operator?: any; innerConditions?: any; children?: any; }) => {
-        let lastIndex = 0
-        let currentFieldValues = parentObj.values.map((y: { eq: any[]; }, index: number) => {
-          lastIndex = index
-          return {
-            field: y.eq[0].var,
-            condition: Object.keys(parentObj)[0],
-            value: y.eq[1],
-            sort: 1,
-            level: parentObj.level,
-            expression: parentObj.operator,
-            innerConditions: [],
-            hasNested: false
-          }
-        
-        })
-        parentObj.innerConditions = currentFieldValues
-          parentObj.innerConditions[lastIndex].temps = parentObj?.children[0] || {}
-          parentObj.innerConditions[lastIndex].hasNested = true 
-          parentObj.innerConditions[lastIndex].level = parseInt(parentObj.level + `1`);
-        const tempchild = parentObj.children
-        delete parentObj.children
-        delete parentObj.values
-        delete parentObj.level
-        delete parentObj.operator
-        convertObj(tempchild)
-      })
-    
-    }
-  
-    convertObj(_structeredArr)
-    console.log("---M ",JSON.stringify(_structeredArr, null, 2))
-  
-    function removeTempsAndMoveInnerConditions(jsonData: any[]) {
-      console.log("JSON", jsonData)
-      if (!Array.isArray(jsonData)) {
-        return;
-      }
-  
-      jsonData.forEach((item) => {
-        if (Object.prototype.hasOwnProperty.call(item, "temps")) {
-          const temps = item.temps;
-          delete item.temps;
-          item.innerConditions = temps?.innerConditions;
-          removeTempsAndMoveInnerConditions(item.innerConditions);
-        } else if (Array.isArray(item.innerConditions)) {
-          removeTempsAndMoveInnerConditions(item.innerConditions);
-        }
-      });
-    }
-  
-    removeTempsAndMoveInnerConditions(_structeredArr[0].innerConditions)
-    return _structeredArr[0].innerConditions
-};
-
-
 
 const normalConverter = (sampleArr: any) => {
-    const parentLevelKey : any = Object.keys(sampleArr);
-    const parentLvlArray: any = [];
-    let level = 0
-    sampleArr[parentLevelKey].forEach((obj: { eq?: any; }) => {
-   
-   if(Object.keys(obj)[0] === 'eq') {
-        // console.log(obj)
-        parentLvlArray.push({
-          field: obj.eq[0].var,
-        condition: Object.keys(obj)[0],
-        value: obj.eq[1], 
+    
+const finalResultArray: never[] = []
+
+const convertFunc = (sampleArr: any[], level = 1) => {
+  const normalParents = sampleArr.filter((x: {}) => Object.keys(x)[0] === 'eq' || Object.keys(x)[0] === '==');
+  const nestedParents = sampleArr.filter((x: {}) => Object.keys(x)[0] === 'or' || Object.keys(x)[0] === 'and');
+  const parentExpression = nestedParents.map((x: {}) => Object.keys(x)[0])[0];
+
+  if (nestedParents && nestedParents.length) {
+    nestedParents.forEach((x: any) => {
+      const nestedLevelParents = Object.keys(x)[0];
+      const equalOperators = x[nestedLevelParents].filter((x: {}) => Object.keys(x)[0] === '==' || Object.keys(x)[0] === 'eq');
+      const andOrOperators = x[nestedLevelParents].filter((x: {}) => Object.keys(x)[0] === 'and' || Object.keys(x)[0] === 'or');
+
+      x[nestedLevelParents] = equalOperators.map((prnt: { [x: string]: any[]; }) => ({
+        field: prnt["=="] ? prnt["=="][0].var : prnt.eq[0].var,
+        condition: Object.keys(prnt)[0],
+        value: prnt["=="] ? prnt["=="][1] : prnt.eq[1],
         sort: 1,
         level: level++,
-        expression: parentLevelKey[0],
-        innerConditions:[]
-        })
-    }else {
-       console.log(obj)
-       parentLvlArray.push(...convertDbFormatToJSON(obj, level++));
-    }
+        expression: nestedLevelParents,
+        innerConditions: [],
+        hasNested: false,
+      }));
+
+      if (andOrOperators.length > 0) {
+        x[nestedLevelParents][x[nestedLevelParents].length - 1].hasNested = true
+        x[nestedLevelParents][x[nestedLevelParents].length - 1].innerConditions = andOrOperators;
+
+        console.log("andOrOperators", andOrOperators)
+        convertFunc(x[nestedLevelParents][x[nestedLevelParents].length - 1].innerConditions, level);
+      }
     });
-    console.log("DDDDDFEFFEEFUHFE", parentLvlArray)
-    return parentLvlArray
+    return nestedParents;
+  }
+
+  return finalResultArray;
+};
+
+const finalRes = convertFunc(sampleArr)
+
+
+
+function removeAndOrKeys(obj: any): any {
+    if (Array.isArray(obj)) {
+      if (obj.length === 1) {
+        return removeAndOrKeys(obj[0]);
+      } else {
+        return obj.map(removeAndOrKeys);
+      }
+    }
+  
+    if (typeof obj === 'object' && obj !== null) {
+      if (Object.prototype.hasOwnProperty.call(obj, 'and')) {
+        obj = removeAndOrKeys(obj.and);
+        return obj;
+      } else if (Object.prototype.hasOwnProperty.call(obj, 'or')) {
+        obj = removeAndOrKeys(obj.or);
+        return obj;
+      }
+  
+      for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          obj[key] = removeAndOrKeys(obj[key]);
+        }
+      }
+    }
+    return obj;
+  }
+  
+
+const res = removeAndOrKeys(finalRes);
+    console.log("DB Converted Arrayyy ", JSON.stringify(res, null, 2));
+    return res;
+
   } 
 
-export { convertDbFormatToJSON, normalConverter };
+export { normalConverter };
