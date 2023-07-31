@@ -6,6 +6,7 @@ import App from "./src/App";
 export class ValidationRules implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 
     private container: HTMLDivElement;
+    
     constructor()
     {
 
