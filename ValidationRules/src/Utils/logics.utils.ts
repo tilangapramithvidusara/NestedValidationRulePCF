@@ -263,8 +263,22 @@ const convertJSONFormatToDBFormat = (
   let result = [];
   const minMax = allSections?.actions[0]?.minMax;
   const arr = allSections.fields;
+
+  let parentExpression = 'or';
+
+  if (arr[1] && arr[1].expression) {
+    parentExpression = arr[1]?.expression === '&&' ? 'and' : 'or';
+  } else if (
+    arr[0] &&
+    arr[0].expression &&
+    arr[0].expression?.innerConditions[0]?.expression
+  ) {
+    parentExpression =
+      arr[0].expression?.innerConditions[0]?.expression === '&&' ? 'and' : 'or';
+  }
   console.log("convertJSONFormatToDBFormat", arr);
   console.log("convertJSONFormatToDBFormat allSections", allSections);
+  console.log("parentExpression", parentExpression);
 
   function buildCondition(conditionObj: {
     condition: any;
@@ -364,7 +378,51 @@ const convertJSONFormatToDBFormat = (
   }
 
   // return { "and": result };
-  return { and: result };
+  return { [parentExpression]: result };
 };
 
-export { convertMinMaxDBFormatToJSON, convertJSONFormatToDBFormat };
+
+
+function findAndUpdateLastNestedIf(obj: any[], condition: any) {
+  if (!obj.length) return [condition];
+
+  let updated = false; // Flag to track if the update has been done
+
+  return obj.map((x: { if: any[]; }, index: any) => {
+      if (x?.if && !updated) {
+          const isLastIf = x.if.filter((item: { if: any; }) => item.if);
+          if (!isLastIf.length) {
+              x.if[1] = condition;
+              updated = true;
+          } else {
+              x.if = findAndUpdateLastNestedIf(x.if, condition);
+          }
+      }
+      return x;
+  });
+}
+
+function removeIfKeyAndGetDbProperty(obj: any[]){
+  const ifConditions: any[] = [];
+
+  obj.map((x: { if: any[]; }) => {
+    if (x?.if) {
+      if (!x.if.length) {
+        ifConditions.push(x.if);
+      } else {
+        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or);
+        if (filteredVal) {
+          ifConditions.push(filteredVal);
+        }
+        // Recursively call the function and merge results with ifConditions
+        ifConditions.push(...removeIfKeyAndGetDbProperty(x.if));
+      }
+    }
+  });
+
+  return ifConditions;
+}
+
+
+
+export { convertMinMaxDBFormatToJSON, convertJSONFormatToDBFormat, findAndUpdateLastNestedIf, removeIfKeyAndGetDbProperty };
