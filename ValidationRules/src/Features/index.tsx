@@ -499,7 +499,7 @@ const ParentComponent: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="validation-wrap">
       {currentPossitionDetails && (
         <div>
           <div className="nestedBtns">

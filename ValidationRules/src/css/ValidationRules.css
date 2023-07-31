@@ -7,11 +7,11 @@
     text-align: right;
   }
    
-  .control-container .custom-toggle.ant-switch-checked {
+  .validation-wrap .custom-toggle.ant-switch-checked {
     background-color: #6c7986; /* Set the background color for the checked state */
   }
   
-  .control-container .custom-toggle.ant-switch-handle {
+  .validation-wrap .custom-toggle.ant-switch-handle {
     background-color: #4e4e4f; /* Set the background color for the switch handle */
   }
   
@@ -19,7 +19,7 @@
     border: none !important;
   }
   
-  .control-container .displayText {
+  .validation-wrap .displayText {
     display: block;
     text-align: left;
     margin-bottom: 20px;
@@ -27,46 +27,46 @@
     font-size: 17px;
   }
 
-  .control-container .tableComponent {
+  .validation-wrap .tableComponent {
     border: 1px solid #E6E6E6;
     padding: 26px 28px;
   }
 
-  .control-container .subTitle {
+  .validation-wrap .subTitle {
     text-align: left;
     font-size: 14px;
     font-weight: 700;
   }
 
-  .control-container .ant-btn {
+  .validation-wrap .ant-btn {
     line-height: 15px;
   }
 
-  .control-container .text-left {
+  .validation-wrap .text-left {
     text-align: left;
   }
 
-  .control-container .mt-15 {
+  .validation-wrap .mt-15 {
     margin-top: 15px;
   }
 
-  .control-container .mb-15 {
+  .validation-wrap .mb-15 {
     margin-bottom: 15px;
   }
 
-  .control-container table {
+  .validation-wrap table {
     width: 100%;
   }
 
-  .control-container .w-100 {
+  .validation-wrap .w-100 {
     width: 100%;
   }
 
-  .control-container .actionWrap {
+  .validation-wrap .actionWrap {
     width: 33%;
   }
 
-  .control-container .checkboxLabel {
+  .validation-wrap .checkboxLabel {
     border: 0.5px solid #C1BDBD;
     margin-left: 2px;
     display: inline-block;
@@ -76,37 +76,37 @@
     width: 100%;
   }
 
-  .control-container .actionWrap .ant-checkbox-wrapper {
+  .validation-wrap .actionWrap .ant-checkbox-wrapper {
     width: 100%;
     margin-bottom: 5px;
   }
 
-  .control-container .visible-box {
+  .validation-wrap .visible-box {
     display: flex;
   }
 
-  .control-container .ant-select  {
+  .validation-wrap .ant-select  {
     width: 100% !important;
   }
 
-  .control-container .checkbox-switch-container {
+  .validation-wrap .checkbox-switch-container {
     display: flex;
     align-items: center;
     margin-left: 10px; 
   }
 
-  .control-container .mb-15.flex-wrap {
+  .validation-wrap .mb-15.flex-wrap {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
   }
 
-  .control-container .flex-wrap {
+  .validation-wrap .flex-wrap {
       display: flex;
       align-items: center;
   }
 
-  .control-container .elseText {
+  .validation-wrap .elseText {
     font-size: 14px;
     vertical-align: middle;
     margin-left: 10px;
@@ -114,44 +114,44 @@
 
   }
 
-  .control-container .minmaxText {
+  .validation-wrap .minmaxText {
     font-size: 14px;
     text-align: left;
     margin-right: 10px;
   }
 
-  .control-container th {
+  .validation-wrap th {
     color: #616161;
     font-size: 15px;
     font-weight: 500;
   }
 
-  .control-container td {
+  .validation-wrap td {
     padding: 6px 4px;
     color: #797777;
     font-size: 14px;
     font-weight: 400;
   }
 
-  .control-container .btnAddRow {
+  .validation-wrap .btnAddRow {
     border: none;
     font-size: 14px;
     color: #0958d9;
     padding: 0;
   }
 
-  .control-container .action-container {
+  .validation-wrap .action-container {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .control-container .nestedBtns {
+  .validation-wrap .nestedBtns {
     text-align: left;
     margin-bottom: 20px;
   }
 
-  .control-container .btn-default, .control-container .btn-default:hover {
+  .validation-wrap .btn-default, .validation-wrap .btn-default:hover {
     border: 0.5px solid #0958d9 !important;
     color: #0958d9 !important;
     height: 30px;
@@ -161,38 +161,38 @@
     border-radius: 2px;
   }
 
-  .control-container .mr-20 {
+  .validation-wrap .mr-20 {
     margin-right: 20px;
   }
 
-  .control-container .mr-30 {
+  .validation-wrap .mr-30 {
     margin-right: 30px;
   }
 
 
-  .control-container .flex-start {
+  .validation-wrap .flex-start {
     display: flex;
   }
 
-  .control-container .w-10 {
+  .validation-wrap .w-10 {
    width: 10%;
   }
 
-  .control-container .mr-10 {
+  .validation-wrap .mr-10 {
     margin-right: 10px;
   }
 
-  .control-container .mt-20 {
+  .validation-wrap .mt-20 {
     margin-top: 20px;
   }
 
-  .control-container .nested-wrap {
+  .validation-wrap .nested-wrap {
     border: 1px solid #dee2e6;
     padding: 10px 15px; 
     margin-bottom: 20px;
   }
 
-  .control-container .condition-label {
+  .validation-wrap .condition-label {
     font-size: 14px;
     font-weight: 500;
     color: #616161;
@@ -201,14 +201,14 @@
     margin-right: 20px;
   }
 
-  .control-container .loop {
+  .validation-wrap .loop {
     position: relative;
     background: #ffffff;
     margin-left: 35px;
     padding: 10px 0px 10px 10px;
   }
 
-  .control-container .loop:before {
+  .validation-wrap .loop:before {
     border-style: solid;
     content: "";
     left: -11px;
@@ -221,11 +221,11 @@
       
   }
 
-  .control-container .mb-15 {
+  .validation-wrap .mb-15 {
     margin-bottom: 15px;
   }
 
-  .control-container .loop:after {
+  .validation-wrap .loop:after {
     height: calc(50% + 4px);
     top: calc(50% - 50px);
     border-style: solid;
@@ -237,81 +237,81 @@
     border-color: rgb(153, 187, 255);
   }
 
-  .control-container .flex-row {
+  .validation-wrap .flex-row {
     display: flex;
     justify-content:space-between;
     align-items: center;
   }
 
-  .control-container .flex-row-start{
+  .validation-wrap .flex-row-start{
     display: flex;
     justify-content:flex-start;
     align-items: center;
   }
 
-  .control-container .w-33 {
+  .validation-wrap .w-33 {
     width: 33.49%;
   }
 
-  .control-container .action-container {
+  .validation-wrap .action-container {
     margin-top: 20px;
   }
 
-  .control-container .action-container .ant-input-number {
+  .validation-wrap .action-container .ant-input-number {
     width: 50% !important;
   }
 
-  .control-container .action-container .ant-checkbox+span {
+  .validation-wrap .action-container .ant-checkbox+span {
     width: 80% !important;
   }
 
-  .control-container .flex-col-start {
+  .validation-wrap .flex-col-start {
     display: flex;
     justify-content: center;
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .control-container .flex-row-start {
+  .validation-wrap .flex-row-start {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     flex-direction: row;
   }
 
-  .control-container .validation-text {
+  .validation-wrap .validation-text {
     font-weight: 500;
     font-size: 14px;
   }
 
-  .control-container .mb-10 {
+  .validation-wrap .mb-10 {
     margin-bottom: 10px;
   }
 
-  .control-container .mb-20 {
+  .validation-wrap .mb-20 {
     margin-bottom: 20px;
   }
 
-  .control-container .ml-20 {
+  .validation-wrap .ml-20 {
     margin-left: 20px;
   }
 
-  .control-container .collapse-wrap {
+  .validation-wrap .collapse-wrap {
     padding: 10px 10px;
     margin-bottom: 10px;
     background-color: #f2f2f2;
     position: relative;
   }
 
-  .control-container .delete-img {
+  .validation-wrap .delete-img {
     height: 17px;
   }
 
-  .control-container .text-right {
+  .validation-wrap .text-right {
     text-align: right;
   }
 
-  .control-container .btn-primary {
+  .validation-wrap .btn-primary {
     height: 30px;
     min-width: 85px;
     font-size: 14px;
@@ -323,7 +323,7 @@
     border-radius: 2px;
   }
 
-  .control-container .ant-btn-default:disabled {
+  .validation-wrap .ant-btn-default:disabled {
     cursor: not-allowed;
     border-color: #d9d9d9 !important;
     color: rgba(0, 0, 0, 0.25) !important;
@@ -331,33 +331,33 @@
     box-shadow: none;
   }
 
-  .control-container .anticon-caret-down path,   .control-container .anticon-caret-right path {
+  .validation-wrap .anticon-caret-down path,   .validation-wrap .anticon-caret-right path {
     fill: #0958d9;
   }
 
-  .control-container .ant-select-selector {
+  .validation-wrap .ant-select-selector {
     height: 30px;
     border-radius: 2px;
   }
 
-  .control-container .ant-input-number-input {
+  .validation-wrap .ant-input-number-input {
     height: 30px;
     border-radius: 2px;
   }
 
-  .control-container .ant-input-number {
+  .validation-wrap .ant-input-number {
     border-radius: 2px;
   }
 
-  .control-container .anticon {
+  .validation-wrap .anticon {
     position: absolute;
     right: 10px;
   }
 
-  .control-container .custom-width {
+  .validation-wrap .custom-width {
     width: 250px;
   }
 
-  .control-container .ant-select-selector {
+  .validation-wrap .ant-select-selector {
     min-width: 200px;
   }
