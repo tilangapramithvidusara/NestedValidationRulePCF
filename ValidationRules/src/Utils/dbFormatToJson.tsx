@@ -20,11 +20,16 @@ const convertFunc = (sampleArr: any[], level = 1) => {
 
       x[nestedLevelParents] = equalOperators.map((prnt: { [x: string]: any[]; }) => ({
         field: prnt["=="] ? prnt["=="][0].var : prnt.eq[0].var,
-        condition: Object.keys(prnt)[0],
+          condition: Object.keys(prnt)[0] === 'eq' ?
+              "==" : Object.keys(prnt)[0] === 'gt' ?
+                  '>' : Object.keys(prnt)[0] === 'gte' ?
+                      '>=' : Object.keys(prnt)[0] === 'lt' ?
+                          '<' : Object.keys(prnt)[0] === 'lte' ?
+                              '<=' : Object.keys(prnt)[0],
         value: prnt["=="] ? prnt["=="][1] : prnt.eq[1],
         sort: 1,
         level: level++,
-        expression: nestedLevelParents,
+        expression: nestedLevelParents === 'and' || nestedLevelParents === 'AND' || nestedLevelParents === '&&' ? '&&' : "||",
         innerConditions: [],
         hasNested: false,
       }));

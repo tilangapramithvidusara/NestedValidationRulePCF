@@ -263,7 +263,8 @@ const convertJSONFormatToDBFormat = (
   let result = [];
   const minMax = allSections?.actions[0]?.minMax;
   const arr = allSections.fields;
-  console.log(arr);
+  console.log("convertJSONFormatToDBFormat", arr);
+  console.log("convertJSONFormatToDBFormat allSections", allSections);
 
   function buildCondition(conditionObj: {
     condition: any;
@@ -330,8 +331,8 @@ const convertJSONFormatToDBFormat = (
   }
 
   function buildInnerConditions(innerConditions: any): any {
-    let innerResult = [];
-    for (const innerCondition of innerConditions) {
+    let innerResult : any = [];
+    for (const innerCondition of innerConditions)  {
       const condition = buildCondition(innerCondition);
       if (condition) {
         innerResult.push(condition);
@@ -343,7 +344,7 @@ const convertJSONFormatToDBFormat = (
         const nestedConditions = buildInnerConditions(
           innerCondition.innerConditions
         );
-        innerResult.push({ [innerCondition.expression]: nestedConditions });
+        innerResult.push({ [innerCondition.expression === '&&' || innerCondition.expression === 'and' || innerCondition.expression === 'AND' ? 'and' : 'or']: nestedConditions });
       }
     }
     return innerResult;
@@ -358,7 +359,7 @@ const convertJSONFormatToDBFormat = (
       const nestedConditions = buildInnerConditions(
         conditionObj.innerConditions
       );
-      result.push({ [conditionObj.expression]: nestedConditions });
+      result.push({ [conditionObj.expression === '&&' || conditionObj.expression === 'and' || conditionObj.expression === 'AND' ? 'and' : 'or']: nestedConditions });
     }
   }
 

@@ -6,7 +6,7 @@ export const dbConstants = {
             fieldName: "gyde_surveytemplatechaptersection",
         },
         question: {
-            fieldName: "gyde_surveytemplatechaptersectionquestion",
+            fieldName: "gyde_surveytemplatechaptersectionquestion", 
             gyde_minmaxvalidationrule: "gyde_minmaxvalidationrule",
             gyde_documentOutputRule: "gyde_isquestionavailableonoutputdocument"
         },

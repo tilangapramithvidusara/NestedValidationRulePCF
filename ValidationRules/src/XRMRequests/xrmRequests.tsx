@@ -11,28 +11,24 @@ declare global {
 
 export const loadAllQuestionsInSurvey = async () => {
   console.log('come');
-  
-  try {
-    console.log('come2');
-    
-    // const templateID = await window.parent.Xrm.Page.ui._formContext.getAttribute("gyde_surveytemplate").getValue()[0].id.replace("{", "").replace("}", "");
-    // console.log('template id =========> ', templateID);
-    // const result = await window.parent.Xrm.WebApi.retrieveMultipleRecords("gyde_surveytemplatechaptersectionquestion", "?$select=gyde_name,gyde_answertype,gyde_shortname&$filter= _gyde_surveytemplate_value eq " + templateID);
-    // console.log("result ===========> ", result);
+  try {    
+    const templateID = await window.parent.Xrm.Page.ui._formContext.getAttribute("gyde_surveytemplate").getValue()[0].id.replace("{", "").replace("}", "");
+    console.log('template id =========> ', templateID);
+    const result = await window.parent.Xrm.WebApi.retrieveMultipleRecords("gyde_surveytemplatechaptersectionquestion", "?$select=gyde_name,gyde_answertype,gyde_shortname&$filter= _gyde_surveytemplate_value eq " + templateID);
+    console.log("result ===========> ", result);
     console.log('result.entities=====> ', questionArraySample);
     
     return {
       error: false,
-      data: questionArraySample
-      // result?.entities?.length > 0 ? result?.entities : []
+      data: result?.entities?.length > 0 ? result?.entities : []
     }
     
   } catch (error) {
-    console.log("error ========> ", operationsSampleData);
+    // console.log("error ========> ", operationsSampleData);
     return {
       error: true,
       // data: [],
-      data: operationsSampleData
+      data: []
     }
   }
 }
@@ -148,7 +144,9 @@ export const saveValidationRules = async(validationRuleData: object) => {
     data:any
   ): Promise<any> => {
     try {
-      const result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName,id,data);
+      console.log("saving requeesttttt", entityLogicalName, id, data);
+      const result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName, id, data);
+      console.log("saving requeesttttt result", result);
       return { error: false, data: result, loading: false };
     } catch (error: any) {
       // handle error conditions

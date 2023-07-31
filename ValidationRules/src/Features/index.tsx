@@ -226,9 +226,9 @@ const ParentComponent: React.FC = () => {
     console.log("minMaxPreviousValues _result -----> ", minMaxPreviousValues);
     console.log("validationRulePreviousValues _result -----> ", validationRulePreviousValues);
 
-    if (visibilityRulePreviousValues?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {visibility: JSON.parse(visibilityRulePreviousValues)}]);
-    if(minMaxPreviousValues?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {minMax: JSON.parse(minMaxPreviousValues)}]);
-    if(validationRulePreviousValues?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {validation: JSON.parse(validationRulePreviousValues)}]);
+    if (visibilityRulePreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {visibility: JSON.parse(visibilityRulePreviousValues?.data)}]);
+    if(minMaxPreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {minMax: JSON.parse(minMaxPreviousValues?.data)}]);
+    if(validationRulePreviousValues?.data?.length) _setVisibilityRulePrev((prevData:any) => [...prevData, {validation: JSON.parse(validationRulePreviousValues?.data)}]);
   };
   useEffect(() => {
     console.log("currentId ----->", currentPossitionDetails);
@@ -249,8 +249,10 @@ const ParentComponent: React.FC = () => {
     } else if (currentPossitionDetails?.currentPosition === "chapter") {
       logicalName = dbConstants.chapter.fieldName;
     }
+    console.log("logicalName when saving", logicalName)
+    console.log("logicalName when saving currentPossitionDetails", currentPossitionDetails)
 
-    if (currentPossitionDetails?.id && (currentPossitionDetails.section === "section" || currentPossitionDetails?.currentPosition === "chapter")) {
+    if (currentPossitionDetails?.id && (currentPossitionDetails.currentPosition === "section" || currentPossitionDetails?.currentPosition === "chapter")) {
       await saveRequest(
         logicalName,
         currentPossitionDetails?.id,
@@ -304,16 +306,16 @@ const ParentComponent: React.FC = () => {
       if (sec[key]?.actions[0]?.checkBoxValues) {
         console.log("checkBoxValues when saving ----> ", sec[key]?.actions[0]?.checkBoxValues[0]);
         if (sec[key]?.actions[0]?.checkBoxValues[0]["show"]) {
-          console.log("Show");
-          visibilityRule.push(convertJSONFormatToDBFormat(sec[key], false))
+          console.log("Show saving logic", convertJSONFormatToDBFormat(sec[key], true));
+          visibilityRule.push(convertJSONFormatToDBFormat(sec[key], true))
         }
         if (sec[key]?.actions[0]?.checkBoxValues[0]["outputDoc"]) {
-          console.log("outputDoc");
+          console.log("outputDoc saving logic", convertJSONFormatToDBFormat(sec[key], true));
           outputDocShow.push(convertJSONFormatToDBFormat(sec[key], false))
         }
         if (sec[key]?.actions[0]?.checkBoxValues[0]["enable"]) {
-          console.log("enable");
-          validationRule.push(convertJSONFormatToDBFormat(sec[key], false))
+          console.log("enable saving logic", convertJSONFormatToDBFormat(sec[key], true));
+          validationRule.push(convertJSONFormatToDBFormat(sec[key], true))
         }
       }
 
@@ -365,6 +367,10 @@ const ParentComponent: React.FC = () => {
       (outputDocShow && outputDocShow.length) ||
       (validationRule && validationRule.length)
     ) {
+      console.log("DATA Saving visibilityRule", visibilityRule);
+      console.log("DATA Saving validationRule", validationRule);
+      console.log("DATA Saving outputDocShow", outputDocShow);
+      console.log("DATA Saving minMaxDBFormatArray", minMaxDBFormatArray);
       saveVisibilityData(visibilityRule, validationRule, outputDocShow, minMaxDBFormatArray);
     }
   };
