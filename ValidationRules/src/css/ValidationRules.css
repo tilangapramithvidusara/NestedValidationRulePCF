@@ -35,7 +35,8 @@
   .validation-wrap .subTitle {
     text-align: left;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 500;
+    color: #333;
   }
 
   .validation-wrap .ant-btn {
@@ -182,6 +183,10 @@
     margin-right: 10px;
   }
 
+  .validation-wrap {
+    color: #333333;
+  }
+
   .validation-wrap .mt-20 {
     margin-top: 20px;
   }
@@ -195,7 +200,7 @@
   .validation-wrap .condition-label {
     font-size: 14px;
     font-weight: 500;
-    color: #616161;
+    color: #333333;
     width: 200px;
     text-align: left;
     margin-right: 20px;
@@ -318,7 +323,7 @@
     font-weight: 500;
     background-color: #0958d9;
     border: 1px solid #0958d9;
-    color: white;
+    color: white !important;
     line-height: 15px;
     border-radius: 2px;
   }
