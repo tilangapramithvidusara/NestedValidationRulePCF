@@ -129,9 +129,9 @@ export const saveValidationRules = async(validationRuleData: object) => {
     try {
       let result = await window.parent.Xrm.WebApi.retrieveRecord(entityLogicalName, id, columnsNames);
       let _result
-      if (result?.gyde_minmaxvalidationrule?.length) _result = result[dbConstants.question.gyde_minmaxvalidationrule];
+      if (result?.gyde_validationrule?.length) _result = result[dbConstants.question.gyde_minmaxvalidationrule];
       else if(result?.gyde_visibilityrule?.length) _result = result[dbConstants.common.gyde_visibilityrule];
-      else if(result?.gyde_validationrule?.length) _result = result[dbConstants.common.gyde_validationrule];
+      // else if(result?.gyde_validationrule?.length) _result = result[dbConstants.common.gyde_validationrule];
       else if (result?.gyde_documentoutputrule?.length) _result = result[dbConstants.question.gyde_documentOutputRule];
       else _result = []
       if (_result) {

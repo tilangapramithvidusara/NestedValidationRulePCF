@@ -17,7 +17,7 @@ const convertFunc = (sampleArr: any[], level = 1) => {
       const nestedLevelParents = Object.keys(x)[0];
       const equalOperators = x[nestedLevelParents].filter((x: {}) => Object.keys(x)[0] === '==' || Object.keys(x)[0] === 'eq');
       const andOrOperators = x[nestedLevelParents].filter((x: {}) => Object.keys(x)[0] === 'and' || Object.keys(x)[0] === 'or');
-
+        console.log("")
       x[nestedLevelParents] = equalOperators.map((prnt: { [x: string]: any[]; }) => ({
         field: prnt["=="] ? prnt["=="][0].var : prnt.eq[0].var,
           condition: Object.keys(prnt)[0] === 'eq' ?
@@ -49,6 +49,7 @@ const convertFunc = (sampleArr: any[], level = 1) => {
 };
 
 const finalRes = convertFunc(sampleArr)
+console.log("DB Converted Arrayyy finalRes", JSON.stringify(finalRes, null, 2));
 
 
 
@@ -77,10 +78,27 @@ function removeAndOrKeys(obj: any): any {
       }
     }
     return obj;
+}
+    
+// This function is use If the inner condition is object make it array
+function convertNestedToArrays(conditions: string | any[]) {
+    if (!Array.isArray(conditions)) {
+      conditions = [conditions]; // Convert single condition to an array
+    }
+  
+    for (let i = 0; i < conditions.length; i++) {
+      const condition = conditions[i];
+  
+      if (condition.hasNested) {
+        condition.innerConditions = convertNestedToArrays(condition.innerConditions);
+      }
+    }
+  
+    return conditions;
   }
   
 
-const res = removeAndOrKeys(finalRes);
+const res = convertNestedToArrays(removeAndOrKeys(finalRes));
     console.log("DB Converted Arrayyy ", JSON.stringify(res, null, 2));
     return res;
 

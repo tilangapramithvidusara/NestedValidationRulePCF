@@ -364,6 +364,7 @@ const convertJSONFormatToDBFormat = (
     return innerResult;
   }
 
+
   for (const conditionObj of arr) {
     const condition = buildCondition(conditionObj);
     if (condition) {
@@ -383,7 +384,7 @@ const convertJSONFormatToDBFormat = (
 
 
 
-function findAndUpdateLastNestedIf(obj: any[], condition: any) {
+function findAndUpdateLastNestedIf(obj: any[], condition: any, overrideMinMax: boolean) {
   if (!obj.length) return [condition];
 
   let updated = false; // Flag to track if the update has been done
@@ -392,10 +393,10 @@ function findAndUpdateLastNestedIf(obj: any[], condition: any) {
       if (x?.if && !updated) {
           const isLastIf = x.if.filter((item: { if: any; }) => item.if);
           if (!isLastIf.length) {
-              x.if[1] = condition;
+              x.if[overrideMinMax ? 2 : 1] = condition;
               updated = true;
           } else {
-              x.if = findAndUpdateLastNestedIf(x.if, condition);
+              x.if = findAndUpdateLastNestedIf(x.if, condition, overrideMinMax);
           }
       }
       return x;
@@ -404,6 +405,7 @@ function findAndUpdateLastNestedIf(obj: any[], condition: any) {
 
 function removeIfKeyAndGetDbProperty(obj: any[]){
   const ifConditions: any[] = [];
+  console.log("LKKKKKKKKKxadawad xxxxxx", obj)
 
   obj.map((x: { if: any[]; }) => {
     if (x?.if) {
@@ -411,6 +413,8 @@ function removeIfKeyAndGetDbProperty(obj: any[]){
         ifConditions.push(x.if);
       } else {
         const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or);
+        console.log("LKKKKKKKKKxadawad", filteredVal)
+
         if (filteredVal) {
           ifConditions.push(filteredVal);
         }
@@ -424,5 +428,33 @@ function removeIfKeyAndGetDbProperty(obj: any[]){
 }
 
 
+function removeMinMaxIfKeyAndGetDbProperty(obj: any[]){
+  const ifConditions: any = [];
+  // console.log("LKKKKKKKKKxadawad xxxxxx", obj)
 
-export { convertMinMaxDBFormatToJSON, convertJSONFormatToDBFormat, findAndUpdateLastNestedIf, removeIfKeyAndGetDbProperty };
+  obj.map((x: any) => {
+    if (x?.if) {
+      if (!x.if.length) {
+        ifConditions.push(x.if);
+        const minMax = x?.if?.map((x: any[]) => x[0])?.filter((x: any) => x);
+        if(minMax) ifConditions.push({ifConditions: x.if, minMax });
+      } else {
+        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or);
+        if (filteredVal) {
+          const minMax = x?.if?.map((x: any[]) => x[0])?.filter((x: any) => x);
+          const _minMax = x?.if?.map((x: any[]) => x[1])?.filter((x: any) => x);
+
+          if(minMax) ifConditions.push({ifConditions: filteredVal, minMax: [...minMax, ..._minMax] });
+        
+        }
+        // Recursively call the function and merge results with ifConditions
+        ifConditions.push(...removeMinMaxIfKeyAndGetDbProperty(x.if));
+      }
+    }
+  });
+
+  return ifConditions;
+}
+
+
+export { convertMinMaxDBFormatToJSON, convertJSONFormatToDBFormat, findAndUpdateLastNestedIf, removeIfKeyAndGetDbProperty, removeMinMaxIfKeyAndGetDbProperty };

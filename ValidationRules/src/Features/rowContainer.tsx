@@ -40,6 +40,7 @@ interface TableRowProps {
   _setNestedRows: any;
   _nestedRows: any;
   questionList: any;
+  handleSectionRemove: any
 }
 
 interface Condition {
@@ -63,6 +64,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   _setNestedRows,
   _nestedRows,
   questionList,
+  handleSectionRemove
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
@@ -705,8 +707,20 @@ const RowContainer: React.FC<TableRowProps> = ({
       </div>
       <div style={{ textAlign: "left", marginBottom: "10px" }}>
         {" "}
-        { showActionOutput && ("{ " + showActionOutput + " }") }{" "}
+        {showActionOutput && ("{ " + showActionOutput + " }")}{" "}
+        <div style={{ textAlign: "right", marginLeft: "88%" }}>
+        <div className="nestedBtns">
+          <Button className="mr-10 btn-default"
+            onClick={() =>
+              handleSectionRemove(sectionLevel)} > Remove Section
+          </Button>
+        </div>
+        </div>
+        
       </div>
+     
+        
+     
       {_nestedRows && _nestedRows?.length && renderNestedConditions(
         _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
           ?.fields || []
