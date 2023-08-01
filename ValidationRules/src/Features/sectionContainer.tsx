@@ -31,6 +31,8 @@ interface SectionProps {
   _nestedRows: any;
   isNested: any;
   currentPossitionDetails: any;
+  questionList: any;
+  setValidation: any
 }
 
 function SectionContainer({
@@ -40,7 +42,9 @@ function SectionContainer({
   _setNestedRows,
   _nestedRows,
   isNested,
-  currentPossitionDetails
+  currentPossitionDetails,
+  questionList,
+  setValidation
 }: SectionProps) {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [rowData, setRowData] = useState<any>();
@@ -57,7 +61,7 @@ function SectionContainer({
   const [minValue, setMinValue] = useState<any>();
   const [maxValue, setMaxValue] = useState<any>();
   const [minMaxValue, setMinMaxValue] = useState<any>();
-  const [questionList, setQuestionList] = useState<any[]>([]);
+
   const [defaultActions, setDefaultActions] = useState<any[]>([]);
 
   // const [rows, setRows] = useState<Row[]>(_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.fields);
@@ -111,29 +115,20 @@ function SectionContainer({
     );
   };
 
-  useEffect(() => {
-    setDefaultActions([
-      {
-        label: "Show",
-        value: "show",
-      },
-      {
-        label: "Show in Document",
-        value: "OutPutDoc:Show",
-      },
-    ]);
+  // useEffect(() => {
+    // setDefaultActions([
+    //   {
+    //     label: "Show",
+    //     value: "show",
+    //   },
+    //   {
+    //     label: "Show in Document",
+    //     value: "OutPutDoc:Show",
+    //   },
+    // ]);
 
-  }, [_nestedRows]);
-  
+  // }, [_nestedRows]);
 
-
-  useEffect(() => {
-    loadQuestionHandler();
-  }, []);
-
-  useEffect(() => {
-      console.log("questionList", questionList)
-  }, [questionList])
 
   useEffect(() => {
     console.log("questionList rowsrowsrows", rows)
@@ -173,37 +168,30 @@ function SectionContainer({
       );
     }
   }, [minValue, maxValue]);
-  
 
-  const loadQuestionHandler = async () => {
-    const result = await loadAllQuestionsInSurvey();
-    console.log('resss =====> ', result);
-    
-    let questionListArray = result.data || [];
-    // Check if 'result.data' exists and has 'entities' property
-    if (questionListArray && questionListArray.length) {
-        const formattedQuestionList = questionListArray.map((quesNme:any) => {
-            return { label: quesNme.gyde_name, value: quesNme.gyde_name, questionType: quesNme.questionType}
-        })
-        formattedQuestionList && formattedQuestionList.length && setQuestionList(formattedQuestionList);
-    } else {
-      // Handle the case when 'entities' property is not present
-      setQuestionList([]);
-    }
-  };
+  // useEffect(() => {
+  //     setValidation((prevValidation: any) => ({
+  //       ...prevValidation,
+  //       ["minMaxValidation"]:
+  //         minMaxValue?.maxValue && minMaxValue?.minValue ||
+  //         (typeof minMaxValue?.maxValue !== 'string' && typeof minMaxValue?.minValue !== 'string' && minMaxValue?.maxValue >= minMaxValue?.minValue)
+  //     }));
+
+  // }, [minMaxValue])
+
 
   const handleSectionRemove = () => {
-    _setNestedRows((prevNestedRows: any) =>
+    if(_nestedRows?.length >= 2) _setNestedRows((prevNestedRows: any) =>
          prevNestedRows.filter((key: any) => parseInt(Object.keys(key)[0]) !== sectionLevel)
       );
   }
+
   useEffect(() => {
-    console.log("DEFAULt ACTS", defaultActions);
-    // setMinCheckboxEnabled(defaultActions[0]?.minMax?.minValue ? true : false);
-    // setMaxCheckboxEnabled(defaultActions[0]?.minMax?.maxValue ? true : false);
-    // setToggledEnableMin(defaultActions[0]?.minMax?.minValue ? true : false);
-    // setToggledEnableMax(defaultActions[0]?.minMax?.maxValue ? true : false);
-  }, [defaultActions]);
+    setMinCheckboxEnabled(_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue || false);
+    setToggledEnableMin(typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue !== 'string')
+    setMaxCheckboxEnabled(_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || false);
+    setToggledEnableMax(typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue !== 'string')
+  }, []);
 
   return (
     <div>
@@ -228,11 +216,11 @@ function SectionContainer({
           <div className="subTitle w-10">Actions</div>
           <div className="flex-row">
             <CheckBox
-  checkboxDefaultSelectedValues={
-    _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.checkBoxValues
-      ?.map((obj: any) => ({ value: obj[Object.keys(obj)[0]]?.value }))
-      ?.map((x: any) => x?.value) || []
-  }              checkboxValuesFromConfig={[
+                checkboxDefaultSelectedValues={
+                  _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.checkBoxValues
+                    ?.map((obj: any) => ({ value: obj[Object.keys(obj)[0]]?.value }))
+                    ?.map((x: any) => x?.value) || []
+                }checkboxValuesFromConfig={[
                 {
                   label: "Show",
                   value: "show",

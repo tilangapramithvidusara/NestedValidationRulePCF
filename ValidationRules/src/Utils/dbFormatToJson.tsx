@@ -5,7 +5,7 @@
 
 const normalConverter = (sampleArr: any) => {
     
-const finalResultArray: never[] = []
+let finalResultArray: any = []
 
 const convertFunc = (sampleArr: any[], level = 1) => {
   const normalParents = sampleArr.filter((x: {}) => Object.keys(x)[0] === 'eq' || Object.keys(x)[0] === '==');
@@ -44,14 +44,11 @@ const convertFunc = (sampleArr: any[], level = 1) => {
     });
     return nestedParents;
   }
-
   return finalResultArray;
 };
-
 const finalRes = convertFunc(sampleArr)
+
 console.log("DB Converted Arrayyy finalRes", JSON.stringify(finalRes, null, 2));
-
-
 
 function removeAndOrKeys(obj: any): any {
     if (Array.isArray(obj)) {
@@ -98,7 +95,12 @@ function convertNestedToArrays(conditions: string | any[]) {
   }
   
 
-const res = convertNestedToArrays(removeAndOrKeys(finalRes));
+    const res = convertNestedToArrays(removeAndOrKeys(finalRes));
+    if (res && res[0] && res[0]?.expression) {
+        res[0].expression = ""
+    }
+
+
     console.log("DB Converted Arrayyy ", JSON.stringify(res, null, 2));
     return res;
 
