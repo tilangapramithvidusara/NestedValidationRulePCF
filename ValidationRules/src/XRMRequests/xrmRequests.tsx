@@ -28,7 +28,7 @@ export const loadAllQuestionsInSurvey = async () => {
     return {
       error: true,
       // data: [],
-      data: []
+      data: questionArraySample
     }
   }
 }
@@ -194,3 +194,24 @@ export const getCurrentId = async (
     return { error: true, data: {} };
   }
 };
+
+
+export const getListAnswersByQuestionId = async (questionGuid: any): Promise<any> => {
+  try {
+    let listAnswers = await window.parent.Xrm.WebApi.retrieveMultipleRecords("gyde_surveytemplatequestionanswer", "?$filter=_gyde_relatedquestion_value eq " + questionGuid)
+    console.log("listAnswers", listAnswers)
+    
+        for (var i = 0; i < listAnswers.entities.length; i++) {
+          var result = listAnswers.entities[i];
+          // Columns
+          var gyde_surveytemplatequestionanswerid = result["gyde_surveytemplatequestionanswerid"];
+        }
+    return {
+      error: false, data: listAnswers
+    };
+  } catch (e) {
+    console.log("GetQuestion error", e);
+    return { error: true, data: {} };
+  }
+
+}

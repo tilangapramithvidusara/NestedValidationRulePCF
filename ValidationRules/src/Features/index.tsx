@@ -49,6 +49,7 @@ const ParentComponent: React.FC = () => {
   const [isApiDataLoaded, setIsApiDataLoaded] = useState<boolean>(false);
   const [api, contextHolder]: any = notification.useNotification();
   const [questionList, setQuestionList] = useState<any[]>([]);
+  const [deleteSectionKey, setDeleteSectionKey] = useState<any>();
   const [validation, setValidation] = useState<any>({
     minMaxValidation: true,
     andOrValidation: true,
@@ -89,7 +90,7 @@ const ParentComponent: React.FC = () => {
     let questionListArray = result.data || [];
     if (questionListArray && questionListArray.length) {
         const formattedQuestionList = questionListArray.map((quesNme:any) => {
-            return { label: quesNme.gyde_name, value: quesNme.gyde_name, questionType: quesNme.questionType}
+            return { label: quesNme.gyde_name, value: quesNme.gyde_name, questionType: quesNme["gyde_answertype@OData.Community.Display.V1.FormattedValue"], questionId: quesNme?.gyde_surveytemplatechaptersectionquestionid}
         })
         formattedQuestionList && formattedQuestionList.length && setQuestionList(formattedQuestionList);
     } else {
@@ -102,13 +103,18 @@ const ParentComponent: React.FC = () => {
   }, [sections]);
 
   useEffect(() => {
+    console.log("questionList", questionList);
+  }, [questionList]);
+
+  useEffect(() => {
     console.log("SECCCC _nestedRows", _nestedRows);
     setSections(
       _nestedRows
-        .map((item: {}) => Object.keys(item))
-        .flat()
-        .map((key: any) => ({ key: parseInt(key) }))
+        ?.map((item: {}) => Object.keys(item))
+        ?.flat()
+        ?.map((key: any) => ({ key: parseInt(key) }))
     );
+    if(!_nestedRows?.length) setIsApiDataLoaded(true);
   }, [_nestedRows]);
 
   // for retrieve purpose
@@ -120,6 +126,7 @@ const ParentComponent: React.FC = () => {
         .map((key: any) => ({ key: parseInt(key) }))
     );
     _getCurrentState();
+    
   }, []);
 
   useEffect(() => {
@@ -127,6 +134,7 @@ const ParentComponent: React.FC = () => {
   }, [validation]);
 
   useEffect(() => {
+
     if (_visibilityRulePrev?.length) {
       let key = 30;
       _visibilityRulePrev.forEach((dbData) => {
@@ -194,10 +202,12 @@ const ParentComponent: React.FC = () => {
         });
       });
     }
+    setIsApiDataLoaded(true);
   }, [_visibilityRulePrev]);
 
   useEffect(() => {
     if (_documentOutputRulePrev?.length) {
+
       let key = 1;
       _documentOutputRulePrev.forEach((dbData) => {
         console.log("LOADINGGG", dbData);
@@ -247,6 +257,7 @@ const ParentComponent: React.FC = () => {
           }
         });
       });
+      setIsApiDataLoaded(true);
     }
   }, [_documentOutputRulePrev]);
 
@@ -313,24 +324,29 @@ const ParentComponent: React.FC = () => {
               const maximumLength = fieldDta?.minMax?.find(
                 (x: { type: string }) => x?.type === "MAXIMUM_LENGTH"
               );
-              console.log("refactorDta Min Maxxx", minimumLength);
+              
+              if ((minimumLength?.value && maximumLength?.value) || (minimumLength?.value?.var?.minValue && maximumLength?.value?.var?.maxValue)) {
+                console.log("minimumLength Min ", minimumLength);
+                console.log("maximumLength Max ", maximumLength);
 
-              minMaxOutputDataArray.push({
-                [key++]: {
-                  actions: [
-                    {
-                      minMax: {
-                        logicalName: "minMax",
-                        minValue:
-                          minimumLength?.value ? minimumLength.value : minimumLength.value.var.minValue,
-                        maxValue:
-                          maximumLength?.value ? maximumLength.value : maximumLength.value.var.minValue,
+                minMaxOutputDataArray.push({
+                  [key++]: {
+                    actions: [
+                      {
+                        minMax: {
+                          logicalName: "minMax",
+                          minValue:
+                            minimumLength?.value?.var ? minimumLength?.value?.var : minimumLength.value,
+                          maxValue:
+                          maximumLength?.value?.var? maximumLength?.value?.var : maximumLength.value,
+                        },
                       },
-                    },
-                  ],
-                  fields: normalConverter([fieldDta?.ifConditions]),
-                },
-              });
+                    ],
+                    fields: normalConverter([fieldDta?.ifConditions]),
+                  },
+                });
+                }
+            
             });
             console.log(
               "Validation DB Dataaa showUpdatedDataArray ",
@@ -350,6 +366,7 @@ const ParentComponent: React.FC = () => {
           }
         });
       });
+      setIsApiDataLoaded(true);
     }
   }, [_minMaxRulePrev]);
 
@@ -452,7 +469,7 @@ const ParentComponent: React.FC = () => {
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_002"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_002"},7]}]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":{"var":"26862_C1_S1_002"},"inclusive":true}]]}]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, {docRuleOutput: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
-    setIsApiDataLoaded(true);
+   
     
   };
   useEffect(() => {
@@ -460,6 +477,18 @@ const ParentComponent: React.FC = () => {
     getRequestedData();
     loadQuestionHandler();
   }, [currentPossitionDetails]);
+
+  useEffect(() => {
+    console.log("deleteSectionKey", deleteSectionKey)
+    if(deleteSectionKey) 
+    if (deleteSectionKey && _nestedRows?.length >= 2) {
+      _setNestedRows((prevNestedRows: any) =>
+         prevNestedRows.filter((key: any) => parseInt(Object.keys(key)[0]) !== deleteSectionKey)
+      );
+      setSections((prev: any) => prev.filter((prevKeys: any) => prevKeys.key !== deleteSectionKey))
+    }
+  }, [deleteSectionKey]);
+
 
   const _getCurrentState = async () => {
     const result = await getCurrentState();
@@ -699,6 +728,7 @@ const ParentComponent: React.FC = () => {
                       currentPossitionDetails={currentPossitionDetails}
                       questionList={questionList}
                       setValidation={setValidation}
+                      setDeleteSectionKey={setDeleteSectionKey}
                     />
                   </div>
                 ))}

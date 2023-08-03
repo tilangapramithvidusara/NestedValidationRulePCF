@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import DropDown from "../Components/commonComponents/DropDown";
 import FieldInput from "../Components/commonComponents/FieldInput";
-import { Button } from "antd";
+import { Button, Input } from "antd";
 import { expressionSampleData } from "../SampleData/expressionSampleData";
 import { operationalSampleData } from "../SampleData/operationalSampleData";
 import { sampleInputQuestion } from "../SampleData/sampleInputQuestion";
 import NumberInputField from "../Components/commonComponents/NumberInputField";
+import FieldStringInputProps from "../Components/commonComponents/StringInput";
 // import deleteImg from "../assets/delete.png";
 
 import {
@@ -25,6 +26,8 @@ import {
   DownOutlined,
   RightOutlined,
 } from "@ant-design/icons";
+import { getListAnswersByQuestionId } from "../XRMRequests/xrmRequests";
+import ListDropDown from "../Components/commonComponents/ListDropDown";
 interface NestedRowProps {
   children: React.ReactNode;
 }
@@ -40,7 +43,7 @@ interface TableRowProps {
   _setNestedRows: any;
   _nestedRows: any;
   questionList: any;
-  handleSectionRemove: any
+  handleSectionRemove: any;
 }
 
 interface Condition {
@@ -64,13 +67,21 @@ const RowContainer: React.FC<TableRowProps> = ({
   _setNestedRows,
   _nestedRows,
   questionList,
-  handleSectionRemove
+  handleSectionRemove,
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
   const [fieldValue, setFieldValue] = useState<any>();
   const [showActionOutput, setShowActionOutput] = useState<any>();
   const [questionType, setQuestionType] = useState<any>();
+
+  const [numericField, setNumericField] = useState<any>();
+  const [listField, setListField] = useState<any>();
+  const [stringField, setStringField] = useState<any>();
+  const [dateAndTimeField, setDateAndTimeField] = useState<any>();
+  const [answersDropDownData, setAnswersDropDownData] = useState<any[]>([]);
+  const [selectedFieldData, setSelectedFieldData] = useState<any>();
+
   const findConditionByLevel = (
     level: any,
     conditions: any
@@ -196,7 +207,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                 {
                   fieldName: fieldValue?.fieldName,
                   fieldValue: fieldValue.input,
-                  questionType: fieldValue?.questionType
+                  questionType: fieldValue?.questionType,
                 }
               ),
               actions:
@@ -211,6 +222,13 @@ const RowContainer: React.FC<TableRowProps> = ({
     }
     // );
   }, [fieldValue]);
+
+  useEffect(() => {
+    if (fieldValue?.fieldName === "field") {
+      const resss: any = fetchFieldData(fieldValue?.input);
+      console.log("RESSSS resssresss 1", resss)
+    }
+  }, [fieldValue])
 
   const addConditionToData = (
     data: any[],
@@ -247,7 +265,10 @@ const RowContainer: React.FC<TableRowProps> = ({
         releatedFields,
         level
       );
-      console.log("Clicked Level normal nearestIdParentObject", nearestIdParentObject);
+      console.log(
+        "Clicked Level normal nearestIdParentObject",
+        nearestIdParentObject
+      );
 
       let higestLevel;
       if (nearestIdParentObject?.innerConditions?.length)
@@ -288,20 +309,11 @@ const RowContainer: React.FC<TableRowProps> = ({
           _setNestedRows((prevData: any) => {
             const newData = [...prevData];
             const newFields = [...releatedFields, newRow];
-            console.log(
-              "prevData---->",
-              prevData
-            );
+            console.log("prevData---->", prevData);
 
-            console.log(
-              "newData---->",
-              newData
-            );
+            console.log("newData---->", newData);
 
-            console.log(
-              "newFields---->",
-              newFields
-            );
+            console.log("newFields---->", newFields);
 
             newData[existingLevel1Index] = {
               [sectionLevel]: {
@@ -466,6 +478,29 @@ const RowContainer: React.FC<TableRowProps> = ({
     });
   };
 
+  const fetchFieldData = async (questionId: any) => {
+    try {
+      // Make a request to the backend to fetch the data
+      const questionDetails = questionList.find((x: any) => x.value === questionId)
+      console.log("questionDetails", questionDetails)
+
+      const response = await getListAnswersByQuestionId(questionDetails?.questionId);
+      let dropDownData = []
+      if (response?.data?.entities) {
+        dropDownData = response?.data.entities.map((x: any) => {
+          return {
+            label: x.gyde_answervalue,
+            value: x.gyde_answervalue,
+          }
+        })
+      }
+      if(dropDownData && dropDownData?.length) setAnswersDropDownData(dropDownData)
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      // setSelectedFieldData([]); // Reset the data to an empty array in case of an error
+    }
+  }
+
   useEffect(() => {
     console.log("DDDDDggggg", collapse);
     if (collapse.fieldId !== 0) {
@@ -486,34 +521,11 @@ const RowContainer: React.FC<TableRowProps> = ({
     }
   };
 
-
   const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
     console.log("conditions----->", conditions);
     if (conditions && conditions?.length) {
       return conditions.map((condition: any) => (
         <div key={condition.level}>
-          {/* <div style={{ display: "flex", marginBottom: "2%" }}>
-          {
-            !collapse.state ? <CaretDownOutlined
-              style={{color:"#0093FE"}}
-            onClick={() =>
-              setCollapse({
-                state: true,
-                fieldId: condition?.level,
-              })
-            }
-            /> : <CaretRightOutlined
-            style={{color:"#0093FE"}}
-            onClick={() =>
-              setCollapse({
-                state: false,
-                fieldId: condition?.level,
-              })
-            }
-              />
-          }
-        </div> */}
-
           {!condition?.collapse ? (
             <div className="collapse-wrap">
               <div className="flex-col-start">
@@ -534,7 +546,9 @@ const RowContainer: React.FC<TableRowProps> = ({
                 <div className="flex-row-start mb-15">
                   <Button
                     className="mr-10 btn-default"
-                    onClick={() => _handleAddRow(condition?.level, false, "AND")}
+                    onClick={() =>
+                      _handleAddRow(condition?.level, false, "AND")
+                    }
                   >
                     + Add
                   </Button>
@@ -601,39 +615,62 @@ const RowContainer: React.FC<TableRowProps> = ({
                     />
                   </div>
                   <div className="condition-label">
-                    {
-                      questionList.find((x: { value: string; }) => x.value === condition?.field)?.questionType === "numeric" ?
-                        <NumberInputField
-                          selectedValue={condition?.value}
-                          handleNumberChange={{}}
-                          defaultDisabled={false}
-                          setInputNumber={setFieldValue}
-                          changedId={condition?.level}
-                          fieldName={"value"}
-                        /> : questionList.find((x: { value: string; }) => x.value === condition?.field)?.questionType === "text" ?
-                          <FieldInput
-                            sampleData={
-                              questionList && questionList.length
-                                ? questionList
-                                : sampleInputQuestion
-                            }
-                            selectedValue={condition?.field}
-                            overrideSearch={false}
-                            setFieldValue={setFieldValue}
-                            changedId={condition?.level}
-                            fieldName={"value"}
-                          /> :
-                          <NumberInputField
-                            selectedValue={condition?.value}
-                            handleNumberChange={{}}
-                            defaultDisabled={false}
-                            setInputNumber={setFieldValue}
-                            changedId={condition?.level}
-                            fieldName={"value"}
-                        />
-                    }
+                    {questionList.find(
+                      (x: { value: string }) => x.value === condition?.field
+                    )?.questionType === "Numeric" ? (
+                      <NumberInputField
+                        selectedValue={condition?.value}
+                        handleNumberChange={{}}
+                        defaultDisabled={false}
+                        setInputNumber={setFieldValue}
+                        changedId={condition?.level}
+                        fieldName={"value"}
+                      />
+                    ) : questionList.find(
+                        (x: { value: string }) => x.value === condition?.field
+                      )?.questionType === "String" ? (
+                      <FieldStringInputProps
+                        sampleData={
+                          questionList && questionList.length
+                            ? questionList
+                            : sampleInputQuestion
+                        }
+                        selectedValue={condition?.value}
+                        overrideSearch={false}
+                        setFieldValue={setFieldValue}
+                        changedId={condition?.level}
+                        fieldName={"value"}
+                      />
+                    ) : questionList.find(
+                        (x: { value: string }) => x.value === condition?.field
+                      )?.questionType === "List" ? (
+                      <ListDropDown
+                        dropDownData={{}}
+                        isDisabled={false}
+                        setFieldValue={setFieldValue}
+                        changedId={condition?.level}
+                        fieldName={"value"}
+                        selectedValue={condition?.value}
+                        listDropDownData={answersDropDownData}
+                        // getDropDownData={getDropDownData(condition?.field)} // Pass the getDropDownData function as a prop
+                        // answerCallback={getDropDownData(condition?.field)} 
+                      />
+                    ) : (
+                      <FieldStringInputProps
+                        sampleData={
+                          questionList && questionList.length
+                            ? questionList
+                            : sampleInputQuestion
+                        }
+                        selectedValue={condition?.value}
+                        overrideSearch={false}
+                        setFieldValue={setFieldValue}
+                        changedId={condition?.level}
+                        fieldName={"value"}
+                      />
+                    )}
                   </div>
-                  
+
                   <div className="condition-label">
                     <Button
                       className="btn-default"
@@ -650,18 +687,18 @@ const RowContainer: React.FC<TableRowProps> = ({
             </div>
           ) : (
             <div className="flex-row-start mb-10 collapse-wrap custom-width">
-                {!condition.state && (
-                  <div>
-                <CaretRightOutlined
-                  style={{ color: "#0093FE" }}
-                  onClick={() =>
-                    setCollapse({
-                      state: false,
-                      fieldId: condition?.level,
-                    })
-                  }
-                    />
-                    <div className="condition-label">
+              {!condition.state && (
+                <div>
+                  <CaretRightOutlined
+                    style={{ color: "#0093FE" }}
+                    onClick={() =>
+                      setCollapse({
+                        state: false,
+                        fieldId: condition?.level,
+                      })
+                    }
+                  />
+                  <div className="condition-label">
                     <DropDown
                       dropDownData={expressionSampleData}
                       isDisabled={condition?.level === 1 ? true : false}
@@ -671,7 +708,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       selectedValue={condition?.expression}
                     />{" "}
                   </div>
-                  </div>
+                </div>
               )}
               <div className="validation-text"></div>
             </div>
@@ -698,37 +735,39 @@ const RowContainer: React.FC<TableRowProps> = ({
     <div>
       <div style={{ textAlign: "left" }}>
         {" "}
-        {
-          _nestedRows && _nestedRows?.length && "if(" + generateOutputString(
-            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-              ?.fields || []
-          ) + ")" 
-          }{" "}
+        {_nestedRows &&
+          _nestedRows?.length &&
+          "if(" +
+            generateOutputString(
+              _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
+                ?.fields || []
+            ) +
+            ")"}{" "}
       </div>
       <div style={{ textAlign: "left", marginBottom: "10px" }}>
         {" "}
-        {showActionOutput && ("{ " + showActionOutput + " }")}{" "}
+        {showActionOutput && "{ " + showActionOutput + " }"}{" "}
         <div style={{ textAlign: "right", marginLeft: "88%" }}>
-        <div className="nestedBtns">
-          <Button className="mr-10 btn-default"
-            onClick={() =>
-              handleSectionRemove(sectionLevel)} > Remove Section
-          </Button>
+          <div className="nestedBtns">
+            <Button
+              className="mr-10 btn-default"
+              onClick={() => handleSectionRemove(sectionLevel)}
+            >
+              {" "}
+              Remove Section
+            </Button>
+          </div>
         </div>
-        </div>
-        
       </div>
-     
-        
-     
-      {_nestedRows && _nestedRows?.length && renderNestedConditions(
-        _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-          ?.fields || []
-      )}
+
+      {_nestedRows &&
+        _nestedRows?.length &&
+        renderNestedConditions(
+          _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
+            ?.fields || []
+        )}
     </div>
   );
 };
 
 export default RowContainer;
-
-

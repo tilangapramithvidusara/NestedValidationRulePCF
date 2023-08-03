@@ -204,13 +204,35 @@ function convertMinMaxDBFormatToJSON(obj: { and: any }, level = 1) {
       if (keys.length === 1) {
         const expression = keys[0];
 
-        if (
-          expression === "eq" &&
-          condition.eq.length === 2 &&
-          typeof condition.eq[0].var === "string"
-        ) {
-          const field = condition.eq[0].var;
-          const value = condition.eq[1];
+        if ((expression === "eq" || expression === "lt" || expression === "lte" || expression === "gte" || expression === "gt") &&
+          (condition["eq"]?.length === 2 || condition["lt"]?.length === 2 || condition["lte"]?.length === 2 || condition["gt"]?.length === 2 || condition["gte"]?.length === 2) &&
+          (typeof condition["eq"][0].var === "string" || typeof condition["lt"][0].var === "string" || typeof condition["lte"][0].var === "string" || typeof condition["gt"][0].var === "string" || typeof condition["gte"][0].var === "string" ))
+        {
+          let field 
+          let value;
+          if (condition["eq"][0].var && condition["eq"][1]) {
+            field = condition["eq"][0].var
+            value = condition["eq"][1];
+          }
+          else if (condition["lt"][0].var && condition["lt"][1]) {
+            field = condition["lt"][0].var
+            value = condition["lt"][1];
+          }
+          else if (condition["lte"][0].var && condition["lte"][1]) {
+            field = condition["lte"][0].var
+            value = condition["lte"][1];
+          }
+          else if (condition["gt"][0].var && condition["gt"][1]) {
+            field = condition["gt"][0].var
+            value = condition["gt"][1];
+          }
+          else if (condition["gte"][0].var && condition["gte"][1]) {
+            field = condition["gte"][0].var
+            value = condition["gte"][1];
+          }
+
+          // const field = condition.eq[0].var;
+          // const value = condition.eq[1];
 
           const innerConditions = condition[expression]
             ? convertMinMaxDBFormatToJSON(
