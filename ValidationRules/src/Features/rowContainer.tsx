@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DropDown from "../Components/commonComponents/DropDown";
 import FieldInput from "../Components/commonComponents/FieldInput";
-import { Button, Input } from "antd";
+import { Button, Input, Space, Spin } from "antd";
 import { expressionSampleData } from "../SampleData/expressionSampleData";
 import { operationalSampleData } from "../SampleData/operationalSampleData";
 import { sampleInputQuestion } from "../SampleData/sampleInputQuestion";
@@ -74,13 +74,9 @@ const RowContainer: React.FC<TableRowProps> = ({
   const [fieldValue, setFieldValue] = useState<any>();
   const [showActionOutput, setShowActionOutput] = useState<any>();
   const [questionType, setQuestionType] = useState<any>();
+  const [isLoad, setIsLoad] = useState<boolean>(false);
 
-  const [numericField, setNumericField] = useState<any>();
-  const [listField, setListField] = useState<any>();
-  const [stringField, setStringField] = useState<any>();
-  const [dateAndTimeField, setDateAndTimeField] = useState<any>();
   const [answersDropDownData, setAnswersDropDownData] = useState<any[]>([]);
-  const [selectedFieldData, setSelectedFieldData] = useState<any>();
 
   const findConditionByLevel = (
     level: any,
@@ -101,16 +97,6 @@ const RowContainer: React.FC<TableRowProps> = ({
     }
     return null;
   };
-
-  // This function is used to if the object has innerCondition at least one obj hasNested need to true
-  // const updateHasNested = (data: Condition[]) => {
-  //   data?.forEach((condition) => {
-  //     if (condition?.innerConditions?.length > 0) {
-  //       condition.hasNested = true;
-  //     }
-  //     updateHasNested(condition?.innerConditions);
-  //   });
-  // };
 
   const idGenerator = (
     parentLevel: number,
@@ -185,40 +171,42 @@ const RowContainer: React.FC<TableRowProps> = ({
     }
   };
 
-  useEffect(() => {
-    console.log("fieldValuefieldValuefieldValue", fieldValue);
-    if (fieldValue) {
-      const existingLevel1Index = _nestedRows.findIndex(
-        (item: any) => sectionLevel in item
-      );
-      const currentActions = _nestedRows.map(
-        (prevData: any, index: number) => prevData[sectionLevel]?.actions
-      );
+  const fieldValueSetToNestedRows = (fieldValue: any) => {
+    const existingLevel1Index = _nestedRows.findIndex(
+      (item: any) => sectionLevel in item
+    );
+    const currentActions = _nestedRows.map(
+      (prevData: any, index: number) => prevData[sectionLevel]?.actions
+    );
 
-      if (existingLevel1Index !== -1) {
-        _setNestedRows((prevData: any) => {
-          const newData = [...prevData];
-          console.log("LLLLLLLL", newData);
-          newData[existingLevel1Index] = {
-            [sectionLevel]: {
-              fields: updateFieldByLevel(
-                newData.find((x) => x[sectionLevel])[sectionLevel].fields,
-                fieldValue?.changedId,
-                {
-                  fieldName: fieldValue?.fieldName,
-                  fieldValue: fieldValue.input,
-                  questionType: fieldValue?.questionType,
-                }
-              ),
-              actions:
-                _nestedRows?.find((x: { [x: string]: any }) => x[sectionLevel])[
-                  sectionLevel
-                ]?.actions || [],
-            },
-          };
-          return newData;
-        });
-      }
+    if (existingLevel1Index !== -1) {
+      _setNestedRows((prevData: any) => {
+        const newData = [...prevData];
+        newData[existingLevel1Index] = {
+          [sectionLevel]: {
+            fields: updateFieldByLevel(
+              newData.find((x) => x[sectionLevel])[sectionLevel].fields,
+              fieldValue?.changedId,
+              {
+                fieldName: fieldValue?.fieldName,
+                fieldValue: fieldValue.input,
+                questionType: fieldValue?.questionType,
+              }
+            ),
+            actions:
+              _nestedRows?.find((x: { [x: string]: any }) => x[sectionLevel])[
+                sectionLevel
+              ]?.actions || [],
+          },
+        };
+        return newData;
+      });
+    }
+  }
+  useEffect(() => {
+    console.log("fieldValue", fieldValue);
+    if (fieldValue) {
+      fieldValueSetToNestedRows(fieldValue)
     }
     // );
   }, [fieldValue]);
@@ -226,9 +214,14 @@ const RowContainer: React.FC<TableRowProps> = ({
   useEffect(() => {
     if (fieldValue?.fieldName === "field") {
       const resss: any = fetchFieldData(fieldValue?.input);
-      console.log("RESSSS resssresss 1", resss)
+
+      // When the field value get change need to empty value field
+      let _fieldValue : any = fieldValue;
+      _fieldValue.input = " "
+      _fieldValue.fieldName = 'value'
+      fieldValueSetToNestedRows(_fieldValue)
     }
-  }, [fieldValue])
+  }, [fieldValue]);
 
   const addConditionToData = (
     data: any[],
@@ -481,28 +474,36 @@ const RowContainer: React.FC<TableRowProps> = ({
   const fetchFieldData = async (questionId: any) => {
     try {
       // Make a request to the backend to fetch the data
-      const questionDetails = questionList.find((x: any) => x.value === questionId)
-      console.log("questionDetails", questionDetails)
+      setIsLoad(true);
+      const questionDetails = questionList.find(
+        (x: any) => x.value === questionId
+      );
+      console.log("questionDetails", questionDetails);
 
-      const response = await getListAnswersByQuestionId(questionDetails?.questionId);
-      let dropDownData = []
+      const response = await getListAnswersByQuestionId(
+        questionDetails?.questionId
+      );
+      let dropDownData = [];
       if (response?.data?.entities) {
         dropDownData = response?.data.entities.map((x: any) => {
           return {
             label: x.gyde_answervalue,
             value: x.gyde_answervalue,
-          }
-        })
+          };
+        });
       }
-      if(dropDownData && dropDownData?.length) setAnswersDropDownData(dropDownData)
+      if (dropDownData && dropDownData?.length) {
+        setAnswersDropDownData(dropDownData);
+        
+      }
+      setIsLoad(false);
     } catch (error) {
       console.error("Error fetching data:", error);
       // setSelectedFieldData([]); // Reset the data to an empty array in case of an error
     }
-  }
+  };
 
   useEffect(() => {
-    console.log("DDDDDggggg", collapse);
     if (collapse.fieldId !== 0) {
       collapseHandle(collapse.fieldId, collapse.state);
     }
@@ -523,6 +524,7 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
     console.log("conditions----->", conditions);
+
     if (conditions && conditions?.length) {
       return conditions.map((condition: any) => (
         <div key={condition.level}>
@@ -653,7 +655,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                         selectedValue={condition?.value}
                         listDropDownData={answersDropDownData}
                         // getDropDownData={getDropDownData(condition?.field)} // Pass the getDropDownData function as a prop
-                        // answerCallback={getDropDownData(condition?.field)} 
+                        // answerCallback={getDropDownData(condition?.field)}
                       />
                     ) : (
                       <FieldStringInputProps
@@ -731,41 +733,55 @@ const RowContainer: React.FC<TableRowProps> = ({
     // }
     // }
   };
+  useEffect(() => {
+    console.log("isApiDataLoaded isLoad", isLoad)
+  }, [isLoad])
   return (
     <div>
-      <div style={{ textAlign: "left" }}>
-        {" "}
-        {_nestedRows &&
-          _nestedRows?.length &&
-          "if(" +
-            generateOutputString(
+      {!isLoad ? (
+        <div>
+          <div style={{ textAlign: "left" }}>
+            {" "}
+            {_nestedRows &&
+              _nestedRows?.length &&
+              "if(" +
+                generateOutputString(
+                  _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
+                    sectionLevel
+                  ]?.fields || []
+                ) +
+                ")"}{" "}
+          </div>
+          <div style={{ textAlign: "left", marginBottom: "10px" }}>
+            {" "}
+            {showActionOutput && "{ " + showActionOutput + " }"}{" "}
+            <div style={{ textAlign: "right", marginLeft: "88%" }}>
+              <div className="nestedBtns">
+                <Button
+                  className="mr-10 btn-default"
+                  onClick={() => handleSectionRemove(sectionLevel)}
+                >
+                  {" "}
+                  Remove Section
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {_nestedRows &&
+            _nestedRows?.length &&
+            renderNestedConditions(
               _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
                 ?.fields || []
-            ) +
-            ")"}{" "}
-      </div>
-      <div style={{ textAlign: "left", marginBottom: "10px" }}>
-        {" "}
-        {showActionOutput && "{ " + showActionOutput + " }"}{" "}
-        <div style={{ textAlign: "right", marginLeft: "88%" }}>
-          <div className="nestedBtns">
-            <Button
-              className="mr-10 btn-default"
-              onClick={() => handleSectionRemove(sectionLevel)}
-            >
-              {" "}
-              Remove Section
-            </Button>
-          </div>
+            )}
         </div>
-      </div>
-
-      {_nestedRows &&
-        _nestedRows?.length &&
-        renderNestedConditions(
-          _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-            ?.fields || []
-        )}
+      ) : (
+        <div>
+          <Space size="middle">
+            <Spin />
+          </Space>
+        </div>
+      )}
     </div>
   );
 };

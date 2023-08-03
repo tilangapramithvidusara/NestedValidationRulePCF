@@ -84,6 +84,7 @@ const ParentComponent: React.FC = () => {
   };
 
   const loadQuestionHandler = async () => {
+    setIsApiDataLoaded(true);
     const result = await loadAllQuestionsInSurvey();
     console.log('resss =====> ', result);
     
@@ -92,7 +93,8 @@ const ParentComponent: React.FC = () => {
         const formattedQuestionList = questionListArray.map((quesNme:any) => {
             return { label: quesNme.gyde_name, value: quesNme.gyde_name, questionType: quesNme["gyde_answertype@OData.Community.Display.V1.FormattedValue"], questionId: quesNme?.gyde_surveytemplatechaptersectionquestionid}
         })
-        formattedQuestionList && formattedQuestionList.length && setQuestionList(formattedQuestionList);
+      formattedQuestionList && formattedQuestionList.length && setQuestionList(formattedQuestionList);
+      setIsApiDataLoaded(false);
     } else {
       setQuestionList([]);
     }
@@ -107,14 +109,13 @@ const ParentComponent: React.FC = () => {
   }, [questionList]);
 
   useEffect(() => {
-    console.log("SECCCC _nestedRows", _nestedRows);
     setSections(
       _nestedRows
         ?.map((item: {}) => Object.keys(item))
         ?.flat()
         ?.map((key: any) => ({ key: parseInt(key) }))
     );
-    if(!_nestedRows?.length) setIsApiDataLoaded(true);
+    if(_nestedRows?.length === 0 || !_nestedRows?.length) setIsApiDataLoaded(false);
   }, [_nestedRows]);
 
   // for retrieve purpose
@@ -128,6 +129,10 @@ const ParentComponent: React.FC = () => {
     _getCurrentState();
     
   }, []);
+
+  useEffect(() => {
+    console.log("isApiDataLoaded", isApiDataLoaded)
+  }, [isApiDataLoaded])
 
   useEffect(() => {
     console.log("Validation Data xxxxx", validation);
@@ -201,8 +206,9 @@ const ParentComponent: React.FC = () => {
           }
         });
       });
+      setIsApiDataLoaded(false);
     }
-    setIsApiDataLoaded(true);
+    
   }, [_visibilityRulePrev]);
 
   useEffect(() => {
@@ -257,7 +263,7 @@ const ParentComponent: React.FC = () => {
           }
         });
       });
-      setIsApiDataLoaded(true);
+      setIsApiDataLoaded(false);
     }
   }, [_documentOutputRulePrev]);
 
@@ -366,7 +372,7 @@ const ParentComponent: React.FC = () => {
           }
         });
       });
-      setIsApiDataLoaded(true);
+      setIsApiDataLoaded(false);
     }
   }, [_minMaxRulePrev]);
 
@@ -382,7 +388,7 @@ const ParentComponent: React.FC = () => {
     let minMaxPreviousValues: any;
     let validationRulePreviousValues: any;
     let documentOutputRule: any;
-
+    setIsApiDataLoaded(true);
     let logicalName;
     if (currentPossitionDetails?.currentPosition === "chapter") {
       logicalName = dbConstants.chapter.fieldName;
@@ -465,7 +471,7 @@ const ParentComponent: React.FC = () => {
       ]);
     //test
     // _setVisibilityRulePrev((prevData: any) => [...prevData, {visibility: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
-    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_001"},6]}]}]},[{"type":"MINIMUM_LENGTH","value":13,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":3,"inclusive":true}],{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},4]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":2,"inclusive":true}]]}]}] }]);
+    _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_001"},6]}]}]},[{"type":"MINIMUM_LENGTH","value":13,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":3,"inclusive":true}],{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},4]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":2,"inclusive":true}]]}]}] }]);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_002"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_002"},7]}]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":{"var":"26862_C1_S1_002"},"inclusive":true}]]}]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, {docRuleOutput: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
@@ -474,6 +480,7 @@ const ParentComponent: React.FC = () => {
   };
   useEffect(() => {
     console.log("currentId ----->", currentPossitionDetails);
+    
     getRequestedData();
     loadQuestionHandler();
   }, [currentPossitionDetails]);
@@ -703,7 +710,7 @@ const ParentComponent: React.FC = () => {
       {contextHolder}
       <div>
       </div>
-      {isApiDataLoaded ? (
+      {!isApiDataLoaded ? (
         <div className="validation-wrap">
           {currentPossitionDetails && (
             <div>
