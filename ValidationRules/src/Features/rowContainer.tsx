@@ -44,6 +44,7 @@ interface TableRowProps {
   _nestedRows: any;
   questionList: any;
   handleSectionRemove: any;
+  setSaveAsIsNested: any;
 }
 
 interface Condition {
@@ -68,6 +69,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   _nestedRows,
   questionList,
   handleSectionRemove,
+  setSaveAsIsNested
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
@@ -125,6 +127,7 @@ const RowContainer: React.FC<TableRowProps> = ({
     expression: string = ""
   ) => {
     console.log(" Nested Clicked Level ", level);
+    setSaveAsIsNested(true)
     let releatedFields = _nestedRows.find((x: any[]) => x[sectionLevel]);
     if (releatedFields) {
       const nearestNestedIdParentId = getNestedParentLevel(
