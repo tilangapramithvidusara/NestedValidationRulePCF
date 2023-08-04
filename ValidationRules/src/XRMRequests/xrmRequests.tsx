@@ -35,23 +35,25 @@ export const loadAllQuestionsInSurvey = async () => {
 
 export const getCurrentState = async () => {
   try {    
-    let result = await window.parent.Xrm.Page.ui._formContext.getAttribute("gyde_relatedsurveytemplateitem").getValue()
-    console.log("Current State ===========> ", result);
-    result = result?.map((obj: any) => {
-      const updatedId = obj?.id.replace("{", "").replace("}", "");
-      let currentPosition;
-      
-      if (obj?.entityType.includes('question')) currentPosition = 'question';
-      else if (obj?.entityType.includes('section')) currentPosition = 'section';
-      else if (obj?.entityType.includes('chapter')) currentPosition = 'chapter';
-      return { ...obj, id: updatedId, currentPosition };
-    });
+    // let result = await window.parent.Xrm.Page.ui._formContext.getAttribute("gyde_relatedsurveytemplateitem").getValue();
+    const entityTypeName = window.parent.Xrm.Page.ui._formContext.contextToken.entityTypeName
+    console.log("entityTypeName State ===========> ", entityTypeName);
+    const updatedId = parent.Xrm.Page.ui.formContext.data.entity.getId().replace("{", "").replace("}", "");
 
+    console.log("updatedId State ===========> ", updatedId);
+    // result = result?.map((obj: any) => {
+      // const updatedId = obj?.id.replace("{", "").replace("}", "");
+      let currentPosition;
+
+      if (entityTypeName.includes('question')) currentPosition = 'question';
+      else if (entityTypeName.includes('section')) currentPosition = 'section';
+      else if (entityTypeName.includes('chapter')) currentPosition = 'chapter';
+      // return { id: updatedId, currentPosition };
+    // });
     return {
       error: false,
-      data: result
+      data: [{ id: updatedId, currentPosition }]
     }
-    
   } catch (error) {
     console.log("error ========> ", operationsSampleData);
     return {
