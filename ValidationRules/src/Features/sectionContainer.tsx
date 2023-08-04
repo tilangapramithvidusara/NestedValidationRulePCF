@@ -33,7 +33,8 @@ interface SectionProps {
   currentPossitionDetails: any;
   questionList: any;
   setValidation: any;
-  setDeleteSectionKey: any
+  setDeleteSectionKey: any;
+  setSaveAsIsNested: any;
 }
 
 function SectionContainer({
@@ -46,7 +47,8 @@ function SectionContainer({
   currentPossitionDetails,
   questionList,
   setValidation,
-  setDeleteSectionKey
+  setDeleteSectionKey,
+  setSaveAsIsNested
 }: SectionProps) {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [rowData, setRowData] = useState<any>();
@@ -201,6 +203,7 @@ function SectionContainer({
           _nestedRows={_nestedRows}
           questionList={questionList}
           handleSectionRemove={handleSectionRemove}
+          setSaveAsIsNested={setSaveAsIsNested}
         />
       ))}
 

@@ -11,8 +11,7 @@ import {
 import sampleOutputData from "../SampleData/SampleOutputData";
 import utilHelper from "../utilHelper/utilHelper";
 // import removeIcon from '../assets/delete.png';
-import { Button, notification, Space, Spin,  Alert } from "antd";
-import RowContainer from "./rowContainer";
+import { Button, notification, Space, Spin } from "antd";
 import SectionContainer from "./sectionContainer";
 import {
   updateDataRequest,
@@ -55,7 +54,7 @@ const ParentComponent: React.FC = () => {
     andOrValidation: true,
     nestingLevelValidation: true
   });
-
+  const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
   let addNestedComponent = () => {
     setSections([
       ...sections,
@@ -67,6 +66,7 @@ const ParentComponent: React.FC = () => {
       },
     ]);
     setIsNested(true);
+    setSaveAsIsNested(true);
   };
 
   let addComponent = () => {
@@ -153,17 +153,19 @@ const ParentComponent: React.FC = () => {
               visibilityString
             );
             let visibilityDta = visibilityString;
-            console.log("Visibility visibilityDta  ---->>>> ", visibilityDta);
             console.log(
               "Visibility DB Dataaa Converting ---->>>> ",
               visibilityDta
             );
-            const refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
+            let refactorDta = visibilityDta
+            const isRetrieveAsNested = visibilityDta?.some((x: { if: any; }) => x.if);
+            if(isRetrieveAsNested) refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
+
             console.log(
               "Visibility DB Dataaa Converting refactorDta---->>>> ",
               refactorDta
             );
-            refactorDta?.forEach((fieldDta): any => {
+            refactorDta?.forEach((fieldDta: any): any => {
               console.log(
                 "Visibility DB Dataaa Converting refactorDta fieldDta---->>>> ",
                 fieldDta
@@ -471,7 +473,7 @@ const ParentComponent: React.FC = () => {
       ]);
     //test
     // _setVisibilityRulePrev((prevData: any) => [...prevData, {visibility: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
-    _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_001"},6]}]}]},[{"type":"MINIMUM_LENGTH","value":13,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":3,"inclusive":true}],{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},4]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":2,"inclusive":true}]]}]}] }]);
+    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_001"},6]}]}]},[{"type":"MINIMUM_LENGTH","value":13,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":3,"inclusive":true}],{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},4]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":2,"inclusive":true}]]}]}] }]);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_002"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_002"},7]}]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":{"var":"26862_C1_S1_002"},"inclusive":true}]]}]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, {docRuleOutput: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
@@ -562,9 +564,15 @@ const ParentComponent: React.FC = () => {
   const handleSaveLogic = () => {
     let minMaxDBFormatArray: any = [];
     let visibilityRule: any = [];
+    let visibilityRuleNormal: any = [];
+
     let outputDocShow: any = [];
     let validationRule: any = [];
     let sampleRetrieveFormat: any = [];
+
+    let outputDocShowNormal: any = [];
+    let validationRuleNormal: any = [];
+    let minMaxDBFormatArrayNormal: any = [];
 
     _nestedRows.forEach((sec: any) => {
       console.log("SECCCCCCCC", sec);
@@ -603,7 +611,9 @@ const ParentComponent: React.FC = () => {
             { if: [convertJSONFormatToDBFormat(sec[key], true)] },
             false
           );
+          visibilityRuleNormal.push(convertJSONFormatToDBFormat(sec[key], true));
           console.log("Show saving logic visibilityRule", visibilityRule);
+
         }
         if (isOutputDocShowExists) {
           console.log(
@@ -615,6 +625,7 @@ const ParentComponent: React.FC = () => {
             { if: [convertJSONFormatToDBFormat(sec[key], true)] },
             false
           );
+          outputDocShowNormal.push(convertJSONFormatToDBFormat(sec[key], true));
           // outputDocShow.push(convertJSONFormatToDBFormat(sec[key], false))
         }
         if (isEnableExists) {
@@ -627,6 +638,7 @@ const ParentComponent: React.FC = () => {
             { if: [convertJSONFormatToDBFormat(sec[key], true)] },
             false
           );
+          validationRuleNormal.push(convertJSONFormatToDBFormat(sec[key], true));
           // validationRule.push(convertJSONFormatToDBFormat(sec[key], true))
         }
       }
@@ -671,6 +683,21 @@ const ParentComponent: React.FC = () => {
             },
             true
           );
+          outputDocShowNormal.push([
+            convertJSONFormatToDBFormat(sec[key], true),
+            [
+              {
+                type: "MINIMUM_LENGTH",
+                value: minValue,
+                inclusive: true,
+              },
+              {
+                type: "MAXIMUM_LENGTH",
+                value: maxValue,
+                inclusive: true,
+              },
+            ],
+          ], true);
         }
       }
     });
@@ -679,7 +706,36 @@ const ParentComponent: React.FC = () => {
     console.log("Save Visibility Rule Reqq ------> ", visibilityRule);
     console.log("Save outputDocShow Rule Reqq ------> ", outputDocShow);
     console.log("Save validationRule Rule Reqq ------> ", validationRule);
+    console.log("Show saving logic visibilityRuleNormal", visibilityRuleNormal);
 
+    if (!saveAsIsNested) { 
+      if (validation?.minMaxValidation && validation.andOrValidation && validation.nestingLevelValidation) {
+        if (
+          (visibilityRuleNormal && visibilityRuleNormal.length)
+        ) {
+          const refac_visibilityRuleNormal = {
+            "OR":visibilityRuleNormal
+          }
+          const refac_outputDocShowNormal = {
+            "OR":outputDocShowNormal
+          }
+          const refac_validationRuleNormal = {
+            "OR":validationRuleNormal
+          }
+          const refac_minMaxDBFormatArrayNormal = {
+            "OR":minMaxDBFormatArrayNormal
+          }
+          console.log("DATA Saving visibilityRuleNormal ", visibilityRuleNormal);
+    
+          saveVisibilityData(
+            refac_visibilityRuleNormal,
+            refac_validationRuleNormal,
+            refac_outputDocShowNormal,
+            refac_minMaxDBFormatArrayNormal
+          );
+        }
+    }
+    } else {
     if (validation?.minMaxValidation && validation.andOrValidation && validation.nestingLevelValidation) {
       if (
         (visibilityRule && visibilityRule.length) ||
@@ -702,6 +758,8 @@ const ParentComponent: React.FC = () => {
     } else {
       openNotificationWithIcon("error", "Validation Must be passed!")
     }
+    }
+
 
   };
 
@@ -736,6 +794,7 @@ const ParentComponent: React.FC = () => {
                       questionList={questionList}
                       setValidation={setValidation}
                       setDeleteSectionKey={setDeleteSectionKey}
+                      setSaveAsIsNested={setSaveAsIsNested}
                     />
                   </div>
                 ))}
@@ -755,8 +814,7 @@ const ParentComponent: React.FC = () => {
         </div>
       ) : (
         <Space size="middle">
-          {" "}
-          <Spin />{" "}
+          <Spin />
         </Space>
       )}
     </div>
