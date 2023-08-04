@@ -31,6 +31,9 @@ interface SectionProps {
   _nestedRows: any;
   isNested: any;
   currentPossitionDetails: any;
+  questionList: any;
+  setValidation: any;
+  setDeleteSectionKey: any
 }
 
 function SectionContainer({
@@ -40,7 +43,10 @@ function SectionContainer({
   _setNestedRows,
   _nestedRows,
   isNested,
-  currentPossitionDetails
+  currentPossitionDetails,
+  questionList,
+  setValidation,
+  setDeleteSectionKey
 }: SectionProps) {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [rowData, setRowData] = useState<any>();
@@ -57,7 +63,7 @@ function SectionContainer({
   const [minValue, setMinValue] = useState<any>();
   const [maxValue, setMaxValue] = useState<any>();
   const [minMaxValue, setMinMaxValue] = useState<any>();
-  const [questionList, setQuestionList] = useState<any[]>([]);
+
   const [defaultActions, setDefaultActions] = useState<any[]>([]);
 
   // const [rows, setRows] = useState<Row[]>(_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.fields);
@@ -91,159 +97,94 @@ function SectionContainer({
         ] as Row[]
     );
   };
+  
+  useEffect(() => {
+      let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
+      if (releatedFields) {
+        let releatedSection = releatedFields[sectionLevel]
+        let releatedActions = releatedFields[sectionLevel]?.actions
+        console.log("ACTSSSSS releatedFields", releatedActions);
+        // if (actions && actions.length)
+        if (actions && actions.length && releatedSection?.fields?.length) {
+          _setNestedRows(
+            updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+              {
+                checkBoxValues: actions,
+                minMax: releatedActions.map((x: { minMax: any; }) => x?.minMax)[0] || {}
+              }
+            ])
+            );
+        }
+         
+      }
 
-  const addNestedRow = () => {
-    setRows(
-      (prevRows) =>
-        [
-          ...prevRows,
-          {
-            level: 1,
-            column1: "",
-            column2: "",
-            column3: "",
-            column4: "",
-            column5: "",
-            column6: "",
-            innerConditions: "",
-          },
-        ] as Row[]
-    );
-  };
-
-  // useEffect(() => {
-  //   console.log("nestedRows from sectionnnnn", _nestedRows);
-  //     if (_nestedRows) {
-  //       setRows(_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.fields || [])
-  //     }
-  // }, [_nestedRows]);
+  }, [actions]);
 
   useEffect(() => {
-    // const releatedFields = _nestedRows.find((x: any[]) => x[sectionLevel])[sectionLevel];
-    // console.log("nestedRows from sectionnnnn", releatedFields?.actions);
-    
-    // const existingLevel1Index = defaultActions.findIndex(
-    //   (item) => sectionLevel in item
-    // );
-    // console.log("existingLevel1Index from sectionnnnn", existingLevel1Index);
-  
-    // // Create a copy of the current defaultActions to avoid directly modifying state
-    // let updatedDefaultActions = [...defaultActions];
-  
-    // if (existingLevel1Index !== -1) {
-    //   // Update the existing level1 object with new fields
-    //   const existanceFields = updatedDefaultActions[existingLevel1Index][sectionLevel];
-    //   updatedDefaultActions[existingLevel1Index] = {
-    //     ...updatedDefaultActions[existingLevel1Index],
-    //     [sectionLevel]: existanceFields,
-    //   };
-    // } else {
-    //   // Add a new level1 object at the beginning with the relevant fields
-    //   updatedDefaultActions = [
-    //     {
-    //       [sectionLevel]: releatedFields?.actions,
-    //     },
-    //     ...updatedDefaultActions,
-    //   ];
-    // }
-  
-    // // Set the modified defaultActions in the state
-    // setDefaultActions(updatedDefaultActions);
-    // const ref = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.actions[0]?.checkBoxValues || []
-    // console.log("RESSSSsdddd", ref);
-    // if (ref && ref?.length) setActions(Object.keys(ref))
-    
-    setDefaultActions([
+    console.log("Min Max Rendering ..... ", minMaxValue);
+    if (minValue?.input || maxValue?.input) {
+      setMinMaxValue({ minValue: minValue?.input, maxValue: maxValue?.input });
+      let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
+      if (releatedFields) {
+        const previousActions = releatedFields[sectionLevel]?.actions?.map((obj: { checkBoxValues: any; }) => obj.checkBoxValues)
+        _setNestedRows(
+          updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+            {
+              checkBoxValues: previousActions[0] || [],
+              minMax: { minValue: minValue?.input, maxValue: maxValue?.input }
+            }
+          ])
+        );
+      }
+    }
+  }, [minValue, maxValue]);
+
+
+  const handleSectionRemove = () => {
+      setDeleteSectionKey(sectionLevel)
+  }
+
+  useEffect(() => {
+    let releatedFields = _nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel]);
+    if (releatedFields && sectionLevel && releatedFields[sectionLevel] && currentPossitionDetails) {
+      let releatedActions = releatedFields[sectionLevel]?.actions
+      _setNestedRows(
+        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+          {
+            checkBoxValues: releatedActions.map((x: any) => x?.checkBoxValues)[0],
+            minMax: releatedActions.map((x: { minMax: any; }) => x?.minMax)[0] || {}
+          }
+        ])
+      );
+      setMinCheckboxEnabled(_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue || false);
+      setToggledEnableMin(typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue !== 'string')
+      setMaxCheckboxEnabled(_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || false);
+      setToggledEnableMax(typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue !== 'string')
+      setMinMaxValue({
+        minValue: _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue,
+        maxValue: _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue
+      });
+      
+    }
+  }, []);
+
+  useEffect(() => {
+    setDefaultActions(currentPossitionDetails && currentPossitionDetails?.currentPosition === "question" ? [
       {
         label: "Show",
         value: "show",
       },
       {
-        label: "Enable",
-        value: "enable",
-      },
-      {
         label: "Show in Document",
         value: "OutPutDoc:Show",
       },
-    ]);
-
-  }, [_nestedRows]);
-  
-
-
-  useEffect(() => {
-    loadQuestionHandler();
-  }, []);
-
-  useEffect(() => {
-      console.log("questionList", questionList)
-  }, [questionList])
-
-  useEffect(() => {
-    console.log("questionList rowsrowsrows", rows)
-  }, [rows])
-  
-  useEffect(() => {
-    console.log("ACTSSSSS", actions);
-    let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
-    if (releatedFields) {
-      releatedFields = releatedFields[sectionLevel].actions
-      console.log("ACTSSSSS releatedFields", releatedFields);
-      // if (actions && actions.length)
-        _setNestedRows(
-        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
-          {
-            checkBoxValues: actions,
-            minMax: releatedFields.map((x: { minMax: any; }) => x?.minMax)[0] || {}
-          }
-        ])
-        );
-    }
-   
-  }, [actions]);
-
-  useEffect(() => {
-    setMinMaxValue({ minValue: minValue?.input, maxValue: maxValue?.input });
-    let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
-    if (releatedFields) {
-      const previousActions = releatedFields[sectionLevel]?.actions?.map((obj: { checkBoxValues: any; }) => obj.checkBoxValues)
-      _setNestedRows(
-        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
-          {
-            checkBoxValues: previousActions[0] || [],
-            minMax: { minValue: minValue?.input, maxValue: maxValue?.input }
-          }
-        ])
-      );
-    }
-  }, [minValue, maxValue]);
-  
-
-  const loadQuestionHandler = async () => {
-    const result = await loadAllQuestionsInSurvey();
-    console.log('resss =====> ', result);
-    
-    let questionListArray = result.data || [];
-    // Check if 'result.data' exists and has 'entities' property
-    if (questionListArray && questionListArray.length) {
-        const formattedQuestionList = questionListArray.map((quesNme:any) => {
-            return { label: quesNme.gyde_name, value: quesNme.gyde_name, questionType: quesNme.questionType}
-        })
-        formattedQuestionList && formattedQuestionList.length && setQuestionList(formattedQuestionList);
-    } else {
-      // Handle the case when 'entities' property is not present
-      setQuestionList([]);
-    }
-  };
-
-  useEffect(() => {
-    console.log("DEFAULt ACTS", defaultActions);
-    // setMinCheckboxEnabled(defaultActions[0]?.minMax?.minValue ? true : false);
-    // setMaxCheckboxEnabled(defaultActions[0]?.minMax?.maxValue ? true : false);
-    // setToggledEnableMin(defaultActions[0]?.minMax?.minValue ? true : false);
-    // setToggledEnableMax(defaultActions[0]?.minMax?.maxValue ? true : false);
-  }, [defaultActions]);
+    ] : [
+      {
+        label: "Show",
+        value: "show",
+      }
+    ])
+  }, [currentPossitionDetails]);
 
   return (
     <div>
@@ -259,6 +200,7 @@ function SectionContainer({
           _setNestedRows={_setNestedRows}
           _nestedRows={_nestedRows}
           questionList={questionList}
+          handleSectionRemove={handleSectionRemove}
         />
       ))}
 
@@ -267,25 +209,13 @@ function SectionContainer({
           <div className="subTitle w-10">Actions</div>
           <div className="flex-row">
             <CheckBox
-  checkboxDefaultSelectedValues={
-    _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.checkBoxValues
-      ?.map((obj: any) => ({ value: obj[Object.keys(obj)[0]]?.value }))
-      ?.map((x: any) => x?.value) || []
-  }              checkboxValuesFromConfig={[
-                {
-                  label: "Show",
-                  value: "show",
-                },
-                {
-                  label: "Enable",
-                  value: "enable",
-                },
-                {
-                  label: "Show in Document",
-                  value: "OutPutDoc:Show",
-                },
-              ]}
-              setCheckboxValues={setActions}
+                checkboxDefaultSelectedValues={
+                  _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.checkBoxValues
+                    ?.map((obj: any) => ({ value: obj[Object.keys(obj)[0]]?.value }))
+                    ?.map((x: any) => x?.value) || []
+                }
+                checkboxValuesFromConfig={defaultActions}
+                setCheckboxValues={setActions}
             />
           </div>
         </div>
@@ -327,7 +257,7 @@ function SectionContainer({
                   />
                 ) : (
                   <DropDown
-                    dropDownData={sampleInputQuestion}
+                    dropDownData={questionList}
                     isDisabled={!minCheckboxEnabled}
                     setExpression={setMinValue}
                     changedId={undefined}
@@ -367,7 +297,7 @@ function SectionContainer({
                     fieldName={"maxValue"} />
                 ) : (
                   <DropDown
-                    dropDownData={sampleInputQuestion}
+                    dropDownData={questionList}
                     isDisabled={!maxCheckboxEnabled}
                     setExpression={setMaxValue}
                     changedId={undefined}

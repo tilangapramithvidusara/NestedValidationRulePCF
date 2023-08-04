@@ -204,13 +204,35 @@ function convertMinMaxDBFormatToJSON(obj: { and: any }, level = 1) {
       if (keys.length === 1) {
         const expression = keys[0];
 
-        if (
-          expression === "eq" &&
-          condition.eq.length === 2 &&
-          typeof condition.eq[0].var === "string"
-        ) {
-          const field = condition.eq[0].var;
-          const value = condition.eq[1];
+        if ((expression === "eq" || expression === "lt" || expression === "lte" || expression === "gte" || expression === "gt") &&
+          (condition["eq"]?.length === 2 || condition["lt"]?.length === 2 || condition["lte"]?.length === 2 || condition["gt"]?.length === 2 || condition["gte"]?.length === 2) &&
+          (typeof condition["eq"][0].var === "string" || typeof condition["lt"][0].var === "string" || typeof condition["lte"][0].var === "string" || typeof condition["gt"][0].var === "string" || typeof condition["gte"][0].var === "string" ))
+        {
+          let field 
+          let value;
+          if (condition["eq"][0].var && condition["eq"][1]) {
+            field = condition["eq"][0].var
+            value = condition["eq"][1];
+          }
+          else if (condition["lt"][0].var && condition["lt"][1]) {
+            field = condition["lt"][0].var
+            value = condition["lt"][1];
+          }
+          else if (condition["lte"][0].var && condition["lte"][1]) {
+            field = condition["lte"][0].var
+            value = condition["lte"][1];
+          }
+          else if (condition["gt"][0].var && condition["gt"][1]) {
+            field = condition["gt"][0].var
+            value = condition["gt"][1];
+          }
+          else if (condition["gte"][0].var && condition["gte"][1]) {
+            field = condition["gte"][0].var
+            value = condition["gte"][1];
+          }
+
+          // const field = condition.eq[0].var;
+          // const value = condition.eq[1];
 
           const innerConditions = condition[expression]
             ? convertMinMaxDBFormatToJSON(
@@ -263,7 +285,22 @@ const convertJSONFormatToDBFormat = (
   let result = [];
   const minMax = allSections?.actions[0]?.minMax;
   const arr = allSections.fields;
-  console.log(arr);
+
+  let parentExpression = 'or';
+
+  if (arr[1] && arr[1].expression) {
+    parentExpression = arr[1]?.expression === '&&' ? 'and' : 'or';
+  } else if (
+    arr[0] &&
+    arr[0].expression &&
+    arr[0].expression?.innerConditions[0]?.expression
+  ) {
+    parentExpression =
+      arr[0].expression?.innerConditions[0]?.expression === '&&' ? 'and' : 'or';
+  }
+  console.log("convertJSONFormatToDBFormat", arr);
+  console.log("convertJSONFormatToDBFormat allSections", allSections);
+  console.log("parentExpression", parentExpression);
 
   function buildCondition(conditionObj: {
     condition: any;
@@ -330,8 +367,8 @@ const convertJSONFormatToDBFormat = (
   }
 
   function buildInnerConditions(innerConditions: any): any {
-    let innerResult = [];
-    for (const innerCondition of innerConditions) {
+    let innerResult : any = [];
+    for (const innerCondition of innerConditions)  {
       const condition = buildCondition(innerCondition);
       if (condition) {
         innerResult.push(condition);
@@ -343,11 +380,12 @@ const convertJSONFormatToDBFormat = (
         const nestedConditions = buildInnerConditions(
           innerCondition.innerConditions
         );
-        innerResult.push({ [innerCondition.expression]: nestedConditions });
+        innerResult.push({ [innerCondition.expression === '&&' || innerCondition.expression === 'and' || innerCondition.expression === 'AND' ? 'and' : 'or']: nestedConditions });
       }
     }
     return innerResult;
   }
+
 
   for (const conditionObj of arr) {
     const condition = buildCondition(conditionObj);
@@ -358,12 +396,87 @@ const convertJSONFormatToDBFormat = (
       const nestedConditions = buildInnerConditions(
         conditionObj.innerConditions
       );
-      result.push({ [conditionObj.expression]: nestedConditions });
+      result.push({ [conditionObj.expression === '&&' || conditionObj.expression === 'and' || conditionObj.expression === 'AND' ? 'and' : 'or']: nestedConditions });
     }
   }
 
   // return { "and": result };
-  return { and: result };
+  return { [parentExpression]: result };
 };
 
-export { convertMinMaxDBFormatToJSON, convertJSONFormatToDBFormat };
+
+
+function findAndUpdateLastNestedIf(obj: any[], condition: any, overrideMinMax: boolean) {
+  if (!obj.length) return [condition];
+
+  let updated = false; // Flag to track if the update has been done
+
+  return obj.map((x: { if: any[]; }, index: any) => {
+      if (x?.if && !updated) {
+          const isLastIf = x.if.filter((item: { if: any; }) => item.if);
+          if (!isLastIf.length) {
+              x.if[overrideMinMax ? 2 : 1] = condition;
+              updated = true;
+          } else {
+              x.if = findAndUpdateLastNestedIf(x.if, condition, overrideMinMax);
+          }
+      }
+      return x;
+  });
+}
+
+function removeIfKeyAndGetDbProperty(obj: any[]){
+  const ifConditions: any[] = [];
+  console.log("LKKKKKKKKKxadawad xxxxxx", obj)
+
+  obj.map((x: { if: any[]; }) => {
+    if (x?.if) {
+      if (!x.if.length) {
+        ifConditions.push(x.if);
+      } else {
+        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or);
+        console.log("LKKKKKKKKKxadawad", filteredVal)
+
+        if (filteredVal) {
+          ifConditions.push(filteredVal);
+        }
+        // Recursively call the function and merge results with ifConditions
+        ifConditions.push(...removeIfKeyAndGetDbProperty(x.if));
+      }
+    }
+  });
+
+  return ifConditions;
+}
+
+
+function removeMinMaxIfKeyAndGetDbProperty(obj: any[]){
+  const ifConditions: any = [];
+  // console.log("LKKKKKKKKKxadawad xxxxxx", obj)
+
+  obj.map((x: any) => {
+    if (x?.if) {
+      if (!x.if.length) {
+        ifConditions.push(x.if);
+        const minMax = x?.if?.map((x: any[]) => x[0])?.filter((x: any) => x);
+        if(minMax) ifConditions.push({ifConditions: x.if, minMax });
+      } else {
+        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or);
+        if (filteredVal) {
+          const minMax = x?.if?.map((x: any[]) => x[0])?.filter((x: any) => x);
+          const _minMax = x?.if?.map((x: any[]) => x[1])?.filter((x: any) => x);
+
+          if(minMax) ifConditions.push({ifConditions: filteredVal, minMax: [...minMax, ..._minMax] });
+        
+        }
+        // Recursively call the function and merge results with ifConditions
+        ifConditions.push(...removeMinMaxIfKeyAndGetDbProperty(x.if));
+      }
+    }
+  });
+
+  return ifConditions;
+}
+
+
+export { convertMinMaxDBFormatToJSON, convertJSONFormatToDBFormat, findAndUpdateLastNestedIf, removeIfKeyAndGetDbProperty, removeMinMaxIfKeyAndGetDbProperty };

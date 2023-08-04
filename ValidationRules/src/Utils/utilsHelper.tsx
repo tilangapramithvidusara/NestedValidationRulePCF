@@ -50,19 +50,21 @@ const generateOutputString = (conditions: string | any[]) => {
 
   for (let i = 0; i < conditions.length; i++) {
     const condition = conditions[i];
-    const previousCondition = conditions[i - 1];
+    const nxtCondition = conditions[i+1];
+    const prvCondition = conditions[i - 1];
 
     if (condition.hasNested) {
-      const innerExpression = generateOutputString(condition.innerConditions);
+      const innerExpression = generateOutputString(condition?.innerConditions || []);
       //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
-      expression += `${condition?.expression ? condition?.expression : ""} (${
+      expression += `${condition?.expression ? condition?.expression : ""} ( ${
         condition.field
       } ${condition.condition} ${condition.value} ${
         innerExpression && innerExpression.length ? ` ${innerExpression} ` : ""
       } `;
     } else {
       //   expression += condition.field;
-      expression += ` ${condition?.expression ? condition?.expression : ""} ${
+      console.log("prvCondition", prvCondition)
+      expression += `${condition?.expression ? condition?.expression : ""} ${
         condition.field
       } ${condition.condition} ${condition.value} `;
     }
