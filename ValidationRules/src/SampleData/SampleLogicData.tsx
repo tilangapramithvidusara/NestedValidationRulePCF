@@ -113,10 +113,10 @@ export const questionArraySample = [{
 {
   "@odata.etag": "W/\"7940133\"",
   "gyde_name": "NTemp_C01_04_Q_04",
-  "gyde_answertype@OData.Community.Display.V1.FormattedValue": "String",
+  "gyde_answertype@OData.Community.Display.V1.FormattedValue": "Date",
   "gyde_answertype": 528670004,
   "gyde_shortname": "Q_04",
-  "questionType": "numeric",
+  "questionType": "Date",
   "gyde_surveytemplatechaptersectionquestionid": "52020283-6af5-ed11-8848-000d3a338dd2"
 },
 {
@@ -179,7 +179,7 @@ export const questionArraySample = [{
   "gyde_answertype@OData.Community.Display.V1.FormattedValue": "List",
   "gyde_answertype": 528670004,
   "gyde_shortname": "q02",
-  "questionType": "text",
+  "questionType": "Date",
   "gyde_surveytemplatechaptersectionquestionid": "441e2655-69f8-ed11-8849-000d3a338dd2"
 },
 {
@@ -188,7 +188,7 @@ export const questionArraySample = [{
   "gyde_answertype@OData.Community.Display.V1.FormattedValue": "List",
   "gyde_answertype": 528670004,
   "gyde_shortname": "Q_01",
-  "questionType": "text",
+  "questionType": "Date",
   "gyde_surveytemplatechaptersectionquestionid": "cf6fb011-8af8-ed11-8849-000d3a338dd2"
 },
 {
@@ -197,7 +197,7 @@ export const questionArraySample = [{
   "gyde_answertype@OData.Community.Display.V1.FormattedValue": "String",
   "gyde_answertype": 528670004,
   "gyde_shortname": "rd",
-  "questionType": "text",
+  "questionType": "Date",
   "gyde_surveytemplatechaptersectionquestionid": "55a62735-26f9-ed11-8849-000d3a338dd2"
 }
 ]

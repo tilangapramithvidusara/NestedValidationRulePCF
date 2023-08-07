@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import DropDown from "../Components/commonComponents/DropDown";
 import FieldInput from "../Components/commonComponents/FieldInput";
-import { Button, Input, Space, Spin } from "antd";
+import { Button, Input, Space, Spin, notification } from "antd";
 import { expressionSampleData } from "../SampleData/expressionSampleData";
 import { operationalSampleData } from "../SampleData/operationalSampleData";
 import { sampleInputQuestion } from "../SampleData/sampleInputQuestion";
 import NumberInputField from "../Components/commonComponents/NumberInputField";
 import FieldStringInputProps from "../Components/commonComponents/StringInput";
 // import deleteImg from "../assets/delete.png";
+import dayjs from 'dayjs';
 
 import {
+  _updateExpressionByParentId,
   findGroupId,
   generateOutputString,
   getAllChildrenIDs,
@@ -28,6 +30,9 @@ import {
 } from "@ant-design/icons";
 import { getListAnswersByQuestionId } from "../XRMRequests/xrmRequests";
 import ListDropDown from "../Components/commonComponents/ListDropDown";
+import { dbConstants } from "../constants/dbConstants";
+import DatePickerCustom from "../Components/commonComponents/DatePickerCustom";
+import moment from "moment";
 interface NestedRowProps {
   children: React.ReactNode;
 }
@@ -79,6 +84,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   const [isLoad, setIsLoad] = useState<boolean>(false);
 
   const [answersDropDownData, setAnswersDropDownData] = useState<any[]>([]);
+  const [api, contextHolder]: any = notification.useNotification();
 
   const findConditionByLevel = (
     level: any,
@@ -115,7 +121,7 @@ const RowContainer: React.FC<TableRowProps> = ({
         },
         0
       );
-      newKey = highestLevel + 1;
+      newKey = highestLevel + 100;
     }
     console.log("New Key", newKey);
     return newKey;
@@ -206,12 +212,83 @@ const RowContainer: React.FC<TableRowProps> = ({
       });
     }
   }
+
+  const openNotificationWithIcon = (type: any, message: any) => {
+    api[type]({
+      message: type,
+      description: message,
+    });
+  };
+
   useEffect(() => {
     console.log("fieldValue", fieldValue);
     if (fieldValue) {
       fieldValueSetToNestedRows(fieldValue)
     }
-    // );
+    // Added validation, If the same level expression Changed other child has to be changed
+    if (fieldValue?.fieldName === 'expression') {
+      console.log("fieldValue Exp", fieldValue);
+      let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields;
+      if (releatedFields) {
+        let _collapseList = getAllChildrenIDs(
+          findGroupId(
+            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
+              ?.fields,
+            fieldValue.changedId
+          )
+        );
+        console.log("Expressions numbers", [..._collapseList, fieldValue.changedId]);
+        _collapseList = [..._collapseList, fieldValue.changedId];
+            const nearestIdParentObject = getNearestParentByItems(
+            releatedFields,
+            fieldValue.changedId
+          );
+          console.log(
+            "nearestIdParentObject",
+            nearestIdParentObject
+          );
+
+        // Changed expression to the nearest parent expression
+        if (nearestIdParentObject) {
+          const sameLevelInnerConditions = nearestIdParentObject?.innerConditions;
+          console.log("sameLevelInnerConditions", sameLevelInnerConditions);
+          let sameLevelIds = sameLevelInnerConditions.map((x: any) => x?.level);
+          console.log("sameLevelIds", sameLevelIds);
+          // sameLevelIds = [...sameLevelIds, nearestIdParentObject?.level]
+          const fields = _updateExpressionByParentId(
+            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
+              ?.fields,
+            sameLevelIds,
+            fieldValue.input
+          );
+          _setNestedRows(updateAllLevelArray(_nestedRows, sectionLevel, fields));
+        } else {
+          const parentExpressions = releatedFields?.map((lvl: any) => lvl?.expression);
+          let parentIds = releatedFields?.map((lvl: any) => lvl?.level);
+          
+          if (releatedFields?.length > 1) {
+            const firstExp = releatedFields[1]?.expression
+            const initialEmptyFieldId = releatedFields[0]?.level;
+            parentIds = parentIds?.filter((item: any) => item !== initialEmptyFieldId)
+            console.log("parentExpressions", parentExpressions)
+            console.log("parentExpressions firstExp", firstExp)
+            console.log("parentExpressions firstExp", firstExp !== fieldValue.input)
+
+            if (firstExp !== fieldValue.input && parentIds.length) {
+              openNotificationWithIcon("error", "First Selected Expression cannot be changed!");
+            const fields = _updateExpressionByParentId(
+              _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
+                ?.fields,
+              parentIds,
+              firstExp
+            );
+            _setNestedRows(updateAllLevelArray(_nestedRows, sectionLevel, fields));
+            }
+            
+          }
+        }
+      }
+    }
   }, [fieldValue]);
 
   useEffect(() => {
@@ -397,11 +474,6 @@ const RowContainer: React.FC<TableRowProps> = ({
   }, [sectionLevel]);
 
   const collapseHandle = (number: any, collapse: boolean) => {
-    console.log("Collapse number", number);
-    console.log("Collapse number", collapse);
-
-    // handleLevelCollapse(number, collapse);
-
     let _collapseList = getAllChildrenIDs(
       findGroupId(
         _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
@@ -477,29 +549,31 @@ const RowContainer: React.FC<TableRowProps> = ({
   const fetchFieldData = async (questionId: any) => {
     try {
       // Make a request to the backend to fetch the data
-      setIsLoad(true);
+      
       const questionDetails = questionList.find(
         (x: any) => x.value === questionId
       );
       console.log("questionDetails", questionDetails);
-
-      const response = await getListAnswersByQuestionId(
-        questionDetails?.questionId
-      );
-      let dropDownData = [];
-      if (response?.data?.entities) {
-        dropDownData = response?.data.entities.map((x: any) => {
-          return {
-            label: x.gyde_answervalue,
-            value: x.gyde_answervalue,
-          };
-        });
+      if (questionDetails?.questionType === dbConstants.questionTypes.listQuestion ) {
+        setIsLoad(true);
+        const response = await getListAnswersByQuestionId(
+          questionDetails?.questionId
+        );
+        let dropDownData = [];
+        if (response?.data?.entities) {
+          dropDownData = response?.data.entities.map((x: any) => {
+            return {
+              label: x.gyde_answervalue,
+              value: x.gyde_answervalue,
+            };
+          });
+        }
+        if (dropDownData && dropDownData?.length) {
+          setAnswersDropDownData(dropDownData);
+        }
+        setIsLoad(false);
       }
-      if (dropDownData && dropDownData?.length) {
-        setAnswersDropDownData(dropDownData);
-        
-      }
-      setIsLoad(false);
+     
     } catch (error) {
       console.error("Error fetching data:", error);
       // setSelectedFieldData([]); // Reset the data to an empty array in case of an error
@@ -622,7 +696,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                   <div className="condition-label">
                     {questionList.find(
                       (x: { value: string }) => x.value === condition?.field
-                    )?.questionType === "Numeric" ? (
+                    )?.questionType === dbConstants.questionTypes.numericQuestion ? (
                       <NumberInputField
                         selectedValue={condition?.value}
                         handleNumberChange={{}}
@@ -630,10 +704,11 @@ const RowContainer: React.FC<TableRowProps> = ({
                         setInputNumber={setFieldValue}
                         changedId={condition?.level}
                         fieldName={"value"}
+                        validatingSuccess={true}
                       />
                     ) : questionList.find(
                         (x: { value: string }) => x.value === condition?.field
-                      )?.questionType === "String" ? (
+                      )?.questionType === dbConstants.questionTypes.stringQuestion ? (
                       <FieldStringInputProps
                         sampleData={
                           questionList && questionList.length
@@ -647,8 +722,19 @@ const RowContainer: React.FC<TableRowProps> = ({
                         fieldName={"value"}
                       />
                     ) : questionList.find(
+                      (x: { value: string }) => x.value === condition?.field
+                        )?.questionType === dbConstants.questionTypes.dateTimeQuestion ? (
+                            <DatePickerCustom
+                              isDisabled={false}
+                              setFieldValue={setFieldValue}
+                              changedId={condition?.level}
+                              fieldName={"value"}
+                              selectedValue={condition?.value ? condition?.value : moment()}
+                    
+                    />
+                  ) : questionList.find(
                         (x: { value: string }) => x.value === condition?.field
-                      )?.questionType === "List" ? (
+                      )?.questionType === dbConstants.questionTypes.listQuestion ? (
                       <ListDropDown
                         dropDownData={{}}
                         isDisabled={false}
@@ -741,6 +827,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   }, [isLoad])
   return (
     <div>
+            {contextHolder}
       {!isLoad ? (
         <div>
           <div style={{ textAlign: "left" }}>

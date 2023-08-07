@@ -10,13 +10,13 @@ const updateByParentId = (data: any, parentId: any, newObj: any) => {
       updateByParentId(i.innerConditions, parentId, newObj);
     }
   });
-  console.log("------------ data>", data);
+  console.log("updateByParentId", data);
   const newArr = [...data];
   return newArr;
 };
 
 const getNestedParentLevel = (data: any, parentId: any) => {
-    console.log("------------>", data, parentId);
+    console.log("getNestedParentLevel data", data, parentId);
     data.map((i: { level: any; innerConditions: any[]; hasNested: any }) => {
       if (i.level == parentId) {
           return i;
@@ -24,7 +24,7 @@ const getNestedParentLevel = (data: any, parentId: any) => {
         getNestedParentLevel(i.innerConditions, parentId);
       }
     });
-    console.log("------------ data>", data);
+    console.log("getNestedParentLevel", data);
     const newArr = [...data];
     return newArr;
   };
@@ -63,7 +63,6 @@ const generateOutputString = (conditions: string | any[]) => {
       } `;
     } else {
       //   expression += condition.field;
-      console.log("prvCondition", prvCondition)
       expression += `${condition?.expression ? condition?.expression : ""} ${
         condition.field
       } ${condition.condition} ${condition.value} `;
@@ -159,7 +158,7 @@ const updateAllLevelActionsArray = (
   const existingLevel1Index = _nestedRows.findIndex(
     (item: any) => sectionLevel in item
   );
-  console.log("actionListactionListactionList", actionList);
+  console.log("actionList", actionList);
   if (existingLevel1Index !== -1) {
     return _nestedRows.map((prevData: any, index: number) => {
       if (index === existingLevel1Index) {
@@ -230,6 +229,25 @@ const getAllChildrenIDs = (o: any): any => {
   return ids;
 };
 
+
+const _updateExpressionByParentId = (
+  _data: any,
+  parentIds: any,
+  expression: any
+) => {
+  parentIds?.forEach((x: any) => {
+    _data?.map((i: any) => {
+      if (x === i.level) {
+        i.expression = expression;
+      } else {
+        _updateExpressionByParentId(i?.innerConditions, parentIds, expression);
+      }
+    });
+  });
+  const newArr = _data ? [..._data] : [];
+  return newArr;
+};
+
 export {
   updateByParentId,
   getNearestParentByItems,
@@ -240,5 +258,6 @@ export {
   removeByKey,
   findGroupId,
     getAllChildrenIDs,
-    getNestedParentLevel
+  getNestedParentLevel,
+  _updateExpressionByParentId
 };
