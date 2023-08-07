@@ -645,20 +645,11 @@ const RowContainer: React.FC<TableRowProps> = ({
                 <div
                   style={{
                     display: "flex",
-                  }}
-                >
-                  <div className="condition-label">And/Or </div>
-                  <div className="condition-label">Field </div>
-                  <div className="condition-label">Operator</div>
-                  <div className="condition-label">Value </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
                     flexDirection: "row",
                   }}
                 >
-                  <div className="condition-label">
+                  <div className="mr-20">
+                  <div className="condition-label">And/Or </div>
                     <DropDown
                       dropDownData={expressionSampleData}
                       isDisabled={condition?.level === 1 ? true : false}
@@ -669,7 +660,8 @@ const RowContainer: React.FC<TableRowProps> = ({
                     />{" "}
                   </div>
 
-                  <div className="condition-label">
+                  <div className="mr-20">
+                  <div className="condition-label">Field </div>
                     <FieldInput
                       sampleData={
                         questionList && questionList.length
@@ -683,7 +675,8 @@ const RowContainer: React.FC<TableRowProps> = ({
                       fieldName={"field"}
                     />{" "}
                   </div>
-                  <div className="condition-label">
+                  <div className="mr-20">
+                  <div className="condition-label">Operator</div>
                     <DropDown
                       dropDownData={operationalSampleData}
                       isDisabled={false}
@@ -693,7 +686,8 @@ const RowContainer: React.FC<TableRowProps> = ({
                       selectedValue={condition?.condition}
                     />
                   </div>
-                  <div className="condition-label">
+                  <div className="mr-20">
+                  <div className="condition-label">Value </div>
                     {questionList.find(
                       (x: { value: string }) => x.value === condition?.field
                     )?.questionType === dbConstants.questionTypes.numericQuestion ? (
@@ -762,7 +756,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     )}
                   </div>
 
-                  <div className="condition-label">
+                  <div className="custom-btn-wrap">
                     <Button
                       className="btn-default"
                       onClick={() => _handleDeleteRow(condition?.level)}
@@ -845,16 +839,14 @@ const RowContainer: React.FC<TableRowProps> = ({
           <div style={{ textAlign: "left", marginBottom: "10px" }}>
             {" "}
             {showActionOutput && "{ " + showActionOutput + " }"}{" "}
-            <div style={{ textAlign: "right", marginLeft: "88%" }}>
-              <div className="nestedBtns">
+            <div className="flex-end-wrap">
                 <Button
-                  className="mr-10 btn-default"
+                  className="btn-default"
                   onClick={() => handleSectionRemove(sectionLevel)}
                 >
                   {" "}
                   Remove Section
                 </Button>
-              </div>
             </div>
           </div>
 
