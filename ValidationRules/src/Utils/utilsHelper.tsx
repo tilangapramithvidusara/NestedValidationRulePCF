@@ -58,7 +58,7 @@ const generateOutputString = (conditions: string | any[]) => {
       const prvCondition = conditions[i - 1];
 
       // For add logic
-      if (condition.hasNested) {
+      if (condition && condition?.hasNested) {
         const innerExpression = generateOutputString(condition?.innerConditions || []);
         //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
         expression += `${condition?.expression ? condition?.expression : ""}  ( ${condition.field
@@ -98,7 +98,7 @@ const generateOutputString = (conditions: string | any[]) => {
       const prvCondition = conditions[i - 1];
 
       // For add logic
-      if (condition.hasNested) {
+      if (condition?.hasNested) {
         const innerExpression = generateOutputString(condition?.innerConditions || []);
         //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
         expression += `${condition?.expression ? condition?.expression : ""}  ${condition.field
@@ -106,8 +106,8 @@ const generateOutputString = (conditions: string | any[]) => {
           } `;
       } else {
         //   expression += condition.field;
-        expression += `${condition?.expression ? condition?.expression : ""} ${condition.field
-          } ${condition.condition} ${condition.value} `;
+        expression += `${condition?.expression ? condition?.expression : ""} ${condition?.field
+          } ${condition?.condition} ${condition?.value} `;
       }
     }
     expression = expression.replace(/\(\s*\|\|/, "(");
@@ -163,15 +163,26 @@ const updateAllLevelArray = (
   const existingLevel1Index = _nestedRows.findIndex(
     (item: any) => sectionLevel in item
   );
+  console.log("newRownewRow 11", newRow)
 
+  
   if (existingLevel1Index !== -1) {
+    console.log("newRownewRow", newRow)
     return _nestedRows.map((prevData: any, index: number) => {
       const existingActions = prevData[sectionLevel]?.actions;
       if (index === existingLevel1Index) {
         return {
           ...prevData,
           [sectionLevel]: {
-            fields: newRow,
+            fields: newRow?.map((x: any) => {
+              if (x?.innerConditions?.length === 0) {
+                return {
+                  ...x,
+                  hasNested:false
+                }
+              }
+              return x
+            }),
             actions:
               _nestedRows.find((x: any) => x[sectionLevel])?.[sectionLevel]
                 ?.actions || [],

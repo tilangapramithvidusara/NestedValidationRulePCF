@@ -667,9 +667,8 @@ const RowContainer: React.FC<TableRowProps> = ({
                   <div className="condition-label">Field </div>
                     <FieldInput
                       sampleData={
-                        questionList && questionList.length
-                          ? questionList
-                          : sampleInputQuestion
+                        questionList && questionList.length && questionList
+                          
                       }
                       selectedValue={condition?.field}
                       overrideSearch={false}
@@ -724,9 +723,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       )?.questionType === dbConstants.questionTypes.stringQuestion ? (
                       <FieldStringInputProps
                         sampleData={
-                          questionList && questionList.length
-                            ? questionList
-                            : sampleInputQuestion
+                          questionList && questionList.length && questionList 
                         }
                         selectedValue={condition?.value}
                         overrideSearch={false}
@@ -762,9 +759,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     ) : (
                       <FieldStringInputProps
                         sampleData={
-                          questionList && questionList.length
-                            ? questionList
-                            : sampleInputQuestion
+                          questionList && questionList.length && questionList
                         }
                         selectedValue={condition?.value}
                         overrideSearch={false}

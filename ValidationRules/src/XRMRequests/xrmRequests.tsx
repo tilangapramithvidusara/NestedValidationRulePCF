@@ -82,16 +82,16 @@ export const saveValidationRules = async(validationRuleData: object) => {
   ): Promise<any> => {
     try {
       let result = await window.parent.Xrm.WebApi.retrieveRecord(entityLogicalName, id, columnsNames);
-      let _result
-      if (result?.gyde_validationrule?.length) _result = result[dbConstants.question.gyde_minmaxvalidationrule];
-      else if(result?.gyde_visibilityrule?.length) _result = result[dbConstants.common.gyde_visibilityrule];
+      let _result = {}
+      if (result?.gyde_validationrule) _result = result[dbConstants.question.gyde_minmaxvalidationrule];
+      else if(result?.gyde_visibilityrule) _result = result[dbConstants.common.gyde_visibilityrule];
       // else if(result?.gyde_validationrule?.length) _result = result[dbConstants.common.gyde_validationrule];
-      else if (result?.gyde_documentoutputrule?.length) _result = result[dbConstants.question.gyde_documentOutputRule];
-      else _result = []
-      if (_result) {
-        _result = JSON.parse(_result)
-        if(!_result || !_result?.length) return { error: false, data: [], loading: false }; 
-      }
+      else if (result?.gyde_documentoutputrule) _result = result[dbConstants.question.gyde_documentOutputRule];
+      // console.log("RESULTTT", _result)
+      // if (_result) {
+      //   _result = JSON.parse(_result)
+      //   if(!_result || !_result?.length) return { error: false, data: [], loading: false }; 
+      // }
       return { error: false, data: _result, loading: false };
     } catch (error: any) {
       // handle error conditions
@@ -106,9 +106,12 @@ export const saveValidationRules = async(validationRuleData: object) => {
     data:any
   ): Promise<any> => {
     try {
-      console.log("saving requeesttttt", entityLogicalName, id, data);
-      const result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName, id, data);
-      console.log("saving requeesttttt result", result);
+      let result
+      if (Object.keys(data).length !== 0) {
+        console.log("saving requeesttttt", entityLogicalName, id, data);
+        result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName, id, data);
+        console.log("saving requeesttttt result", result);
+      }
       return { error: false, data: result, loading: false };
     } catch (error: any) {
       // handle error conditions

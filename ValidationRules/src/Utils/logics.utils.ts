@@ -378,8 +378,8 @@ const convertJSONFormatToDBFormat = (
         innerResult.push(condition);
       }
       if (
-        innerCondition.hasNested &&
-        innerCondition.innerConditions.length > 0
+        innerCondition?.hasNested &&
+        innerCondition?.innerConditions.length > 0
       ) {
         const nestedConditions = buildInnerConditions(
           innerCondition.innerConditions

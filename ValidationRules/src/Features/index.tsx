@@ -26,7 +26,15 @@ import { normalConverter } from "../Utils/dbFormatToJson";
 import { hasNullFields } from "../Utils/utilsHelper";
 // import NotificationPopup from "../Components/NotificationPopup";
 
-const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, imageUrl1: string, imageUrl2: string}) => {
+const ParentComponent = ({
+  imageUrl,
+  imageUrl1,
+  imageUrl2,
+}: {
+  imageUrl: string;
+  imageUrl1: string;
+  imageUrl2: string;
+}) => {
   const [conditionData, setConditionData] = useState<any[]>([]);
 
   // Get From XRM Requests
@@ -34,10 +42,10 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
   const [isLoadData, setIsLoadData] = useState<boolean>(false);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-    currentPosition: "question",
-  });
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+  //   currentPosition: "question",
+  // });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -114,10 +122,12 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
       formattedQuestionList &&
         formattedQuestionList.length &&
         setQuestionList(formattedQuestionList?.filter((x: any) => x));
+        setIsApiDataLoaded(false);
     } else {
       setQuestionList([]);
+      setIsApiDataLoaded(false);
     }
-    setIsApiDataLoaded(false);
+    
   };
 
   useEffect(() => {
@@ -149,18 +159,25 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
         .map((key: any) => ({ key: parseInt(key) }))
     );
     _getCurrentState();
-    console.log("imageUrl, imageUrl1, imageUrl2", imageUrl, imageUrl1, imageUrl2)
+    console.log(
+      "imageUrl, imageUrl1, imageUrl2",
+      imageUrl,
+      imageUrl1,
+      imageUrl2
+    );
   }, []);
 
   useEffect(() => {
-    console.log("_visibilityRulePrev", _visibilityRulePrev)
+    console.log("_visibilityRulePrev", _visibilityRulePrev);
     if (_visibilityRulePrev?.length) {
       let key = 30;
       _visibilityRulePrev.forEach((dbData) => {
         console.log("Loading Visibility Data", dbData);
         _setNestedRows((prevData: any) => {
-          if (dbData?.visibility?.length) {
-            const visibilityString = dbData.visibility;
+          let visibilityString = dbData?.visibility?.if?.length ? dbData?.visibility?.if : [dbData?.visibility]
+          console.log("visibilityString", visibilityString);
+          if (visibilityString) {
+            // const visibilityString = dbData?.visibility?.if;
             const showUpdatedDataArray: any[] = [];
             let visibilityDta = visibilityString;
             let refactorDta = visibilityDta;
@@ -170,22 +187,22 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
             const isFirstExp = visibilityDta?.some(
               (x: any) => !Object.keys(x)[0]
             );
-            const isAllAreNormal = visibilityDta?.every((x: { or: any[]; }) => {
-              const keys = x?.or?.map((x: {}) => Object.keys(x)[0])
-                return keys?.includes('and') || keys?.includes('or')
-              })
+            const isAllAreNormal = visibilityDta?.every((x: { or: any[] }) => {
+              const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
+              return keys?.includes("and") || keys?.includes("or");
+            });
             console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
             console.log("Fetch Type isFirstExp", isFirstExp);
             console.log("Fetch Type isAllAreNormal", isAllAreNormal);
 
             if (isAllAreNormal) {
-              refactorDta = visibilityDta[0]?.or
+              refactorDta = visibilityDta[0]?.or;
             } else if (isRetrieveAsNormal) {
               // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
               refactorDta = visibilityDta;
-            } else if (isFirstExp) { 
+            } else if (isFirstExp) {
               // refactorDta = visibilityDta;
-              refactorDta = [ { or: Object.values(visibilityDta[0])[0] } ]
+              refactorDta = [{ or: Object.values(visibilityDta[0])[0] }];
             } else {
               refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
             }
@@ -196,10 +213,7 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
             );
             if (refactorDta && refactorDta?.length) {
               refactorDta?.forEach((fieldDta: any): any => {
-                console.log(
-                  "Each Section Field Data",
-                  fieldDta
-                );
+                console.log("Each Section Field Data", fieldDta);
                 let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
 
                 showUpdatedDataArray.push({
@@ -220,7 +234,7 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
                   },
                 });
               });
-  
+
               if (showUpdatedDataArray && showUpdatedDataArray.length) {
                 console.log(
                   "Validation DB Dataaa showUpdatedDataArray ",
@@ -233,7 +247,6 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
                 return [...prevData, ...showUpdatedDataArray];
               }
             }
-            
           }
         });
       });
@@ -247,38 +260,37 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
       _documentOutputRulePrev.forEach((dbData) => {
         console.log("Loading Document Output Data", dbData);
         _setNestedRows((prevData: any) => {
-          if (dbData?.docRuleOutput?.length) {
-            const docRuleOutput = dbData?.docRuleOutput;
+          let docRuleOutput = dbData?.docRuleOutput?.if?.length ? dbData?.docRuleOutput?.if : [dbData?.docRuleOutput]
+          console.log("docRuleOutput String", docRuleOutput);
+          if (docRuleOutput) {
+            // docRuleOutput = dbData?.docRuleOutput?.if;
             const showUpdatedDocOutputDataArray: any[] = [];
             let docOutputDta = docRuleOutput;
             // const refactorDta = removeIfKeyAndGetDbProperty(docOutputDta);
             // let visibilityDta = docOutputDta;
-            console.log(
-              "Document Data Converting ---->>>> ",
-              docOutputDta
-            );
+            console.log("Document Data Converting ---->>>> ", docOutputDta);
             const isRetrieveAsNormal = docRuleOutput?.some(
               (x: any) => x?.or?.length || x?.and?.length
             );
             const isFirstExp = docRuleOutput?.some(
               (x: any) => !Object.keys(x)[0]
             );
-            const isAllAreNormal = docRuleOutput?.every((x: { or: any[]; }) => {
-              const keys = x?.or?.map((x: {}) => Object.keys(x)[0])
-                return keys?.includes('and') || keys?.includes('or')
-              })
+            const isAllAreNormal = docRuleOutput?.every((x: { or: any[] }) => {
+              const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
+              return keys?.includes("and") || keys?.includes("or");
+            });
             console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
             console.log("Fetch Type isFirstExp", isFirstExp);
             console.log("Fetch Type isAllAreNormal", isAllAreNormal);
 
             if (isAllAreNormal) {
-              docOutputDta = docRuleOutput[0]?.or
+              docOutputDta = docRuleOutput[0]?.or;
             } else if (isRetrieveAsNormal) {
               // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
               docOutputDta = docRuleOutput;
-            } else if (isFirstExp) { 
+            } else if (isFirstExp) {
               // refactorDta = visibilityDta;
-              docOutputDta = [ { or: Object.values(docRuleOutput[0])[0] } ]
+              docOutputDta = [{ or: Object.values(docRuleOutput[0])[0] }];
             } else {
               docOutputDta = removeIfKeyAndGetDbProperty(docRuleOutput);
             }
@@ -338,7 +350,7 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
       _minMaxRulePrev.forEach((dbData) => {
         console.log("Loading _minMaxRulePrev", dbData);
         _setNestedRows((prevData: any) => {
-          if (dbData?.minMax) {
+          if (dbData?.minMax?.length?.if) {
             const minMax = dbData?.minMax;
             const minMaxOutputDataArray: any[] = [];
             let minMaxDta = minMax;
@@ -468,43 +480,74 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
         `?$select=${dbConstants.question.gyde_documentOutputRule}`
       );
     }
-    if (visibilityRulePreviousValues?.data?.length) {
+    if (visibilityRulePreviousValues?.data && Object.keys(visibilityRulePreviousValues?.data).length !== 0) {
       console.log(
         "visibilityRulePreviousValues -----> ",
         visibilityRulePreviousValues
       );
-      let _visibilityRulePreviousValues = JSON.parse(JSON.stringify(visibilityRulePreviousValues));
+      let _visibilityRulePreviousValues = JSON.parse(
+        JSON.stringify(visibilityRulePreviousValues)
+      );
       _setVisibilityRulePrev((prevData: any) => [
         ...prevData,
-        { visibility: _visibilityRulePreviousValues?.data },
+        { visibility: JSON.parse(_visibilityRulePreviousValues?.data) },
       ]);
     }
-      
-    if (minMaxPreviousValues?.data?.length) {
-      let _minMaxPreviousValues = JSON.parse(JSON.stringify(minMaxPreviousValues));
+
+    if (minMaxPreviousValues?.data && Object.keys(minMaxPreviousValues?.data).length !== 0) {
+      let _minMaxPreviousValues = JSON.parse(
+        JSON.stringify(minMaxPreviousValues)
+      );
       _setMinMaxRulePrev((prevData: any) => [
         ...prevData,
-        { minMax: _minMaxPreviousValues?.data },
+        { minMax: JSON.parse(_minMaxPreviousValues?.data) },
       ]);
     }
-      
+
     // if (validationRulePreviousValues?.data?.length) _setEnabledPrev((prevData: any) => [...prevData, { validation: validationRulePreviousValues?.data }]);
-    if (documentOutputRule?.data?.length) {
+    if (documentOutputRule?.data && Object.keys(documentOutputRule?.data).length !== 0) {
       let _documentOutputRule = JSON.parse(JSON.stringify(documentOutputRule));
       _setDocumentOutputRulePrev((prevData: any) => [
         ...prevData,
-        { docRuleOutput: _documentOutputRule?.data },
+        { docRuleOutput: JSON.parse(_documentOutputRule?.data) },
       ]);
     }
-     
+
     //test
     // _setVisibilityRulePrev((prevValue) => [
     //   ...prevValue,
     //   {
-    //     visibility: [{ "or": [ { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 2213" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 2aws" ] } ] }, { "and": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-02" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2qawd" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "22213" ] } ] } ] }]
+    //     visibility: 
+    //     [{"or" : [
+    //       {"and" : [
+    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
+    //         {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
+    //       ]},
+    //       {"and" : [
+    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
+    //         {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
+    //       ]},
+    //       {"and" : [
+    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
+    //         {"==": [{ var: "FSCM_PL_INV_010"}, "AP"]},
+    //       ]},
+    //       {"and" : [
+    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
+    //         { "==": [{ var: "FSCM_PL_INV_010" }, "AP"] },
+    //         {
+    //           "or": [{"==": [{ var: "FSCM_PL_INV_001"}, "Y"]}]
+    //         }
+    //       ]
+          
+    //       }
+    //       ]}]
     //   }
     // ])
-    
+
     // _setVisibilityRulePrev((prevValue) => [
     //   ...prevValue,
     //   {
@@ -519,7 +562,7 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
     // ]);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"NTemp_C01_04_Q_04"},"2021-10-10"]},{"==":[{"var":"NTemp_C01_04_Q_04"},5]},{"and":[{"==":[{"var":"26862_C1_S1_001"},6]}]}]},[{"type":"MINIMUM_LENGTH","value":13,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":3,"inclusive":true}],{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},4]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":2,"inclusive":true}]]}]}] }]);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_002"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_002"},7]}]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":{"var":"26862_C1_S1_002"},"inclusive":true}]]}]}]);
-    // _setDocumentOutputRulePrev((prevData: any) => [...prevData, {docRuleOutput: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
+    // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
   };
   useEffect(() => {
@@ -532,10 +575,12 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
   useEffect(() => {
     console.log("deleteSectionKey", deleteSectionKey);
     if (deleteSectionKey) {
-      _setNestedRows((prevNestedRows: any) =>
-        prevNestedRows.filter(
+      _setNestedRows((prevNestedRows: any) => {
+        return prevNestedRows.filter(
           (key: any) => parseInt(Object.keys(key)[0]) !== deleteSectionKey
         )
+      }
+        
       );
       setSections((prev: any) =>
         prev.filter((prevKeys: any) => prevKeys.key !== deleteSectionKey)
@@ -572,7 +617,7 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
     if (
       currentPossitionDetails?.id &&
       (currentPossitionDetails.currentPosition === "section" ||
-        currentPossitionDetails?.currentPosition === "chapter")
+        currentPossitionDetails?.currentPosition === "chapter") 
     ) {
       await saveRequest(logicalName, currentPossitionDetails?.id, {
         [dbConstants.common.gyde_visibilityrule]:
@@ -582,26 +627,28 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
       currentPossitionDetails?.id &&
       currentPossitionDetails?.currentPosition === "question"
     ) {
-      await saveRequest(logicalName, currentPossitionDetails?.id, {
-        [dbConstants.common.gyde_visibilityrule]:
-          JSON.stringify(visibilityRule),
-      });
-      await saveRequest(logicalName, currentPossitionDetails?.id, {
-        [dbConstants.question.gyde_minmaxvalidationrule]:
-          JSON.stringify(minMaxDBFormatArray),
-      });
-      // await saveRequest(
-      //   logicalName,
-      //   currentPossitionDetails?.id,
-      //   {
-      //     [dbConstants.common.gyde_validationrule]:
-      //       JSON.stringify(validationRule),
-      //   }
-      // );
-      await saveRequest(logicalName, currentPossitionDetails?.id, {
-        [dbConstants.question.gyde_documentOutputRule]:
-          JSON.stringify(outputDocShow),
-      });
+      console.log("Before Saving visibilityRule", visibilityRule);
+      console.log("Before Saving minMaxDBFormatArray", minMaxDBFormatArray)
+      console.log("Before Saving outputDocShow", outputDocShow)
+      if (visibilityRule) {
+        await saveRequest(logicalName, currentPossitionDetails?.id, {
+          [dbConstants.common.gyde_visibilityrule]:
+            JSON.stringify(visibilityRule),
+        });
+      }
+      if (minMaxDBFormatArray) {
+        await saveRequest(logicalName, currentPossitionDetails?.id, {
+          [dbConstants.question.gyde_minmaxvalidationrule]:
+            JSON.stringify(minMaxDBFormatArray),
+        });
+      }
+      if (outputDocShow) {
+        await saveRequest(logicalName, currentPossitionDetails?.id, {
+          [dbConstants.question.gyde_documentOutputRule]:
+            JSON.stringify(outputDocShow),
+        });
+      }
+      
     }
     openNotificationWithIcon("success", "Data Saved!");
   };
@@ -620,6 +667,10 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
 
     let showIfCount = 0;
     let outputDocShowCount = 0;
+
+    let isVisibilityNested: any = [];
+    let isShowInDocNested: any = [];
+    let isMinMaxNested: any = [];
 
     if (!validation.minMaxValidation) {
       openNotificationWithIcon("error", "MinMax Validation Must be passed!");
@@ -690,17 +741,28 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
           //   );
           // }
           showIfCount = showIfCount + 1;
-          const _visibility = convertJSONFormatToDBFormat(sec[key], true);
-            visibilityRuleNormal.push(_visibility);
-            visibilityRule = findAndUpdateLastNestedIf(
-              visibilityRule,
-              { if: [_visibility] },
-              false
+          isVisibilityNested.push(
+            sec[key]?.fields?.some(
+              (flds: { hasNested: any }) => flds?.hasNested
             )
+          );
+
+          const _visibility = convertJSONFormatToDBFormat(sec[key], true);
+          visibilityRuleNormal.push(_visibility);
+          visibilityRule = findAndUpdateLastNestedIf(
+            visibilityRule,
+            { if: [_visibility] },
+            false
+          );
         }
         if (isOutputDocShowExists) {
           outputDocShowCount = outputDocShowCount + 1;
           const _outputDocShow = convertJSONFormatToDBFormat(sec[key], true);
+          isShowInDocNested.push(
+            sec[key]?.fields?.some(
+              (flds: { hasNested: any }) => flds?.hasNested
+            )
+          );
 
           // if (outputDocShowCount > 1) {
           //   outputDocShow = findAndUpdateLastNestedIf(
@@ -716,12 +778,12 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
           //     false
           //   );
           // }
-            outputDocShowNormal.push(_outputDocShow);
-            outputDocShow = findAndUpdateLastNestedIf(
-              outputDocShow,
-              { if: [_outputDocShow] },
-              false
-            );
+          outputDocShowNormal.push(_outputDocShow);
+          outputDocShow = findAndUpdateLastNestedIf(
+            outputDocShow,
+            { if: [_outputDocShow] },
+            false
+          );
         }
         if (isEnableExists) {
           console.log(
@@ -742,6 +804,9 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
 
       if (minMaxExists) {
         console.log("Min Max when saving ----> ", sec[key].actions[0]?.minMax);
+        isMinMaxNested.push(
+          sec[key]?.fields?.some((flds: { hasNested: any }) => flds?.hasNested)
+        );
         const _minMaxDbFormarFields = convertJSONFormatToDBFormat(
           sec[key],
           true
@@ -787,97 +852,138 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
       }
     });
 
-
-
     console.log("Show saving logic visibilityRule", visibilityRule);
     console.log("Show saving logic visibilityRuleNormal", visibilityRuleNormal);
 
     console.log("Show saving logic ValidationRule", validationRule);
-    console.log("Show saving logic Validation Rule Normal", validationRuleNormal);
+    console.log(
+      "Show saving logic Validation Rule Normal",
+      validationRuleNormal
+    );
 
     console.log("Show saving logic OutputDoc Show", outputDocShow);
-    console.log("Show saving logic Output Doc Show Normal", outputDocShowNormal);
+    console.log(
+      "Show saving logic Output Doc Show Normal",
+      outputDocShowNormal
+    );
 
     console.log("Show saving logic Min Max Rule", minMaxDBFormatArray);
-    
-    let savedVisibilityRuleFinalFormat;
-    let savedValidationRuleFinalFormat;
-    let savedOutputDocShowRuleFinalFormat;
+
+    let savedVisibilityRuleFinalFormat: any = [];
+    let savedValidationRuleFinalFormat : any = [];
+    let savedOutputDocShowRuleFinalFormat: any = [];
     let savedMinMaxRuleFinalFormat;
 
-    if (!saveAsIsNested) {
-      if (visibilityRuleNormal.length > 0 && Object.keys(visibilityRuleNormal[0])[0] === "") {
-          savedVisibilityRuleFinalFormat = visibilityRuleNormal
-      }
-      else {
-        savedVisibilityRuleFinalFormat = [{
-          "or": visibilityRuleNormal
-        }]
-      }
-      
-      if (validationRuleNormal.length > 0 &&  Object.keys(validationRuleNormal[0])[0] === "") {
-        savedValidationRuleFinalFormat = validationRuleNormal
-      }
-      else {
-        savedValidationRuleFinalFormat = [{
-          "or": validationRuleNormal
-        }]
-      }
+    if (
+      isVisibilityNested.length &&
+      isVisibilityNested.length > 0 &&
+      !isVisibilityNested.some((x: any) => x)
+    ) {
+      if (
+        visibilityRuleNormal.length > 0 &&
+        Object.keys(visibilityRuleNormal[0])[0] === ""
+      ) {
+        // savedVisibilityRuleFinalFormat = visibilityRuleNormal;
+        savedVisibilityRuleFinalFormat = {
+          if: visibilityRuleNormal
+        };
 
-      if (outputDocShowNormal.length > 0 && Object.keys(outputDocShowNormal[0])[0] === "") {
-        savedOutputDocShowRuleFinalFormat = outputDocShowNormal
+      } else {
+        // savedVisibilityRuleFinalFormat = [
+        //   {
+        //     or: visibilityRuleNormal,
+        //   },
+        // ];
+        savedVisibilityRuleFinalFormat = {
+          if: [
+            {
+              or: visibilityRuleNormal,
+            },
+          ]
+        };
       }
-      else {
-        savedOutputDocShowRuleFinalFormat = [{
-          "or": outputDocShowNormal
-        }]
-      }
-  
-        savedMinMaxRuleFinalFormat = minMaxDBFormatArray
     } else {
-      // if (
-      //   (visibilityRule && visibilityRule.length) ||
-      //   (minMaxDBFormatArray && minMaxDBFormatArray.length) ||
-      //   (outputDocShow && outputDocShow.length) ||
-      //   (validationRule && validationRule.length) ||
-      //   (visibilityRuleNormal && visibilityRuleNormal.length) ||
-      //   (outputDocShowNormal && outputDocShowNormal.length)
-      // ) {
-        console.log("DATA Saving visibilityRule", visibilityRule);
-        console.log("DATA Saving validationRule", validationRule);
-        console.log("DATA Saving outputDocShow", outputDocShow);
-        console.log("DATA Saving minMaxDBFormatArray", minMaxDBFormatArray);
-
-        savedVisibilityRuleFinalFormat = visibilityRule
-        savedValidationRuleFinalFormat = validationRule
-        savedOutputDocShowRuleFinalFormat = outputDocShow
-        savedMinMaxRuleFinalFormat = minMaxDBFormatArray
-
-        // saveVisibilityData(
-        //   showIfCount > 1 ? visibilityRule : visibilityRuleNormal,
-        //   validationRule,
-        //   outputDocShowCount > 1 ? outputDocShow : outputDocShowNormal,
-        //   minMaxDBFormatArray
-        // );
-      // }
+      savedVisibilityRuleFinalFormat = visibilityRule[0];
+    }
+    if (
+      isShowInDocNested.length &&
+      isShowInDocNested.length > 0 &&
+      !isShowInDocNested.some((x: any) => x)
+    ) {
+      if (
+        outputDocShowNormal.length > 0 &&
+        Object.keys(outputDocShowNormal[0])[0] === ""
+      ) {
+        // savedOutputDocShowRuleFinalFormat = outputDocShowNormal;
+        // savedOutputDocShowRuleFinalFormat = [{
+        //   if: [
+        //     {
+        //       or: outputDocShowNormal,
+        //     }
+        //   ]
+        // }]
+        savedOutputDocShowRuleFinalFormat = {
+          if: outputDocShowNormal
+        };
+      } else {
+        // savedOutputDocShowRuleFinalFormat = [
+        //   {
+        //     or: outputDocShowNormal,
+        //   },
+        // ];
+        savedOutputDocShowRuleFinalFormat = {
+          if: [
+            {
+              or: outputDocShowNormal,
+            }
+          ]
+        }
+      }
+    } else {
+      savedOutputDocShowRuleFinalFormat = outputDocShow[0];
+    }
+    if (
+      isMinMaxNested.length &&
+      isMinMaxNested.length > 0 &&
+      !isMinMaxNested.some((x: any) => x)
+    ) {
+      savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
+    } else {
+      savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
     }
 
+    console.log(
+      "savedVisibilityRuleFinalFormat",
+      savedVisibilityRuleFinalFormat
+    );
+    console.log(
+      "savedValidationRuleFinalFormat",
+      savedValidationRuleFinalFormat
+    );
 
-    console.log("savedVisibilityRuleFinalFormat", savedVisibilityRuleFinalFormat);
-    console.log("savedValidationRuleFinalFormat", savedValidationRuleFinalFormat);
-
-    console.log("savedOutputDocShowRuleFinalFormat", savedOutputDocShowRuleFinalFormat);
+    console.log(
+      "savedOutputDocShowRuleFinalFormat",
+      savedOutputDocShowRuleFinalFormat
+    );
     console.log("savedMinMaxRuleFinalFormat", savedMinMaxRuleFinalFormat);
 
-    if (validation?.minMaxValidation &&
+    if (
+      validation?.minMaxValidation &&
       validation.andOrValidation &&
-      validation.nestingLevelValidation) {
+      validation.nestingLevelValidation
+    ) {
+      if (
+        (Object.keys(savedVisibilityRuleFinalFormat)[0]!) ||
+        (Object.keys(savedValidationRuleFinalFormat)[0]!) ||
+        (Object.keys(savedOutputDocShowRuleFinalFormat)[0]!) ||
+        (Object.keys(savedMinMaxRuleFinalFormat)[0]!
+      ))
       saveVisibilityData(
         savedVisibilityRuleFinalFormat,
         savedValidationRuleFinalFormat,
         savedOutputDocShowRuleFinalFormat,
-        savedMinMaxRuleFinalFormat
-          );
+        !savedMinMaxRuleFinalFormat?.length ? undefined : savedMinMaxRuleFinalFormat
+      );
     } else {
       openNotificationWithIcon("error", "Validation Must be passed!");
     }
@@ -934,14 +1040,11 @@ const ParentComponent = ({imageUrl, imageUrl1, imageUrl2}: {imageUrl: string, im
         </div>
       ) : (
         <Space size="middle">
-            <div>
-              <div>
-              Questions Loading!
-              </div>
-              <div>
+          <div>
+            <div>Questions Loading!</div>
+              <div style={{marginTop: '10px'}}>
               <Spin />
-              </div>
-            
+            </div>
           </div>
         </Space>
       )}
