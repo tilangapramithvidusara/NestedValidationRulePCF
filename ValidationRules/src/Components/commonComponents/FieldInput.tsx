@@ -23,6 +23,7 @@ const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overr
     }
     
     const onChangeSearchEvent = (input: any, option: any) => {
+        console.log("INPPPP", input)
         setFieldValue({input, changedId, fieldName})
     }
     return (

@@ -35,6 +35,7 @@ interface SectionProps {
   setValidation: any;
   setDeleteSectionKey: any;
   setSaveAsIsNested: any;
+  imageUrls: any
 }
 
 function SectionContainer({
@@ -48,7 +49,8 @@ function SectionContainer({
   questionList,
   setValidation,
   setDeleteSectionKey,
-  setSaveAsIsNested
+  setSaveAsIsNested,
+  imageUrls
 }: SectionProps) {
   const [rowData, setRowData] = useState<any>();
   const [toggleEnableMin, setToggledEnableMin] = useState<any | null>(false);
@@ -103,16 +105,16 @@ function SectionContainer({
         let releatedActions = releatedFields[sectionLevel]?.actions
         console.log("ACTSSSSS releatedFields", releatedActions);
         // if (actions && actions.length)
-        if (actions && actions.length && releatedSection?.fields?.length) {
+        // if (actions && actions.length && releatedSection?.fields?.length) {
           _setNestedRows(
             updateAllLevelActionsArray(_nestedRows, sectionLevel, [
               {
-                checkBoxValues: actions,
+                checkBoxValues: actions && actions.length ? actions : [],
                 minMax: releatedActions.map((x: { minMax: any; }) => x?.minMax)[0] || {}
               }
             ])
             );
-        }
+        // }
          
       }
 
@@ -120,21 +122,23 @@ function SectionContainer({
 
   useEffect(() => {
     console.log("Min Max Rendering ..... ", minMaxValue);
-    if (minValue?.input || maxValue?.input) {
+    // if (minValue?.input || maxValue?.input) {
       setMinMaxValue({ minValue: minValue?.input, maxValue: maxValue?.input });
       let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
       if (releatedFields) {
-        const previousActions = releatedFields[sectionLevel]?.actions?.map((obj: { checkBoxValues: any; }) => obj.checkBoxValues)
+        const previousActions = releatedFields[sectionLevel]?.actions?.map((obj: { checkBoxValues: any; }) => obj.checkBoxValues);
+        const minMaxDisplay = { minValue: minValue?.input, maxValue: maxValue?.input };
+        console.log("MINMAX", minMaxDisplay)
         _setNestedRows(
           updateAllLevelActionsArray(_nestedRows, sectionLevel, [
             {
               checkBoxValues: previousActions[0] || [],
-              minMax: { minValue: minValue?.input, maxValue: maxValue?.input }
+              minMax: minMaxDisplay 
             }
           ])
         );
       }
-    }
+    // }
   }, [minValue, maxValue]);
 
   useEffect(() => {
@@ -206,7 +210,24 @@ function SectionContainer({
 
   useEffect(() => {
     console.log("minMaxValidationminMaxValidation", minMaxValidation)
-  }, [minMaxValidation])
+  }, [minMaxValidation]);
+
+  useEffect(() => {
+    setMinValue({ input: null, changedId: "", fieldName: "minValue" })
+  }, [toggleEnableMin])
+
+  useEffect(() => {
+    setMaxValue({ input: null, changedId: "", fieldName: "maxValue" })
+  }, [toggleEnableMax])
+
+
+  useEffect(() => {
+    if(!minCheckboxEnabled) setMinValue({ input: null, changedId: "", fieldName: "minValue" })
+  }, [minCheckboxEnabled])
+
+  useEffect(() => {
+    if(!maxCheckboxEnabled) setMaxValue({ input: null, changedId: "", fieldName: "maxValue" })
+  }, [maxCheckboxEnabled])
 
   return (
     <div>
@@ -224,6 +245,7 @@ function SectionContainer({
           questionList={questionList}
           handleSectionRemove={handleSectionRemove}
           setSaveAsIsNested={setSaveAsIsNested}
+          imageUrls={imageUrls}
         />
       ))}
 
@@ -281,7 +303,7 @@ function SectionContainer({
                     />
                 ) : (
                   <DropDown
-                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: { questionType: string; }) => ques.questionType === 'Numeric') : []}
+                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric' && maxValue?.input !== ques?.value) : []}
                     isDisabled={!minCheckboxEnabled}
                     setExpression={setMinValue}
                     changedId={undefined}
@@ -322,7 +344,7 @@ function SectionContainer({
                       validatingSuccess={minMaxValidation} />
                 ) : (
                   <DropDown
-                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: { questionType: string; }) => ques.questionType === 'Numeric') : []}
+                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric' && minValue?.input !== ques?.value ) : []}
                     isDisabled={!maxCheckboxEnabled}
                     setExpression={setMaxValue}
                     changedId={undefined}

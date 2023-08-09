@@ -48,46 +48,89 @@ const getNearestParentByItems = (
 const generateOutputString = (conditions: string | any[]) => {
   let expression = "";
 
-  for (let i = 0; i < conditions.length; i++) {
-    const condition = conditions[i];
-    const nxtCondition = conditions[i+1];
-    const prvCondition = conditions[i - 1];
-
-    if (condition.hasNested) {
-      const innerExpression = generateOutputString(condition?.innerConditions || []);
-      //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
-      expression += `${condition?.expression ? condition?.expression : ""} ( ${
-        condition.field
-      } ${condition.condition} ${condition.value} ${
-        innerExpression && innerExpression.length ? ` ${innerExpression} ` : ""
-      } `;
-    } else {
-      //   expression += condition.field;
-      expression += `${condition?.expression ? condition?.expression : ""} ${
-        condition.field
-      } ${condition.condition} ${condition.value} `;
-    }
-  }
+  const firstCondition = conditions[0]?.hasNested
+  console.log("FRDDD", firstCondition)
+  if (firstCondition) {
     
-  let openBrackets = 0;
-  let closeBrackets = 0;
+    for (let i = 0; i < conditions.length; i++) {
+      const condition = conditions[i];
+      const nxtCondition = conditions[i + 1];
+      const prvCondition = conditions[i - 1];
 
-  for (let i = 0; i < expression.length; i++) {
-    const char = expression.charAt(i);
-    if (char === '(') {
-      openBrackets++;
-    } else if (char === ')') {
-      closeBrackets++;
+      // For add logic
+      if (condition.hasNested) {
+        const innerExpression = generateOutputString(condition?.innerConditions || []);
+        //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
+        expression += `${condition?.expression ? condition?.expression : ""}  ( ${condition.field
+          } ${condition.condition} ${condition.value} ${innerExpression && innerExpression.length ? ` ${innerExpression} )` : ""
+          } `;
+      } else {
+        //   expression += condition.field;
+        expression += `${condition?.expression ? condition?.expression : ""} ${condition.field
+          } ${condition.condition} ${condition.value} `;
+      }
+    }
+    expression = expression.replace(/\(\s*\|\|/, "(");
+    expression = expression.replace(/\(\s*&&/, "(");
+    let openBrackets = 0;
+    let closeBrackets = 0;
+
+    for (let i = 0; i < expression.length; i++) {
+      const char = expression.charAt(i);
+      if (char === '(') {
+        openBrackets++;
+      } else if (char === ')') {
+        closeBrackets++;
+      }
+    }
+
+    const missingBrackets = openBrackets - closeBrackets;
+    if (missingBrackets > 0) {
+      for (let i = 0; i < missingBrackets; i++) {
+        expression += ')';
+      }
+    }
+
+  } else {
+    for (let i = 0; i < conditions.length; i++) {
+      const condition = conditions[i];
+      const nxtCondition = conditions[i + 1];
+      const prvCondition = conditions[i - 1];
+
+      // For add logic
+      if (condition.hasNested) {
+        const innerExpression = generateOutputString(condition?.innerConditions || []);
+        //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
+        expression += `${condition?.expression ? condition?.expression : ""}  ${condition.field
+          } ${condition.condition} ${condition.value} ${innerExpression && innerExpression.length ? ` ( ${innerExpression} )` : ""
+          } `;
+      } else {
+        //   expression += condition.field;
+        expression += `${condition?.expression ? condition?.expression : ""} ${condition.field
+          } ${condition.condition} ${condition.value} `;
+      }
+    }
+    expression = expression.replace(/\(\s*\|\|/, "(");
+    expression = expression.replace(/\(\s*&&/, "(");
+    let openBrackets = 0;
+    let closeBrackets = 0;
+
+    for (let i = 0; i < expression.length; i++) {
+      const char = expression.charAt(i);
+      if (char === '(') {
+        openBrackets++;
+      } else if (char === ')') {
+        closeBrackets++;
+      }
+    }
+
+    const missingBrackets = openBrackets - closeBrackets;
+    if (missingBrackets > 0) {
+      for (let i = 0; i < missingBrackets; i++) {
+        expression += ')';
+      }
     }
   }
-
-  const missingBrackets = openBrackets - closeBrackets;
-  if (missingBrackets > 0) {
-    for (let i = 0; i < missingBrackets; i++) {
-      expression += ')';
-    }
-  }
-
   return expression;
 };
 
@@ -99,7 +142,9 @@ const updateFieldByLevel = (
   for (let item of array) {
     if (item.level === targetLevel) {
       const { fieldName, fieldValue } = updatedField;
-      if (fieldName && fieldValue) item[fieldName] = fieldValue;
+      console.log("KKKFKFKFKF", fieldName, fieldValue)
+      // if (fieldName && fieldValue) item[fieldName] = fieldValue;
+      if (fieldName) item[fieldName] = fieldValue;
     }
 
     if (item.innerConditions && item.innerConditions.length > 0) {
@@ -248,6 +293,20 @@ const _updateExpressionByParentId = (
   return newArr;
 };
 
+
+const hasNullFields = (obj: any) => {
+
+  return obj?.some((x: { innerConditions: any; value: any; expression: any; condition: any; }) => {
+    if (x?.innerConditions) {
+      if (!x?.value || !x?.expression || !x.value || !x.condition) {
+        return true; // Found a null or undefined field
+      } else {
+        return hasNullFields(x.innerConditions); // Recursively check innerConditions array
+      }
+    }
+  });
+}
+
 export {
   updateByParentId,
   getNearestParentByItems,
@@ -257,7 +316,8 @@ export {
   updateAllLevelActionsArray,
   removeByKey,
   findGroupId,
-    getAllChildrenIDs,
+  getAllChildrenIDs,
   getNestedParentLevel,
-  _updateExpressionByParentId
+  _updateExpressionByParentId,
+  hasNullFields
 };

@@ -1,11 +1,11 @@
 
 export const operationalSampleData: any[] = [{
     options: [
-        { label: "isEqualTo", value: "==" },
-        { label: "greater", value: ">" },
-        { label: "lowerThan", value: "<" },
-        { label: "greaterThan or equal", value: ">=" },
-        { label: "LowerThan or equal", value: "<=" }
+        { label: "IsEqualTo", value: "==" },
+        { label: "GreaterThan", value: ">" },
+        { label: "LowerThan", value: "<" },
+        { label: "GreaterThanOrEqual", value: ">=" },
+        { label: "LowerThanOrEqual", value: "<=" }
     ],
 }];
 

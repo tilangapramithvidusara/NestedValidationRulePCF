@@ -286,21 +286,21 @@ const convertJSONFormatToDBFormat = (
   const minMax = allSections?.actions[0]?.minMax;
   const arr = allSections.fields;
 
-  let parentExpression = 'or';
+  let parentExpression = '';
 
-  if (arr[1] && arr[1].expression) {
+  if (arr[1] && arr[1]?.expression) {
     parentExpression = arr[1]?.expression === '&&' ? 'and' : 'or';
   } else if (
-    arr[0] &&
-    arr[0].expression &&
-    arr[0].expression?.innerConditions[0]?.expression
+    arr[1] &&
+    arr[1].expression &&
+    arr[1].expression?.innerConditions[0]?.expression
   ) {
     parentExpression =
-      arr[0].expression?.innerConditions[0]?.expression === '&&' ? 'and' : 'or';
+      arr[1].expression?.innerConditions[0]?.expression === '&&' ? 'and' : 'or';
   }
-  console.log("convertJSONFormatToDBFormat", arr);
-  console.log("convertJSONFormatToDBFormat allSections", allSections);
-  console.log("parentExpression", parentExpression);
+  // console.log("convertJSONFormatToDBFormat", arr);
+  // console.log("convertJSONFormatToDBFormat allSections", allSections);
+  // console.log("parentExpression", parentExpression);
 
   function buildCondition(conditionObj: {
     condition: any;
@@ -370,6 +370,10 @@ const convertJSONFormatToDBFormat = (
     let innerResult : any = [];
     for (const innerCondition of innerConditions)  {
       const condition = buildCondition(innerCondition);
+      // console.log("condition", innerCondition)
+      const exp = innerCondition?.innerConditions[1]?.expression
+      // console.log("condition exp", exp?.innerConditions[1]?.expression)
+
       if (condition) {
         innerResult.push(condition);
       }
@@ -380,7 +384,7 @@ const convertJSONFormatToDBFormat = (
         const nestedConditions = buildInnerConditions(
           innerCondition.innerConditions
         );
-        innerResult.push({ [innerCondition.expression === '&&' || innerCondition.expression === 'and' || innerCondition.expression === 'AND' ? 'and' : 'or']: nestedConditions });
+        innerResult.push({ [exp === '&&' || exp === 'and' || exp === 'AND' ? 'and' : 'or']: nestedConditions });
       }
     }
     return innerResult;
@@ -396,13 +400,141 @@ const convertJSONFormatToDBFormat = (
       const nestedConditions = buildInnerConditions(
         conditionObj.innerConditions
       );
-      result.push({ [conditionObj.expression === '&&' || conditionObj.expression === 'and' || conditionObj.expression === 'AND' ? 'and' : 'or']: nestedConditions });
+      
+      const exp = conditionObj?.innerConditions[1]?.expression
+      result.push({ [exp === '&&' || exp === 'and' || exp === 'AND' ? 'and' : 'or']: nestedConditions });
     }
   }
 
   // return { "and": result };
   return { [parentExpression]: result };
 };
+
+// const convertJSONFormatToDBFormat = (
+//   allSections: any,
+//   visibilityRuleOverride: boolean
+// ) => {
+//   let result = [];
+//   const minMax = allSections?.actions[0]?.minMax;
+//   const arr = allSections.fields;
+
+//   let parentExpression = 'or';
+
+//   if (arr[1] && arr[1].expression) {
+//     parentExpression = arr[1]?.expression === '&&' ? 'and' : 'or';
+//   } else if (
+//     arr[0] &&
+//     arr[0].expression &&
+//     arr[0].expression?.innerConditions[0]?.expression
+//   ) {
+//     parentExpression =
+//       arr[0].expression?.innerConditions[0]?.expression === '&&' ? 'and' : 'or';
+//   }
+//   console.log("convertJSONFormatToDBFormat", arr);
+//   console.log("convertJSONFormatToDBFormat allSections", allSections);
+//   console.log("parentExpression", parentExpression);
+
+//   function buildCondition(conditionObj: {
+//     condition: any;
+//     field: any;
+//     value: any;
+//   }) {
+//     let condition;
+
+//     switch (conditionObj.condition) {
+//       case "==":
+//         visibilityRuleOverride
+//           ? (condition = {
+//               "==": [{ var: conditionObj.field }, conditionObj.value],
+//             })
+//           : (condition = {
+//               eq: [{ var: conditionObj.field }, conditionObj.value],
+//             });
+//         break;
+//       case "<":
+//         visibilityRuleOverride
+//           ? (condition = {
+//               "<": [{ var: conditionObj.field }, conditionObj.value],
+//             })
+//           : (condition = {
+//               lt: [{ var: conditionObj.field }, conditionObj.value],
+//             });
+
+//         break;
+//       case "<=":
+//         visibilityRuleOverride
+//           ? (condition = {
+//               "<=": [{ var: conditionObj.field }, conditionObj.value],
+//             })
+//           : (condition = {
+//               lte: [{ var: conditionObj.field }, conditionObj.value],
+//             });
+//         break;
+
+//       case ">":
+//         visibilityRuleOverride
+//           ? (condition = {
+//               ">": [{ var: conditionObj.field }, conditionObj.value],
+//             })
+//           : (condition = {
+//               gt: [{ var: conditionObj.field }, conditionObj.value],
+//             });
+
+//         break;
+//       case ">=":
+//         visibilityRuleOverride
+//           ? (condition = {
+//               ">=": [{ var: conditionObj.field }, conditionObj.value],
+//             })
+//           : (condition = {
+//               gte: [{ var: conditionObj.field }, conditionObj.value],
+//             });
+
+//         break;
+//       default:
+//         condition = null;
+//         break;
+//     }
+//     return condition;
+//   }
+
+//   function buildInnerConditions(innerConditions: any): any {
+//     let innerResult : any = [];
+//     for (const innerCondition of innerConditions)  {
+//       const condition = buildCondition(innerCondition);
+//       if (condition) {
+//         innerResult.push(condition);
+//       }
+//       if (
+//         innerCondition.hasNested &&
+//         innerCondition.innerConditions.length > 0
+//       ) {
+//         const nestedConditions = buildInnerConditions(
+//           innerCondition.innerConditions
+//         );
+//         innerResult.push({ [innerCondition.expression === '&&' || innerCondition.expression === 'and' || innerCondition.expression === 'AND' ? 'and' : 'or']: nestedConditions });
+//       }
+//     }
+//     return innerResult;
+//   }
+
+
+//   for (const conditionObj of arr) {
+//     const condition = buildCondition(conditionObj);
+//     if (condition) {
+//       result.push(condition);
+//     }
+//     if (conditionObj.hasNested && conditionObj.innerConditions.length > 0) {
+//       const nestedConditions = buildInnerConditions(
+//         conditionObj.innerConditions
+//       );
+//       result.push({ [conditionObj.expression === '&&' || conditionObj.expression === 'and' || conditionObj.expression === 'AND' ? 'and' : 'or']: nestedConditions });
+//     }
+//   }
+
+//   // return { "and": result };
+//   return { [parentExpression]: result };
+// };
 
 
 

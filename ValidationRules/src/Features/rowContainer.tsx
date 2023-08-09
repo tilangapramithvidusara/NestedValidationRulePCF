@@ -50,6 +50,7 @@ interface TableRowProps {
   questionList: any;
   handleSectionRemove: any;
   setSaveAsIsNested: any;
+  imageUrls: any
 }
 
 interface Condition {
@@ -74,7 +75,8 @@ const RowContainer: React.FC<TableRowProps> = ({
   _nestedRows,
   questionList,
   handleSectionRemove,
-  setSaveAsIsNested
+  setSaveAsIsNested,
+  imageUrls
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
@@ -189,6 +191,7 @@ const RowContainer: React.FC<TableRowProps> = ({
     );
 
     if (existingLevel1Index !== -1) {
+      console.log("FIELDDDSADD", fieldValue)
       _setNestedRows((prevData: any) => {
         const newData = [...prevData];
         newData[existingLevel1Index] = {
@@ -198,7 +201,7 @@ const RowContainer: React.FC<TableRowProps> = ({
               fieldValue?.changedId,
               {
                 fieldName: fieldValue?.fieldName,
-                fieldValue: fieldValue.input,
+                fieldValue: fieldValue?.input,
                 questionType: fieldValue?.questionType,
               }
             ),
@@ -676,20 +679,36 @@ const RowContainer: React.FC<TableRowProps> = ({
                     />{" "}
                   </div>
                   <div className="mr-20">
-                  <div className="condition-label">Operator</div>
-                    <DropDown
-                      dropDownData={operationalSampleData}
-                      isDisabled={false}
-                      setExpression={setFieldValue}
-                      changedId={condition?.level}
-                      fieldName={"condition"}
-                      selectedValue={condition?.condition}
-                    />
+                    <div className="condition-label">Operator</div>
+                    { questionList?.find(
+                        (x: { value: string }) => x?.value === condition?.field
+                      )?.questionType === dbConstants.questionTypes.stringQuestion || questionList?.find(
+                        (x: { value: string }) => x?.value === condition?.field
+                      )?.questionType === dbConstants.questionTypes.listQuestion ?
+                        <DropDown
+                        dropDownData={operationalSampleData[0]?.options?.filter((item: { value: string; }) => item?.value === "==")}
+                        isDisabled={false}
+                        setExpression={setFieldValue}
+                        changedId={condition?.level}
+                        fieldName={"condition"}
+                        selectedValue={condition?.condition}
+                      /> 
+                      :
+                      <DropDown
+                        dropDownData={operationalSampleData}
+                        isDisabled={false}
+                        setExpression={setFieldValue}
+                        changedId={condition?.level}
+                        fieldName={"condition"}
+                        selectedValue={condition?.condition}
+                        />
+                    }
+                    
                   </div>
                   <div className="mr-20">
                   <div className="condition-label">Value </div>
                     {questionList.find(
-                      (x: { value: string }) => x.value === condition?.field
+                      (x: { value: string }) => x?.value === condition?.field
                     )?.questionType === dbConstants.questionTypes.numericQuestion ? (
                       <NumberInputField
                         selectedValue={condition?.value}
@@ -701,7 +720,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                         validatingSuccess={true}
                       />
                     ) : questionList.find(
-                        (x: { value: string }) => x.value === condition?.field
+                        (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.stringQuestion ? (
                       <FieldStringInputProps
                         sampleData={
@@ -716,7 +735,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                         fieldName={"value"}
                       />
                     ) : questionList.find(
-                      (x: { value: string }) => x.value === condition?.field
+                      (x: { value: string }) => x?.value === condition?.field
                         )?.questionType === dbConstants.questionTypes.dateTimeQuestion ? (
                             <DatePickerCustom
                               isDisabled={false}
@@ -727,7 +746,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     
                     />
                   ) : questionList.find(
-                        (x: { value: string }) => x.value === condition?.field
+                        (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.listQuestion ? (
                       <ListDropDown
                         dropDownData={{}}
@@ -764,6 +783,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     >
                       {" "}
                       Remove
+                      {/* <img src={imageUrls.imageUrl} alt="icon"/> */}
                     </Button>
                     {/* <a><img src={deleteImg} className="delete-img" alt="delete"/></a> */}
                   </div>
