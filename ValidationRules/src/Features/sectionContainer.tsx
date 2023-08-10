@@ -35,7 +35,8 @@ interface SectionProps {
   setValidation: any;
   setDeleteSectionKey: any;
   setSaveAsIsNested: any;
-  imageUrls: any
+  imageUrls: any;
+  suerveyIsPublished: any
 }
 
 function SectionContainer({
@@ -50,7 +51,8 @@ function SectionContainer({
   setValidation,
   setDeleteSectionKey,
   setSaveAsIsNested,
-  imageUrls
+  imageUrls,
+  suerveyIsPublished
 }: SectionProps) {
   const [rowData, setRowData] = useState<any>();
   const [toggleEnableMin, setToggledEnableMin] = useState<any | null>(false);
@@ -246,6 +248,7 @@ function SectionContainer({
           handleSectionRemove={handleSectionRemove}
           setSaveAsIsNested={setSaveAsIsNested}
           imageUrls={imageUrls}
+          suerveyIsPublished={suerveyIsPublished}
         />
       ))}
 
@@ -261,6 +264,8 @@ function SectionContainer({
                 }
                 checkboxValuesFromConfig={defaultActions}
                 setCheckboxValues={setActions}
+                isDisabled={suerveyIsPublished}
+              
             />
           </div>
         </div>
@@ -277,6 +282,7 @@ function SectionContainer({
                       onChange={(e) => setMinCheckboxEnabled(e.target.checked)}
                       // defaultChecked={_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.actions[0]?.minMax?.minValue}
                       defaultChecked={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue || false}
+                      disabled={suerveyIsPublished}
                   />{" "}
                 </div>
                 <div style={{ marginRight: "10px" }}>
@@ -285,8 +291,9 @@ function SectionContainer({
                     checkedChildren="Value"
                     unCheckedChildren="Question"
                     onChange={() => setToggledEnableMin(!toggleEnableMin)}
-                      disabled={!minCheckboxEnabled}
+                      disabled={suerveyIsPublished ? suerveyIsPublished : !minCheckboxEnabled}
                       defaultChecked={typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue !== 'string'}
+                      
                   />
                 </div>
 
@@ -295,16 +302,17 @@ function SectionContainer({
                   <NumberInputField
                       selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue}
                       handleNumberChange={{}}
-                      defaultDisabled={!minCheckboxEnabled}
+                      defaultDisabled={suerveyIsPublished ? suerveyIsPublished : !minCheckboxEnabled}
                       setInputNumber={setMinValue}
                       changedId={undefined}
                       fieldName={"minValue"}
                       validatingSuccess={minMaxValidation}
+                      
                     />
                 ) : (
                   <DropDown
                     dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric' && maxValue?.input !== ques?.value) : []}
-                    isDisabled={!minCheckboxEnabled}
+                    isDisabled={suerveyIsPublished ? suerveyIsPublished : !minCheckboxEnabled}
                     setExpression={setMinValue}
                     changedId={undefined}
                     fieldName={"minValue"}
@@ -319,6 +327,7 @@ function SectionContainer({
                   <Checkbox
                       onChange={(e) => setMaxCheckboxEnabled(e.target.checked)}
                       defaultChecked={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue}
+                      disabled={suerveyIsPublished}
                   />{" "}
                 </div>
                 <div style={{ marginRight: "10px" }}>
@@ -327,7 +336,7 @@ function SectionContainer({
                     checkedChildren="Value"
                     unCheckedChildren="Question"
                     onChange={() => setToggledEnableMax(!toggleEnableMax)}
-                      disabled={!maxCheckboxEnabled}
+                      disabled={suerveyIsPublished ? suerveyIsPublished : !maxCheckboxEnabled}
                       defaultChecked={typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue !== 'string'}
                   />
                 </div>
@@ -337,7 +346,7 @@ function SectionContainer({
                   <NumberInputField
                       selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || ''}
                       handleNumberChange={{}}
-                      defaultDisabled={!maxCheckboxEnabled}
+                      defaultDisabled={suerveyIsPublished ? suerveyIsPublished : !maxCheckboxEnabled}
                       setInputNumber={setMaxValue}
                       changedId={undefined}
                       fieldName={"maxValue"}
@@ -345,7 +354,7 @@ function SectionContainer({
                 ) : (
                   <DropDown
                     dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric' && minValue?.input !== ques?.value ) : []}
-                    isDisabled={!maxCheckboxEnabled}
+                    isDisabled={suerveyIsPublished ? suerveyIsPublished : !maxCheckboxEnabled}
                     setExpression={setMaxValue}
                     changedId={undefined}
                     fieldName={"maxValue"}

@@ -20,6 +20,7 @@ import {
   fetchRequest,
   saveRequest,
   loadAllQuestionsInSurvey,
+  getPublishedStatus,
 } from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
 import { normalConverter } from "../Utils/dbFormatToJson";
@@ -42,10 +43,10 @@ const ParentComponent = ({
   const [isLoadData, setIsLoadData] = useState<boolean>(false);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-  //   currentPosition: "question",
-  // });
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+    currentPosition: "question",
+  });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -65,6 +66,8 @@ const ParentComponent = ({
     nestingLevelValidation: true,
   });
   const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
+  const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
+
   let addNestedComponent = () => {
     setSections([
       ...sections,
@@ -525,39 +528,39 @@ const ParentComponent = ({
     }
 
     //test
-    // _setVisibilityRulePrev((prevValue) => [
-    //   ...prevValue,
-      // {
-      //   visibility:
-      //   [{"or" : [
-      //     {"and" : [
-      //       {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-      //       {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
-      //       {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
-      //     ]},
-      //     {"and" : [
-      //       {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-      //       {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
-      //       {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
-      //     ]},
-      //     {"and" : [
-      //       {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-      //       {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
-      //       {"==": [{ var: "FSCM_PL_INV_010"}, "AP"]},
-      //     ]},
-      //     {"and" : [
-      //       {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-      //       {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
-      //       { "==": [{ var: "FSCM_PL_INV_010" }, "AP"] },
-      //       {
-      //         "or": [{"==": [{ var: "FSCM_PL_INV_001"}, "Y"]}]
-      //       }
-      //     ]
+    _setVisibilityRulePrev((prevValue) => [
+      ...prevValue,
+      {
+        visibility:
+        {"or" : [
+          {"and" : [
+            {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+            {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
+            {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
+          ]},
+          {"and" : [
+            {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+            {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
+            {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
+          ]},
+          {"and" : [
+            {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+            {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
+            {"==": [{ var: "FSCM_PL_INV_010"}, "AP"]},
+          ]},
+          {"and" : [
+            {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+            {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
+            { "==": [{ var: "FSCM_PL_INV_010" }, "AP"] },
+            {
+              "or": [{"==": [{ var: "FSCM_PL_INV_001"}, "Y"]}]
+            }
+          ]
           
-      //     }
-      //     ]}]
-      // }
-    // ])
+          }
+          ]}
+      }
+    ])
 
     // _setVisibilityRulePrev((prevValue) => [
     //   ...prevValue,
@@ -576,17 +579,31 @@ const ParentComponent = ({
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
   };
+  const getCurrentPublishedStatus = async () => {
+    
+    const { data = null } = await getPublishedStatus(currentPossitionDetails);
+    console.log("Published Status", data);
+    if(data?.isPublished) setSuerveyIsPublished(data?.isPublished);
+  }
   useEffect(() => {
     console.log("currentId ----->", currentPossitionDetails);
 
     getRequestedData();
     loadQuestionHandler();
+    if (currentPossitionDetails) {
+      getCurrentPublishedStatus();
+    }
+
+
   }, [currentPossitionDetails]);
 
   useEffect(() => {
     console.log("deleteSectionKey", deleteSectionKey);
     if (deleteSectionKey) {
       _setNestedRows((prevNestedRows: any) => {
+        if (prevNestedRows && prevNestedRows.length === 1) {
+          saveVisibilityData({}, {}, {}, {});
+        }
         return prevNestedRows.filter(
           (key: any) => parseInt(Object.keys(key)[0]) !== deleteSectionKey
         )
@@ -612,6 +629,7 @@ const ParentComponent = ({
     minMaxDBFormatArray: any
   ) => {
     let logicalName;
+    
     if (currentPossitionDetails?.currentPosition === "question") {
       logicalName = dbConstants.question.fieldName;
     } else if (currentPossitionDetails?.currentPosition === "section") {
@@ -952,10 +970,13 @@ const ParentComponent = ({
           {currentPossitionDetails && (
             <div>
               <div className="nestedBtns">
-                <Button className="mr-10 btn-default" onClick={addComponent}>
+                <Button
+                  className="mr-10 btn-default"
+                  onClick={addComponent}
+                  disabled={suerveyIsPublished}>
                   + Add
                 </Button>
-                <Button className="btn-default" onClick={addNestedComponent}>
+                <Button className="btn-default" onClick={addNestedComponent} disabled={suerveyIsPublished}>
                   + Add Nested
                 </Button>
               </div>
@@ -975,6 +996,7 @@ const ParentComponent = ({
                       setDeleteSectionKey={setDeleteSectionKey}
                       setSaveAsIsNested={setSaveAsIsNested}
                       imageUrls={{ imageUrl, imageUrl1, imageUrl2 }}
+                      suerveyIsPublished={suerveyIsPublished}
                     />
                   </div>
                 ))}
@@ -984,8 +1006,10 @@ const ParentComponent = ({
                   <Button
                     onClick={handleSaveLogic}
                     className="mr-10 btn-primary"
+                    disabled={suerveyIsPublished}
                   >
                     Save
+                    
                   </Button>
                 </div>
               )}

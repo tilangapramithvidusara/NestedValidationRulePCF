@@ -178,3 +178,52 @@ export const getListAnswersByQuestionId = async (questionGuid: any): Promise<any
   }
 
 }
+
+
+export const getPublishedStatus = async (currentPositionDetails: any) : Promise<any> => {
+  try {
+    let currentStatus;
+    let statusCode;
+    let currnetGuid;
+
+    let currentFieldName;
+    let currentIdKey;
+    let expectedStatusCodeForPublished;
+    let isPublished = false;
+
+    if (currentPositionDetails?.id && currentPositionDetails?.currentPosition) {
+      if (currentPositionDetails?.currentPosition === 'question') {
+        currentFieldName = dbConstants.question.fieldName
+        currentIdKey = "gyde_surveytemplatechaptersectionid";
+        expectedStatusCodeForPublished = dbConstants.question.publishedStatus;
+
+      } else if (currentPositionDetails?.currentPosition === 'section') {
+        currentFieldName = dbConstants.section.fieldName
+        currentIdKey = "gyde_surveytemplatechaptersectionid"
+        expectedStatusCodeForPublished = dbConstants.section.publishedStatus;
+
+      } else if (currentPositionDetails?.currentPosition === 'chapter') {
+        currentFieldName = dbConstants.chapter.fieldName
+        currentIdKey = "gyde_surveytemplatechapterid"
+        expectedStatusCodeForPublished = dbConstants.chapter.publishedStatus;
+
+      }
+      console.log("currentFieldName", currentFieldName);
+      console.log("currentIdKey" , currentIdKey)
+
+      if (currentFieldName && currentIdKey) {
+        currentStatus = await window.parent.Xrm.WebApi.retrieveRecord(currentFieldName, currentPositionDetails?.id, "?$select=statuscode");
+        console.log("current Published Status", currentStatus )
+        currnetGuid = currentStatus[currentIdKey];
+        statusCode = currentStatus[dbConstants.common.statusCode];
+        isPublished = statusCode === expectedStatusCodeForPublished
+      }
+    }
+
+    return { error: false, data: { currentStatus, isPublished, currnetGuid } }
+
+  } catch (e) {
+    console.log("Published Status Error", e);
+    return { error: true, data: {} }
+  }
+}
