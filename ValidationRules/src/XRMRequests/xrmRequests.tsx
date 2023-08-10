@@ -82,7 +82,7 @@ export const saveValidationRules = async(validationRuleData: object) => {
   ): Promise<any> => {
     try {
       let result = await window.parent.Xrm.WebApi.retrieveRecord(entityLogicalName, id, columnsNames);
-      let _result = {}
+      let _result : any = {}
       if (result?.gyde_validationrule) _result = result[dbConstants.question.gyde_minmaxvalidationrule];
       else if(result?.gyde_visibilityrule) _result = result[dbConstants.common.gyde_visibilityrule];
       // else if(result?.gyde_validationrule?.length) _result = result[dbConstants.common.gyde_validationrule];
@@ -90,8 +90,16 @@ export const saveValidationRules = async(validationRuleData: object) => {
       // console.log("RESULTTT", _result)
       // if (_result) {
       //   _result = JSON.parse(_result)
-      //   if(!_result || !_result?.length) return { error: false, data: [], loading: false }; 
+      //   if(!_result || !_result?.length) return { error: false, data: [], loading: false };
       // }
+      console.log("fetch Result ..." , _result)
+      if (typeof _result === 'object') {
+        _result = {}
+      } else { 
+        _result = JSON.parse(_result);
+      }
+      
+  
       return { error: false, data: _result, loading: false };
     } catch (error: any) {
       // handle error conditions
@@ -107,11 +115,9 @@ export const saveValidationRules = async(validationRuleData: object) => {
   ): Promise<any> => {
     try {
       let result
-      if (Object.keys(data).length !== 0) {
-        console.log("saving requeesttttt", entityLogicalName, id, data);
-        result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName, id, data);
-        console.log("saving requeesttttt result", result);
-      }
+      console.log("saving requeesttttt", entityLogicalName, id, data);
+      result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName, id, data);
+      console.log("saving requeesttttt result", result);
       return { error: false, data: result, loading: false };
     } catch (error: any) {
       // handle error conditions

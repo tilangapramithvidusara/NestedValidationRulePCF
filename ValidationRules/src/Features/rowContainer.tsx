@@ -639,6 +639,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     onClick={() =>
                       _handleAddNestedRow(condition?.level, true, "AND")
                     }
+                    disabled={condition?.level === 1 ? true : false}
                   >
                     + Add Nested
                   </Button>

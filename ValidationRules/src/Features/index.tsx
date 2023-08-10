@@ -191,11 +191,16 @@ const ParentComponent = ({
               const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
               return keys?.includes("and") || keys?.includes("or");
             });
+            const isNestedIfs = visibilityDta?.some((x: {}) => Object.keys(x)[0] === 'if')
             console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
             console.log("Fetch Type isFirstExp", isFirstExp);
             console.log("Fetch Type isAllAreNormal", isAllAreNormal);
+            console.log("Fetch Type isNestedIfs", isNestedIfs);
 
-            if (isAllAreNormal) {
+            if (isNestedIfs) {
+              refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
+            }
+            else if (isAllAreNormal) {
               refactorDta = visibilityDta[0]?.or;
             } else if (isRetrieveAsNormal) {
               // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
@@ -279,11 +284,17 @@ const ParentComponent = ({
               const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
               return keys?.includes("and") || keys?.includes("or");
             });
+            const isNestedIfs = docRuleOutput?.some((x: {}) => Object.keys(x)[0] === 'if')
+
             console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
             console.log("Fetch Type isFirstExp", isFirstExp);
             console.log("Fetch Type isAllAreNormal", isAllAreNormal);
+            console.log("Fetch Type isNestedIfs", isNestedIfs);
 
-            if (isAllAreNormal) {
+            if (isNestedIfs) {
+              docOutputDta = removeIfKeyAndGetDbProperty(docRuleOutput);
+            }
+            else if (isAllAreNormal) {
               docOutputDta = docRuleOutput[0]?.or;
             } else if (isRetrieveAsNormal) {
               // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
@@ -490,7 +501,7 @@ const ParentComponent = ({
       );
       _setVisibilityRulePrev((prevData: any) => [
         ...prevData,
-        { visibility: JSON.parse(_visibilityRulePreviousValues?.data) },
+        { visibility: _visibilityRulePreviousValues?.data },
       ]);
     }
 
@@ -500,7 +511,7 @@ const ParentComponent = ({
       );
       _setMinMaxRulePrev((prevData: any) => [
         ...prevData,
-        { minMax: JSON.parse(_minMaxPreviousValues?.data) },
+        { minMax: _minMaxPreviousValues?.data },
       ]);
     }
 
@@ -509,43 +520,43 @@ const ParentComponent = ({
       let _documentOutputRule = JSON.parse(JSON.stringify(documentOutputRule));
       _setDocumentOutputRulePrev((prevData: any) => [
         ...prevData,
-        { docRuleOutput: JSON.parse(_documentOutputRule?.data) },
+        { docRuleOutput: _documentOutputRule?.data },
       ]);
     }
 
     //test
     // _setVisibilityRulePrev((prevValue) => [
     //   ...prevValue,
-    //   {
-    //     visibility: 
-    //     [{"or" : [
-    //       {"and" : [
-    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
-    //         {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
-    //       ]},
-    //       {"and" : [
-    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
-    //         {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
-    //       ]},
-    //       {"and" : [
-    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
-    //         {"==": [{ var: "FSCM_PL_INV_010"}, "AP"]},
-    //       ]},
-    //       {"and" : [
-    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
-    //         { "==": [{ var: "FSCM_PL_INV_010" }, "AP"] },
-    //         {
-    //           "or": [{"==": [{ var: "FSCM_PL_INV_001"}, "Y"]}]
-    //         }
-    //       ]
+      // {
+      //   visibility:
+      //   [{"or" : [
+      //     {"and" : [
+      //       {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+      //       {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
+      //       {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
+      //     ]},
+      //     {"and" : [
+      //       {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+      //       {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
+      //       {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
+      //     ]},
+      //     {"and" : [
+      //       {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+      //       {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
+      //       {"==": [{ var: "FSCM_PL_INV_010"}, "AP"]},
+      //     ]},
+      //     {"and" : [
+      //       {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+      //       {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
+      //       { "==": [{ var: "FSCM_PL_INV_010" }, "AP"] },
+      //       {
+      //         "or": [{"==": [{ var: "FSCM_PL_INV_001"}, "Y"]}]
+      //       }
+      //     ]
           
-    //       }
-    //       ]}]
-    //   }
+      //     }
+      //     ]}]
+      // }
     // ])
 
     // _setVisibilityRulePrev((prevValue) => [
@@ -630,25 +641,24 @@ const ParentComponent = ({
       console.log("Before Saving visibilityRule", visibilityRule);
       console.log("Before Saving minMaxDBFormatArray", minMaxDBFormatArray)
       console.log("Before Saving outputDocShow", outputDocShow)
-      if (visibilityRule) {
+     
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.common.gyde_visibilityrule]:
             JSON.stringify(visibilityRule),
         });
-      }
-      if (minMaxDBFormatArray) {
+      
+     
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.question.gyde_minmaxvalidationrule]:
             JSON.stringify(minMaxDBFormatArray),
         });
-      }
-      if (outputDocShow) {
+    
+    
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.question.gyde_documentOutputRule]:
             JSON.stringify(outputDocShow),
         });
-      }
-      
+     
     }
     openNotificationWithIcon("success", "Data Saved!");
   };
@@ -724,29 +734,12 @@ const ParentComponent = ({
           sec[key]?.actions[0]?.checkBoxValues[0]
         );
         if (isShowExists) {
-          // showIfCount = showIfCount + 1;
-          // const _visibility = convertJSONFormatToDBFormat(sec[key], true);
-          // if (showIfCount > 1) {
-          //   visibilityRule = findAndUpdateLastNestedIf(
-          //     visibilityRule,
-          //     { if: [_visibility] },
-          //     false
-          //   );
-          // } else {
-          //   visibilityRuleNormal.push(_visibility);
-          //   visibilityRule = findAndUpdateLastNestedIf(
-          //     visibilityRule,
-          //     { if: [_visibility] },
-          //     false
-          //   );
-          // }
           showIfCount = showIfCount + 1;
           isVisibilityNested.push(
             sec[key]?.fields?.some(
               (flds: { hasNested: any }) => flds?.hasNested
             )
           );
-
           const _visibility = convertJSONFormatToDBFormat(sec[key], true);
           visibilityRuleNormal.push(_visibility);
           visibilityRule = findAndUpdateLastNestedIf(
@@ -763,21 +756,6 @@ const ParentComponent = ({
               (flds: { hasNested: any }) => flds?.hasNested
             )
           );
-
-          // if (outputDocShowCount > 1) {
-          //   outputDocShow = findAndUpdateLastNestedIf(
-          //     outputDocShow,
-          //     { if: [_outputDocShow] },
-          //     false
-          //   );
-          // } else {
-          //   outputDocShowNormal.push(_outputDocShow);
-          //   outputDocShow = findAndUpdateLastNestedIf(
-          //     outputDocShow,
-          //     { if: [_outputDocShow] },
-          //     false
-          //   );
-          // }
           outputDocShowNormal.push(_outputDocShow);
           outputDocShow = findAndUpdateLastNestedIf(
             outputDocShow,
@@ -889,11 +867,6 @@ const ParentComponent = ({
         };
 
       } else {
-        // savedVisibilityRuleFinalFormat = [
-        //   {
-        //     or: visibilityRuleNormal,
-        //   },
-        // ];
         savedVisibilityRuleFinalFormat = {
           if: [
             {
@@ -914,23 +887,10 @@ const ParentComponent = ({
         outputDocShowNormal.length > 0 &&
         Object.keys(outputDocShowNormal[0])[0] === ""
       ) {
-        // savedOutputDocShowRuleFinalFormat = outputDocShowNormal;
-        // savedOutputDocShowRuleFinalFormat = [{
-        //   if: [
-        //     {
-        //       or: outputDocShowNormal,
-        //     }
-        //   ]
-        // }]
         savedOutputDocShowRuleFinalFormat = {
           if: outputDocShowNormal
         };
       } else {
-        // savedOutputDocShowRuleFinalFormat = [
-        //   {
-        //     or: outputDocShowNormal,
-        //   },
-        // ];
         savedOutputDocShowRuleFinalFormat = {
           if: [
             {
@@ -972,16 +932,10 @@ const ParentComponent = ({
       validation.andOrValidation &&
       validation.nestingLevelValidation
     ) {
-      if (
-        (Object.keys(savedVisibilityRuleFinalFormat)[0]!) ||
-        (Object.keys(savedValidationRuleFinalFormat)[0]!) ||
-        (Object.keys(savedOutputDocShowRuleFinalFormat)[0]!) ||
-        (Object.keys(savedMinMaxRuleFinalFormat)[0]!
-      ))
       saveVisibilityData(
-        savedVisibilityRuleFinalFormat,
-        savedValidationRuleFinalFormat,
-        savedOutputDocShowRuleFinalFormat,
+        savedVisibilityRuleFinalFormat ? savedVisibilityRuleFinalFormat : {},
+        savedValidationRuleFinalFormat ? savedValidationRuleFinalFormat : {},
+        savedOutputDocShowRuleFinalFormat ? savedOutputDocShowRuleFinalFormat : {},
         !savedMinMaxRuleFinalFormat?.length ? undefined : savedMinMaxRuleFinalFormat
       );
     } else {
