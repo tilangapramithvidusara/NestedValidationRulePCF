@@ -36,7 +36,8 @@ interface SectionProps {
   setDeleteSectionKey: any;
   setSaveAsIsNested: any;
   imageUrls: any;
-  suerveyIsPublished: any
+  suerveyIsPublished: any;
+  currentQuestionDetails: any
 }
 
 function SectionContainer({
@@ -52,7 +53,8 @@ function SectionContainer({
   setDeleteSectionKey,
   setSaveAsIsNested,
   imageUrls,
-  suerveyIsPublished
+  suerveyIsPublished,
+  currentQuestionDetails
 }: SectionProps) {
   const [rowData, setRowData] = useState<any>();
   const [toggleEnableMin, setToggledEnableMin] = useState<any | null>(false);
@@ -211,8 +213,8 @@ function SectionContainer({
   }, [currentPossitionDetails]);
 
   useEffect(() => {
-    console.log("minMaxValidationminMaxValidation", minMaxValidation)
-  }, [minMaxValidation]);
+    console.log("currentQuestionDetails ", currentQuestionDetails)
+  }, [currentQuestionDetails]);
 
   useEffect(() => {
     setMinValue({ input: null, changedId: "", fieldName: "minValue" })
@@ -270,7 +272,10 @@ function SectionContainer({
           </div>
         </div>
         {
-          currentPossitionDetails && currentPossitionDetails?.currentPosition === "question" &&
+          currentPossitionDetails &&
+          currentPossitionDetails?.currentPosition === "question" &&
+          currentQuestionDetails?.questionType !== "Header" &&
+          currentQuestionDetails?.questionType !== "List" && 
               
           <div className="subTitle mt-10 mb-30 w-100 flex-start">
             <div className="subTitle w-10">Min/Max Field</div>

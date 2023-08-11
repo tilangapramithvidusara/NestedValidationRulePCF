@@ -67,6 +67,7 @@ const ParentComponent = ({
   });
   const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
   const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
+  const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>(null);
 
   let addNestedComponent = () => {
     setSections([
@@ -104,13 +105,13 @@ const ParentComponent = ({
     if (questionListArray && questionListArray.length) {
       const formattedQuestionList = questionListArray.map((quesNme: any) => {
         if (
-          quesNme &&
-          quesNme[
-            "gyde_answertype@OData.Community.Display.V1.FormattedValue"
-          ] !== "Grid" &&
-          quesNme[
-            "gyde_answertype@OData.Community.Display.V1.FormattedValue"
-          ] !== "Header"
+          quesNme
+          // quesNme[
+          //   "gyde_answertype@OData.Community.Display.V1.FormattedValue"
+          // ] !== "Grid" &&
+          // quesNme[
+          //   "gyde_answertype@OData.Community.Display.V1.FormattedValue"
+          // ] !== "Header"
         )
           return {
             label: quesNme.gyde_name,
@@ -134,8 +135,14 @@ const ParentComponent = ({
   };
 
   useEffect(() => {
-    console.log("SECCCC", sections);
-  }, [sections]);
+    console.log("currentPossitionDetails 1", currentPossitionDetails);
+    console.log("questionList 1", questionList);
+
+    if (questionList && questionList?.length && currentPossitionDetails?.currentPosition === "question") {
+        const currnetQuestionDetails = questionList.find(ques => ques?.questionId === currentPossitionDetails?.id?.toLowerCase())
+        setCurrentQuestionDetails(currnetQuestionDetails)
+    }
+  }, [questionList, currentPossitionDetails]);
 
   useEffect(() => {
     console.log("questionList", questionList);
@@ -995,6 +1002,7 @@ const ParentComponent = ({
                       setSaveAsIsNested={setSaveAsIsNested}
                       imageUrls={{ imageUrl, imageUrl1, imageUrl2 }}
                       suerveyIsPublished={suerveyIsPublished}
+                      currentQuestionDetails={currentQuestionDetails}
                     />
                   </div>
                 ))}
