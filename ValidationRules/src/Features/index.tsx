@@ -43,10 +43,10 @@ const ParentComponent = ({
   const [isLoadData, setIsLoadData] = useState<boolean>(false);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-    currentPosition: "question",
-  });
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+  //   currentPosition: "question",
+  // });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -528,39 +528,39 @@ const ParentComponent = ({
     }
 
     //test
-    _setVisibilityRulePrev((prevValue) => [
-      ...prevValue,
-      {
-        visibility:
-        {"or" : [
-          {"and" : [
-            {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-            {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
-            {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
-          ]},
-          {"and" : [
-            {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-            {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
-            {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
-          ]},
-          {"and" : [
-            {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-            {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
-            {"==": [{ var: "FSCM_PL_INV_010"}, "AP"]},
-          ]},
-          {"and" : [
-            {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
-            {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
-            { "==": [{ var: "FSCM_PL_INV_010" }, "AP"] },
-            {
-              "or": [{"==": [{ var: "FSCM_PL_INV_001"}, "Y"]}]
-            }
-          ]
+    // _setVisibilityRulePrev((prevValue) => [
+    //   ...prevValue,
+    //   {
+    //     visibility:
+    //     {"or" : [
+    //       {"and" : [
+    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
+    //         {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
+    //       ]},
+    //       {"and" : [
+    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
+    //         {"==": [{ var: "FSCM_PL_INV_010"}, "AMT"]},
+    //       ]},
+    //       {"and" : [
+    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Two"]},
+    //         {"==": [{ var: "FSCM_PL_INV_010"}, "AP"]},
+    //       ]},
+    //       {"and" : [
+    //         {"==": [{ var: "FSCM_PL_INV_001"}, "Y"]},
+    //         {"==": [{ var: "FSCM_PL_INV_007"}, "Three"]},
+    //         { "==": [{ var: "FSCM_PL_INV_010" }, "AP"] },
+    //         {
+    //           "or": [{"==": [{ var: "FSCM_PL_INV_001"}, "Y"]}]
+    //         }
+    //       ]
           
-          }
-          ]}
-      }
-    ])
+    //       }
+    //       ]}
+    //   }
+    // ])
 
     // _setVisibilityRulePrev((prevValue) => [
     //   ...prevValue,
@@ -876,8 +876,7 @@ const ParentComponent = ({
       !isVisibilityNested.some((x: any) => x)
     ) {
       if (
-        visibilityRuleNormal.length > 0 &&
-        Object.keys(visibilityRuleNormal[0])[0] === ""
+        visibilityRuleNormal.length === 1
       ) {
         // savedVisibilityRuleFinalFormat = visibilityRuleNormal;
         savedVisibilityRuleFinalFormat = {
@@ -902,8 +901,7 @@ const ParentComponent = ({
       !isShowInDocNested.some((x: any) => x)
     ) {
       if (
-        outputDocShowNormal.length > 0 &&
-        Object.keys(outputDocShowNormal[0])[0] === ""
+        outputDocShowNormal.length === 1
       ) {
         savedOutputDocShowRuleFinalFormat = {
           if: outputDocShowNormal
