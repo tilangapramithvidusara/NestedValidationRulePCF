@@ -139,7 +139,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   ) => {
     console.log(" Nested Clicked Level ", level);
     setSaveAsIsNested(true)
-    let releatedFields = _nestedRows.find((x: any[]) => x[sectionLevel]);
+    let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
     if (releatedFields) {
       const nearestNestedIdParentId = getNestedParentLevel(
         releatedFields[sectionLevel].fields,
@@ -337,7 +337,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   ) => {
     console.log("Clicked Level normal ", level);
 
-    let releatedFields = _nestedRows.find((x: any[]) => x[sectionLevel]);
+    let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
     if (releatedFields) {
       releatedFields = releatedFields[sectionLevel].fields;
       const nearestIdParentObject = getNearestParentByItems(
@@ -556,7 +556,7 @@ const RowContainer: React.FC<TableRowProps> = ({
     try {
       // Make a request to the backend to fetch the data
       
-      const questionDetails = dropDownQuestionList.find(
+      const questionDetails = dropDownQuestionList?.find(
         (x: any) => x.value === questionId
       );
       console.log("questionDetails", questionDetails);
@@ -720,7 +720,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                   </div>
                   <div className="mr-20">
                   <div className="condition-label">Value </div>
-                    {dropDownQuestionList.find(
+                    {dropDownQuestionList?.find(
                       (x: { value: string }) => x?.value === condition?.field
                     )?.questionType === dbConstants.questionTypes.numericQuestion ? (
                       <NumberInputField
@@ -732,7 +732,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                         fieldName={"value"}
                         validatingSuccess={true}
                       />
-                    ) : dropDownQuestionList.find(
+                    ) : dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.stringQuestion ? (
                       <FieldStringInputProps
@@ -746,7 +746,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                             fieldName={"value"}
                             isDisabled={suerveyIsPublished}
                       />
-                    ) : dropDownQuestionList.find(
+                    ) : dropDownQuestionList?.find(
                       (x: { value: string }) => x?.value === condition?.field
                         )?.questionType === dbConstants.questionTypes.dateTimeQuestion ? (
                             <DatePickerCustom
@@ -757,7 +757,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                               selectedValue={condition?.value ? condition?.value : moment()}
                     
                     />
-                  ) : dropDownQuestionList.find(
+                  ) : dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.listQuestion ? (
                       <ListDropDown

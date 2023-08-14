@@ -139,7 +139,7 @@ const ParentComponent = ({
     console.log("questionList 1", questionList);
 
     if (questionList && questionList?.length && currentPossitionDetails?.currentPosition === "question") {
-        const currnetQuestionDetails = questionList.find(ques => ques?.questionId === currentPossitionDetails?.id?.toLowerCase())
+        const currnetQuestionDetails = questionList?.find(ques => ques?.questionId === currentPossitionDetails?.id?.toLowerCase())
         setCurrentQuestionDetails(currnetQuestionDetails)
     }
   }, [questionList, currentPossitionDetails]);
