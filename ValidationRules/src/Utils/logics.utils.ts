@@ -557,11 +557,10 @@ function findAndUpdateLastNestedIf(obj: any[], condition: any, overrideMinMax: b
   });
 }
 
-function removeIfKeyAndGetDbProperty(obj: any[]){
-  const ifConditions: any[] = [];
+function _removeIfKeyAndGetDbProperty(obj: any) {
+  const ifConditions: any = [];
   console.log("LKKKKKKKKKxadawad xxxxxx", obj)
-
-  obj.map((x: { if: any[]; }) => {
+  obj.map((x: any) => {
     if (x?.if) {
       if (!x.if.length) {
         ifConditions.push(x.if);
@@ -573,12 +572,21 @@ function removeIfKeyAndGetDbProperty(obj: any[]){
           ifConditions.push(filteredVal);
         }
         // Recursively call the function and merge results with ifConditions
-        ifConditions.push(...removeIfKeyAndGetDbProperty(x.if));
+        ifConditions.push(..._removeIfKeyAndGetDbProperty(x.if));
       }
     }
   });
-
   return ifConditions;
+}
+function removeIfKeyAndGetDbProperty(obj: any[]) {
+  console.log("removeIfKeyAndGetDbProperty", obj);
+  const initialHasNormal = obj?.some(x => Object.keys(x)[0] === 'and' || Object.keys(x)[0] === 'or');
+  let _rmvFinal = _removeIfKeyAndGetDbProperty(obj);
+  if (initialHasNormal) {
+    _rmvFinal.push(obj?.find(x => Object.keys(x)[0] === 'and' ||Object.keys(x)[0] === 'or' ))
+  }
+  console.log("_rmvFinal", _rmvFinal)
+  return _rmvFinal;
 }
 
 

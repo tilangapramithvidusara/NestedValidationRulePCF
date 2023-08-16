@@ -169,7 +169,7 @@ const RowContainer: React.FC<TableRowProps> = ({
         value: "",
         sort: 1,
         level: higestLevel,
-        hasNested: hasNested,
+        hasNested: false,
         innerConditions: [],
         collapse: false,
       };

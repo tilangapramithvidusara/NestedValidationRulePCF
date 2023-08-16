@@ -3,7 +3,9 @@ const updateByParentId = (data: any, parentId: any, newObj: any) => {
   data.forEach((i: { level: any; innerConditions: any[]; hasNested: any }) => {
     if (i.level == parentId) {
       i.innerConditions = [...i.innerConditions, newObj];
-      if (i?.innerConditions?.length > 0) {
+      console.log("IODDJJF", i);
+      const _i = JSON.parse(JSON.stringify(i));
+      if (_i?.innerConditions?.length > 0) {
         i.hasNested = true;
       }
     } else {
@@ -47,9 +49,9 @@ const getNearestParentByItems = (
 
 const generateOutputString = (conditions: string | any[]) => {
   let expression = "";
-
-  const firstCondition = conditions[0]?.hasNested
-  console.log("FRDDD", firstCondition)
+  let parentExp = "";
+  const firstCondition = conditions[0]?.hasNested;
+  console.log("firstCondition", firstCondition);
   if (firstCondition) {
     
     for (let i = 0; i < conditions.length; i++) {
@@ -57,11 +59,14 @@ const generateOutputString = (conditions: string | any[]) => {
       const nxtCondition = conditions[i + 1];
       const prvCondition = conditions[i - 1];
 
+      if (condition?.hasNested) {
+        parentExp = condition?.expression
+      }
       // For add logic
       if (condition && condition?.hasNested) {
         const innerExpression = generateOutputString(condition?.innerConditions || []);
         //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
-        expression += `${condition?.expression ? condition?.expression : ""}  ( ${condition.field
+        expression += `${condition?.expression ? condition?.expression : ""} ${parentExp} ( ${condition.field
           } ${condition.condition} ${condition.value} ${innerExpression && innerExpression.length ? ` ${innerExpression} )` : ""
           } `;
       } else {
@@ -97,12 +102,15 @@ const generateOutputString = (conditions: string | any[]) => {
       const nxtCondition = conditions[i + 1];
       const prvCondition = conditions[i - 1];
 
+      if (condition?.hasNested) {
+        parentExp = condition?.expression
+      }
       // For add logic
       if (condition?.hasNested) {
         const innerExpression = generateOutputString(condition?.innerConditions || []);
         //   expression += `(${condition.field} ${condition.condition} ${condition.value} ${innerExpression})`;
-        expression += `${condition?.expression ? condition?.expression : ""}  ${condition.field
-          } ${condition.condition} ${condition.value} ${innerExpression && innerExpression.length ? ` ( ${innerExpression} )` : ""
+        expression += `${condition?.expression ? condition?.expression : ""} ${condition.field
+          } ${condition.condition} ${condition.value} ${innerExpression && innerExpression.length ? ` ${parentExp} ( ${innerExpression} )` : ""
           } `;
       } else {
         //   expression += condition.field;

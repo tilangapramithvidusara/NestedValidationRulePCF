@@ -316,7 +316,7 @@ function SectionContainer({
                     />
                 ) : (
                   <DropDown
-                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric' && maxValue?.input !== ques?.value) : []}
+                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric') : []}
                     isDisabled={suerveyIsPublished ? suerveyIsPublished : !minCheckboxEnabled}
                     setExpression={setMinValue}
                     changedId={undefined}
@@ -358,7 +358,7 @@ function SectionContainer({
                       validatingSuccess={minMaxValidation} />
                 ) : (
                   <DropDown
-                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric' && minValue?.input !== ques?.value ) : []}
+                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric') : []}
                     isDisabled={suerveyIsPublished ? suerveyIsPublished : !maxCheckboxEnabled}
                     setExpression={setMaxValue}
                     changedId={undefined}
