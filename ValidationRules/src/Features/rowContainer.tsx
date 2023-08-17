@@ -699,7 +699,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.listQuestion ?
                         <DropDown
-                        dropDownData={operationalSampleData[0]?.options?.filter((item: { value: string; }) => item?.value === "==")}
+                        dropDownData={operationalSampleData[0]?.options?.filter((item: { value: string; }) => item?.value === "==" || item?.value === "!=")}
                         isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
                         setExpression={setFieldValue}
                         changedId={condition?.level}
