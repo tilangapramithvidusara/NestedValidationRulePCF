@@ -15,18 +15,19 @@ const convertFunc = (sampleArr: any[], level = 1) => {
   if (nestedParents && nestedParents.length) {
     nestedParents.forEach((x: any) => {
       const nestedLevelParents = Object.keys(x)[0];
-      const equalOperators = x[nestedLevelParents].filter((x: {}) => Object.keys(x)[0] === '==' || Object.keys(x)[0] === 'eq' || Object.keys(x)[0] === '>'|| Object.keys(x)[0] === 'gt' || Object.keys(x)[0] === '>='|| Object.keys(x)[0] === 'gte' || Object.keys(x)[0] === '<'|| Object.keys(x)[0] === 'lt' || Object.keys(x)[0] === '<='|| Object.keys(x)[0] === 'lte');
+      const equalOperators = x[nestedLevelParents].filter((x: {}) => Object.keys(x)[0] === '==' || Object.keys(x)[0] === 'eq' || Object.keys(x)[0] === '>'|| Object.keys(x)[0] === 'gt' || Object.keys(x)[0] === '>='|| Object.keys(x)[0] === 'gte' || Object.keys(x)[0] === '<'|| Object.keys(x)[0] === 'lt' || Object.keys(x)[0] === '<='|| Object.keys(x)[0] === 'lte' || Object.keys(x)[0] === '!='|| Object.keys(x)[0] === 'nq');
       const andOrOperators = x[nestedLevelParents].filter((x: {}) => Object.keys(x)[0] === 'and' || Object.keys(x)[0] === 'or');
         console.log("")
       x[nestedLevelParents] = equalOperators.map((prnt: { [x: string]: any[]; }) => ({
-        field: prnt["=="] ? prnt["=="][0].var : prnt[">"] ? prnt[">"][0].var : prnt[">="] ? prnt[">="][0].var :  prnt["<"] ? prnt["<"][0].var : prnt["<="] ? prnt["<="][0].var : prnt.eq[0].var,
+        field: prnt["=="] ? prnt["=="][0].var : prnt[">"] ? prnt[">"][0].var : prnt[">="] ? prnt[">="][0].var :  prnt["<"] ? prnt["<"][0].var : prnt["<="] ? prnt["<="][0].var : prnt["!="] ? prnt["!="][0].var : prnt.eq[0].var,
           condition: Object.keys(prnt)[0] === 'eq' ?
               "==" : Object.keys(prnt)[0] === 'gt' ?
-                  '>' : Object.keys(prnt)[0] === 'gte' ?
+              '>' : Object.keys(prnt)[0] === 'gte' ?
+              '!=' : Object.keys(prnt)[0] === 'nq' ?
                       '>=' : Object.keys(prnt)[0] === 'lt' ?
                           '<' : Object.keys(prnt)[0] === 'lte' ?
                               '<=' : Object.keys(prnt)[0],
-        value: prnt["=="] ? prnt["=="][1] : prnt[">"] ? prnt[">"][1] : prnt[">="] ? prnt[">="][1] :  prnt["<"] ? prnt["<"][1] :  prnt["<="] ? prnt["<="][1] : prnt.eq[1],
+        value: prnt["=="] ? prnt["=="][1] : prnt[">"] ? prnt[">"][1] : prnt[">="] ? prnt[">="][1] :  prnt["<"] ? prnt["<"][1] :  prnt["<="] ? prnt["<="][1] : prnt["!="] ? prnt["!="][1] : prnt.eq[1],
         sort: 1,
         level: level++,
         expression: nestedLevelParents === 'and' || nestedLevelParents === 'AND' || nestedLevelParents === '&&' ? '&&' : "||",

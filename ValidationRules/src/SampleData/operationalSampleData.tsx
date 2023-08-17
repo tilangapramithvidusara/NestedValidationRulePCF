@@ -5,7 +5,8 @@ export const operationalSampleData: any[] = [{
         { label: "GreaterThan", value: ">" },
         { label: "LowerThan", value: "<" },
         { label: "GreaterThanOrEqual", value: ">=" },
-        { label: "LowerThanOrEqual", value: "<=" }
+        { label: "LowerThanOrEqual", value: "<=" }, 
+        { label: "NotEqualTo", value: "!=" }
     ],
 }];
 

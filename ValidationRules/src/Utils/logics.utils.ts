@@ -204,9 +204,9 @@ function convertMinMaxDBFormatToJSON(obj: { and: any }, level = 1) {
       if (keys.length === 1) {
         const expression = keys[0];
 
-        if ((expression === "eq" || expression === "lt" || expression === "lte" || expression === "gte" || expression === "gt") &&
-          (condition["eq"]?.length === 2 || condition["lt"]?.length === 2 || condition["lte"]?.length === 2 || condition["gt"]?.length === 2 || condition["gte"]?.length === 2) &&
-          (typeof condition["eq"][0].var === "string" || typeof condition["lt"][0].var === "string" || typeof condition["lte"][0].var === "string" || typeof condition["gt"][0].var === "string" || typeof condition["gte"][0].var === "string" ))
+        if ((expression === "eq" || expression === "lt" || expression === "lte" || expression === "gte" || expression === "gt"|| expression === "nq") &&
+          (condition["eq"]?.length === 2 || condition["lt"]?.length === 2 || condition["lte"]?.length === 2 || condition["gt"]?.length === 2 || condition["gte"]?.length === 2 || condition["nq"]?.length === 2) &&
+          (typeof condition["eq"][0].var === "string" || typeof condition["lt"][0].var === "string" || typeof condition["lte"][0].var === "string" || typeof condition["gt"][0].var === "string" || typeof condition["gte"][0].var === "string" || typeof condition["nq"][0].var === "string"))
         {
           let field 
           let value;
@@ -230,7 +230,10 @@ function convertMinMaxDBFormatToJSON(obj: { and: any }, level = 1) {
             field = condition["gte"][0].var
             value = condition["gte"][1];
           }
-
+          else if (condition["nq"][0].var && condition["nq"][1]) {
+            field = condition["nq"][0].var
+            value = condition["nq"][1];
+          }
           // const field = condition.eq[0].var;
           // const value = condition.eq[1];
 
@@ -359,6 +362,16 @@ const convertJSONFormatToDBFormat = (
             });
 
         break;
+        case "!=":
+          visibilityRuleOverride
+            ? (condition = {
+                "!=": [{ var: conditionObj.field }, conditionObj.value],
+              })
+            : (condition = {
+                nq: [{ var: conditionObj.field }, conditionObj.value],
+              });
+  
+          break;
       default:
         condition = null;
         break;
