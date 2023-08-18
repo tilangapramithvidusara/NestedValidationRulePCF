@@ -551,7 +551,7 @@ const convertJSONFormatToDBFormat = (
 
 
 
-function findAndUpdateLastNestedIf(obj: any[], condition: any, overrideMinMax: boolean) {
+function findAndUpdateLastNestedIf(obj: any, condition: any, overrideMinMax: boolean) {
   if (!obj.length) return [condition];
 
   let updated = false; // Flag to track if the update has been done
@@ -611,15 +611,20 @@ function removeMinMaxIfKeyAndGetDbProperty(obj: any[]){
     if (x?.if) {
       if (!x.if.length) {
         ifConditions.push(x.if);
-        const minMax = x?.if?.map((x: any[]) => x[0])?.filter((x: any) => x);
-        if(minMax) ifConditions.push({ifConditions: x.if, minMax });
+        const minOrMax = x?.if[1];
+        if (minOrMax) {
+          console.log("x?.if 1222", x?.if);
+          ifConditions.push({ ifConditions: x?.if, minOrMax });
+        }
       } else {
         const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or);
         if (filteredVal) {
-          const minMax = x?.if?.map((x: any[]) => x[0])?.filter((x: any) => x);
-          const _minMax = x?.if?.map((x: any[]) => x[1])?.filter((x: any) => x);
+          console.log("x?.if", x?.if);
+          // const minMax = x?.if?.map((x: any[]) => x[1])?.filter((x: any) => x);
+          // const _minMax = x?.if?.map((x: any[]) => x[1])?.filter((x: any) => x);
+          const minOrMax = x?.if[1]
 
-          if(minMax) ifConditions.push({ifConditions: filteredVal, minMax: [...minMax, ..._minMax] });
+          if(minOrMax) ifConditions.push({ifConditions: filteredVal, minMax: minOrMax });
         
         }
         // Recursively call the function and merge results with ifConditions

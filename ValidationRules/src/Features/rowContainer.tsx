@@ -204,7 +204,9 @@ const RowContainer: React.FC<TableRowProps> = ({
               fieldValue?.changedId,
               {
                 fieldName: fieldValue?.fieldName,
-                fieldValue: fieldValue?.input,
+                fieldValue: typeof fieldValue?.input === "string"
+                ? fieldValue?.input.trim()
+                : fieldValue?.input,
                 questionType: fieldValue?.questionType,
               }
             ),

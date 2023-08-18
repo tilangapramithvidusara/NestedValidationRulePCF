@@ -371,69 +371,151 @@ const ParentComponent = ({
       _minMaxRulePrev.forEach((dbData) => {
         console.log("Loading _minMaxRulePrev", dbData);
         _setNestedRows((prevData: any) => {
-          if (dbData?.minMax?.length?.if) {
             const minMax = dbData?.minMax;
             const minMaxOutputDataArray: any[] = [];
             let minMaxDta = minMax;
-            const refactorDta = removeMinMaxIfKeyAndGetDbProperty(minMaxDta);
-            console.log("refactorDta Min Maxxx", refactorDta);
-            refactorDta?.forEach((fieldDta: any): any => {
-              const minimumLength = fieldDta?.minMax?.find(
-                (x: { type: string }) => x?.type === "MINIMUM_LENGTH"
-              );
-              const maximumLength = fieldDta?.minMax?.find(
-                (x: { type: string }) => x?.type === "MAXIMUM_LENGTH"
-              );
+          if (minMaxDta?.length) {
+            minMaxDta.forEach((fieldMinMax: any) => {
+              console.log("fieldMinMax", fieldMinMax);
 
-              if (
-                (minimumLength?.value && maximumLength?.value) ||
-                (minimumLength?.value?.var?.minValue &&
-                  maximumLength?.value?.var?.maxValue)
-              ) {
-                console.log("minimumLength Min ", minimumLength);
-                console.log("maximumLength Max ", maximumLength);
+              const _refactorDtaMin = removeMinMaxIfKeyAndGetDbProperty([fieldMinMax[0]?.value]);
+              const _refactorDtaMax = removeMinMaxIfKeyAndGetDbProperty([fieldMinMax[1]?.value]);
 
+              console.log("refactorDta Min Maxxx", _refactorDtaMin[0]?.minMax);
+              console.log("refactorDta Min Maxxx _refactorDtaMax", _refactorDtaMax[0]?.minMax);
+
+              // refactorDta?.forEach((fieldDta: any): any => {
+              // const minimumLength = fieldDta?.minMax?.find(
+              //   (x: { type: string }) => x?.type === "MINIMUM_LENGTH"
+              // );
+              // const maximumLength = fieldDta?.minMax?.find(
+              //   (x: { type: string }) => x?.type === "MAXIMUM_LENGTH"
+              // );
+  
+              // if (
+              //   (minimumLength?.value && maximumLength?.value) ||
+              //   (minimumLength?.value?.var?.minValue &&
+              //     maximumLength?.value?.var?.maxValue)
+              // ) {
+              //   console.log("minimumLength Min ", minimumLength);
+              //   console.log("maximumLength Max ", maximumLength);
+              if (_refactorDtaMin[0]?.minMax && _refactorDtaMax[0]?.minMax) {
                 minMaxOutputDataArray.push({
                   [key++]: {
                     actions: [
                       {
                         minMax: {
                           logicalName: "minMax",
-                          minValue: minimumLength?.value?.var
-                            ? minimumLength?.value?.var
-                            : minimumLength.value,
-                          maxValue: maximumLength?.value?.var
-                            ? maximumLength?.value?.var
-                            : maximumLength.value,
+                          minValue: _refactorDtaMin[0]?.minMax?.var
+                            ? _refactorDtaMin[0]?.minMax?.var
+                            : _refactorDtaMin[0]?.minMax,
+                          maxValue: _refactorDtaMax[0]?.minMax?.var
+                            ? _refactorDtaMax[0]?.minMax?.var
+                            : _refactorDtaMax[0]?.minMax,
                         },
                       },
                     ],
-                    fields: normalConverter([fieldDta?.ifConditions]),
+                    fields: normalConverter([_refactorDtaMin[0]?.ifConditions]),
                   },
                 });
               }
-            });
-            console.log(
-              "Validation DB Dataaa showUpdatedDataArray ",
-              minMaxOutputDataArray
-            );
-            if (minMaxOutputDataArray && minMaxOutputDataArray.length) {
-              console.log(
-                "Validation DB Dataaa showUpdatedDataArray ",
-                minMaxOutputDataArray
-              );
-              console.log("Validation DB Dataaa showUpdatedDataArray ", [
-                ...prevData,
-                minMaxOutputDataArray,
-              ]);
-              return [...prevData, ...minMaxOutputDataArray];
-            }
+                 
+            })
           }
+              // });
+              // console.log(
+              //   "Validation DB Dataaa showUpdatedDataArray ",
+              //   minMaxOutputDataArray
+              // );
+              if (minMaxOutputDataArray && minMaxOutputDataArray.length) {
+                console.log(
+                  "Validation DB Dataaa showUpdatedDataArray ",
+                  minMaxOutputDataArray
+                );
+                console.log("Validation DB Dataaa showUpdatedDataArray ", [
+                  ...prevData,
+                  minMaxOutputDataArray,
+                ]);
+                return [...prevData, ...minMaxOutputDataArray];
+              }
+            // })
+
+          
         });
       });
       setIsApiDataLoaded(false);
     }
   }, [_minMaxRulePrev]);
+
+  // useEffect(() => {
+  //   if (_minMaxRulePrev?.length) {
+  //     let key = 20;
+  //     _minMaxRulePrev.forEach((dbData) => {
+  //       console.log("Loading _minMaxRulePrev", dbData);
+  //       _setNestedRows((prevData: any) => {
+  //         if (dbData?.minMax?.length?.if) {
+  //           const minMax = dbData?.minMax;
+  //           const minMaxOutputDataArray: any[] = [];
+  //           let minMaxDta = minMax;
+  //           const refactorDta = removeMinMaxIfKeyAndGetDbProperty(minMaxDta);
+  //           console.log("refactorDta Min Maxxx", refactorDta);
+  //           refactorDta?.forEach((fieldDta: any): any => {
+  //             const minimumLength = fieldDta?.minMax?.find(
+  //               (x: { type: string }) => x?.type === "MINIMUM_LENGTH"
+  //             );
+  //             const maximumLength = fieldDta?.minMax?.find(
+  //               (x: { type: string }) => x?.type === "MAXIMUM_LENGTH"
+  //             );
+
+  //             if (
+  //               (minimumLength?.value && maximumLength?.value) ||
+  //               (minimumLength?.value?.var?.minValue &&
+  //                 maximumLength?.value?.var?.maxValue)
+  //             ) {
+  //               console.log("minimumLength Min ", minimumLength);
+  //               console.log("maximumLength Max ", maximumLength);
+
+  //               minMaxOutputDataArray.push({
+  //                 [key++]: {
+                    // actions: [
+                    //   {
+                    //     minMax: {
+                    //       logicalName: "minMax",
+                    //       minValue: minimumLength?.value?.var
+                    //         ? minimumLength?.value?.var
+                    //         : minimumLength.value,
+                    //       maxValue: maximumLength?.value?.var
+                    //         ? maximumLength?.value?.var
+                    //         : maximumLength.value,
+                    //     },
+                    //   },
+                    // ],
+  //                   fields: normalConverter([fieldDta?.ifConditions]),
+  //                 },
+  //               });
+  //             }
+  //           });
+  //           console.log(
+  //             "Validation DB Dataaa showUpdatedDataArray ",
+  //             minMaxOutputDataArray
+  //           );
+  //           if (minMaxOutputDataArray && minMaxOutputDataArray.length) {
+  //             console.log(
+  //               "Validation DB Dataaa showUpdatedDataArray ",
+  //               minMaxOutputDataArray
+  //             );
+  //             console.log("Validation DB Dataaa showUpdatedDataArray ", [
+  //               ...prevData,
+  //               minMaxOutputDataArray,
+  //             ]);
+  //             return [...prevData, ...minMaxOutputDataArray];
+  //           }
+  //         }
+  //       });
+  //     });
+  //     setIsApiDataLoaded(false);
+  //   }
+  // }, [_minMaxRulePrev]);
 
   const openNotificationWithIcon = (type: any, message: any) => {
     api[type]({
@@ -555,7 +637,7 @@ const ParentComponent = ({
     //     visibility: [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-08" ] } ] } ],
     //   },
     // ]);
-    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"NTemp_C01_04_Q_04"},"2021-10-10"]},{"==":[{"var":"NTemp_C01_04_Q_04"},5]},{"and":[{"==":[{"var":"26862_C1_S1_001"},6]}]}]},[{"type":"MINIMUM_LENGTH","value":13,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":3,"inclusive":true}],{"if":[{"and":[{"==":[{"var":"26862_C1_S1_001"},4]},{"==":[{"var":"26862_C1_S1_001"},4]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":2,"inclusive":true}]]}]}] }]);
+    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [ [ { "type": "MINIMUM_LENGTH", "value": { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1234 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1111" ] } ] }, 2 ] } }, { "type": "MAXIMUM_LENGTH", "value": { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1234 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1111" ] } ] }, { "var": "NTemp_C01_s01_grd" } ] } } ], [ { "type": "MINIMUM_LENGTH", "value": { "if": [ { "or": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-17" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "1222" ] } ] }, { "var": "NTemp_C01_s01_grd" } ] } }, { "type": "MAXIMUM_LENGTH", "value": { "if": [ { "or": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-17" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "1222" ] } ] }, { "var": "NTemp_C01_s01_grid" } ] } } ] ]}]);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_002"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_002"},7]}]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":{"var":"26862_C1_S1_002"},"inclusive":true}]]}]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
@@ -661,6 +743,7 @@ const ParentComponent = ({
     }
     openNotificationWithIcon("success", "Data Saved!");
   };
+  
   const handleSaveLogic = () => {
     let minMaxDBFormatArray: any = [];
     let minMaxDBFormatArrayNormal: any = [];
@@ -681,22 +764,51 @@ const ParentComponent = ({
     let isShowInDocNested: any = [];
     let isMinMaxNested: any = [];
 
-    if (!validation.minMaxValidation) {
-      openNotificationWithIcon("error", "MinMax Validation Must be passed!");
-      return;
-    }
+    // if (!validation.minMaxValidation) {
+    //   openNotificationWithIcon("error", "MinMax Validation Must be passed!");
+    //   return;
+    // }
 
-    const isAtLeastOneActionNotEmpty = _nestedRows?.map((item: any[]) => {
-      const actions = Object.values(item)[0]?.actions;
-      return actions && Array.isArray(actions) && actions?.length > 0;
+    // const isAtLeastOneActionNotEmpty = _nestedRows?.every((item: any[]) => {
+    //   const actions = Object.values(item)[0]?.actions;
+    //   return actions?.length > 0 && (actions[0]?.checkBoxValues?.length > 0 || actions[0]?.minMax)
+    //   // return actions && Array.isArray(actions) && actions?.length > 0;
+    // });
+
+    // if (isAtLeastOneActionNotEmpty) {
+    //   openNotificationWithIcon("error", "One Action(s) Has to be selected!");
+    //   return;
+    // }
+
+    for (const obj of _nestedRows) {
+      const keys = Object.keys(obj);
+      if (keys?.length > 0) {
+          const innerObj = obj[keys[0]];
+          const minMax = innerObj?.actions[0]?.minMax;
+          const checkBoxValues = innerObj?.actions[0]?.checkBoxValues;
+
+         
+        if (minMax === null && !checkBoxValues?.length) {
+            openNotificationWithIcon("error", "One Action(s) Has to be selected!");
+            return
+        } 
+        // if (minMax !== null && minMax !== undefined ) {
+        //   if (!minMax?.minValue || !minMax?.maxValue) {
+        //     openNotificationWithIcon("error", "Min Value or Max Value cannot be empty!");
+        //     return
+        //   }
+        // }
+      }
+    }
+    
+    const sortedData = [..._nestedRows].sort((a, b) => {
+      const aKey = Object.keys(a)[0];
+      const bKey = Object.keys(b)[0];
+      return parseInt(aKey) - parseInt(bKey);
     });
 
-    if (!isAtLeastOneActionNotEmpty.some((x: boolean) => x === true)) {
-      openNotificationWithIcon("error", "One Action(s) Has to be selected!");
-      return;
-    }
-
-    _nestedRows.forEach((sec: any) => {
+    console.log("DDDD", sortedData)
+    sortedData.forEach((sec: any) => {
       console.log("SECCCCCCCC", sec);
       const key = Object.keys(sec)[0];
 
@@ -784,13 +896,20 @@ const ParentComponent = ({
         isMinMaxNested.push(
           sec[key]?.fields?.some((flds: { hasNested: any }) => flds?.hasNested)
         );
-        const _minMaxDbFormarFields = convertJSONFormatToDBFormat(
+        const _minMaxDbFormarFields: any = convertJSONFormatToDBFormat(
           sec[key],
           true
         );
         const minMax = sec[key]?.actions[0]?.minMax;
         let minValue = minMax?.minValue;
         let maxValue = minMax?.maxValue;
+        // if (!minValue || !maxValue) {
+        //   openNotificationWithIcon("error", "Min Max Fields cannot be empty!");
+        //   setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } });
+        //   return;
+        // } else {
+        //   setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } });
+        // }
         console.log("Min Max ", minMax);
 
         if (minMax && minMax?.minValue && minMax?.maxValue) {
@@ -804,27 +923,42 @@ const ParentComponent = ({
               var: minMax?.maxValue,
             };
           }
-          minMaxDBFormatArray = findAndUpdateLastNestedIf(
-            minMaxDBFormatArray,
+          console.log("_minMaxDbFormarFields", _minMaxDbFormarFields)
+          const formattingForMin = [];
+          const formattingForMax = [];
+          formattingForMin.push(_minMaxDbFormarFields, minValue);
+          formattingForMax.push(_minMaxDbFormarFields, maxValue)
+          minMaxDBFormatArray.push([
             {
-              if: [
-                _minMaxDbFormarFields,
-                [
-                  {
-                    type: "MINIMUM_LENGTH",
-                    value: minValue,
-                    inclusive: true,
-                  },
-                  {
-                    type: "MAXIMUM_LENGTH",
-                    value: maxValue,
-                    inclusive: true,
-                  },
-                ],
-              ],
+              "type": "MINIMUM_LENGTH",
+              "value": { "if": formattingForMin }
             },
-            true
-          );
+            {
+              "type": "MAXIMUM_LENGTH",
+              "value": { "if": formattingForMax }
+            }
+          ])
+          // minMaxDBFormatArray = findAndUpdateLastNestedIf(
+          //   minMaxDBFormatArray,
+          //   {
+          //     if: [
+          //       _minMaxDbFormarFields,
+          //       [
+          //         {
+          //           type: "MINIMUM_LENGTH",
+          //           value: minValue,
+          //           inclusive: true,
+          //         },
+          //         {
+          //           type: "MAXIMUM_LENGTH",
+          //           value: maxValue,
+          //           inclusive: true,
+          //         },
+          //       ],
+          //     ],
+          //   },
+          //   true
+          // );
         }
       }
     });
