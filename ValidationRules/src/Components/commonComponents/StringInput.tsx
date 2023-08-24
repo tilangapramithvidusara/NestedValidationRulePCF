@@ -8,10 +8,11 @@ interface FieldStringInputProps {
     overrideSearch: boolean,
     setFieldValue: any,
     changedId: any,
-    fieldName: any
+    fieldName: any,
+    isDisabled: any
 }
   
-const FieldStringInput: React.FC<FieldStringInputProps> = ({sampleData, selectedValue, overrideSearch, setFieldValue, changedId, fieldName}) => {
+const FieldStringInput: React.FC<FieldStringInputProps> = ({sampleData, selectedValue, overrideSearch, setFieldValue, changedId, fieldName, isDisabled}) => {
 
     const searchFilterSort = (optionA: any, optionB: any) => {
         return (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase());
@@ -33,6 +34,7 @@ const FieldStringInput: React.FC<FieldStringInputProps> = ({sampleData, selected
                 placeholder="Search to Select"
                 onChange={onChangeSearchEvent}
                 defaultValue={selectedValue}
+                disabled={isDisabled}
             />
         </div>
     )

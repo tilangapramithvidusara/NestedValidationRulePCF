@@ -7,7 +7,8 @@ interface NumberInputField {
     defaultDisabled: any;
     setInputNumber: any;
     changedId: any;
-    fieldName: any
+  fieldName: any;
+  validatingSuccess: any
 }
 
 const FieldInput: React.FC<NumberInputField> = ({
@@ -16,7 +17,8 @@ const FieldInput: React.FC<NumberInputField> = ({
     defaultDisabled,
     setInputNumber,
     changedId,
-    fieldName
+  fieldName,
+  validatingSuccess
 }) => {
 
   const numberFormatter = (value: number | undefined) => {
@@ -44,7 +46,8 @@ const FieldInput: React.FC<NumberInputField> = ({
         disabled={defaultDisabled ? defaultDisabled : false}
         style={{ width: "100%" }}
         onChange={(value) => setInputNumber({ input: value, changedId, fieldName })}
-        defaultValue={selectedValue}
+        value={selectedValue}
+        status={!validatingSuccess ? "error" : "" }
       />
     </div>
   );

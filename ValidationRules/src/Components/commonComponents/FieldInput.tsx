@@ -9,9 +9,10 @@ interface SearchSortProps {
     setFieldValue: any,
     changedId: any,
     fieldName: any
+    isDisabled: any
 }
   
-const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overrideSearch, setFieldValue, changedId, fieldName}) => {
+const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overrideSearch, setFieldValue, changedId, fieldName, isDisabled}) => {
 
     const searchFilterSort = (optionA: any, optionB: any) => {
         return (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase());
@@ -23,6 +24,7 @@ const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overr
     }
     
     const onChangeSearchEvent = (input: any, option: any) => {
+        console.log("INPPPP", input)
         setFieldValue({input, changedId, fieldName})
     }
     return (
@@ -37,6 +39,7 @@ const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overr
                 onChange={onChangeSearchEvent}
                 options={sampleData}
                 defaultValue={selectedValue}
+                disabled={isDisabled}
             />
         </div>
     )

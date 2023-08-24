@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="Seer365Controls" constructor="ValidationRules" version="1.1.26" display-name-key="ValidationRules" description-key="ValidationRules description" control-type="standard" >
+  <control namespace="Seer365Controls" constructor="ValidationRules" version="1.2.43" display-name-key="ValidationRules" description-key="ValidationRules description" control-type="standard" >
     <property name="sampleProperty" display-name-key="Property_Display_Key" description-key="Property_Desc_Key" of-type="SingleLine.Text" usage="bound" required="true" />
     <resources>
       <code path="index.ts" order="1"/>
       <css path="src/css/ValidationRules.css" order="1" />
+      <img path="images/delete.png"  />
+      <img path="images/shrink.png"  />
+      <img path="images/expand.png"  />
       <!-- <resx path="strings/ValidationRules.1033.resx" version="1.0.0" /> -->
     </resources>
   </control>

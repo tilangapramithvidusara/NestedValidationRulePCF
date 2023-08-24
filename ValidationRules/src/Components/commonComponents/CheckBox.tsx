@@ -6,12 +6,14 @@ interface CheckBoxProps {
   checkboxDefaultSelectedValues: any;
   checkboxValuesFromConfig: any;
   setCheckboxValues: any;
+  isDisabled: any
 }
 
 function CheckBox({
   checkboxDefaultSelectedValues,
   checkboxValuesFromConfig,
   setCheckboxValues,
+  isDisabled
 }: CheckBoxProps) {
     const checkboxOnChange = (checkedValues: any) => {
         console.log("CHECCCC", checkedValues);
@@ -35,6 +37,7 @@ function CheckBox({
             defaultValue={checkboxDefaultSelectedValues && checkboxDefaultSelectedValues?.length && checkboxDefaultSelectedValues}
             onChange={checkboxOnChange}
             options={checkboxValuesFromConfig}
+            disabled={isDisabled}
           >
           </Checkbox.Group>
     </>
