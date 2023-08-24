@@ -37,6 +37,7 @@
     font-size: 14px;
     font-weight: 500;
     color: #333;
+    display: contents;
   }
 
   .validation-wrap .ant-btn {
@@ -152,6 +153,12 @@
     margin-bottom: 20px;
   }
 
+  .validation-wrap .flex-end-wrap {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
   .validation-wrap .btn-default, .validation-wrap .btn-default:hover {
     border: 0.5px solid #0958d9 !important;
     color: #0958d9 !important;
@@ -203,7 +210,6 @@
     color: #333333;
     width: 200px;
     text-align: left;
-    margin-right: 20px;
   }
 
   .validation-wrap .loop {
@@ -211,6 +217,8 @@
     background: #ffffff;
     margin-left: 35px;
     padding: 10px 0px 10px 10px;
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   .validation-wrap .loop:before {
@@ -246,6 +254,7 @@
     display: flex;
     justify-content:space-between;
     align-items: center;
+    padding-left: 12px
   }
 
   .validation-wrap .flex-row-start{
@@ -354,7 +363,7 @@
     border-radius: 2px;
   }
 
-  .validation-wrap .anticon {
+  .validation-wrap .anticon-caret-down {
     position: absolute;
     right: 10px;
   }
@@ -365,4 +374,14 @@
 
   .validation-wrap .ant-select-selector {
     min-width: 200px;
+  }
+
+  .validation-wrap .custom-btn-wrap {
+    display: flex;
+    align-items: center;
+    margin-top: 17px;
+  }
+
+  .validation-wrap .ant-input {
+    border-radius: 2px;
   }

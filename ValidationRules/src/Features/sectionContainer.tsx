@@ -31,6 +31,13 @@ interface SectionProps {
   _nestedRows: any;
   isNested: any;
   currentPossitionDetails: any;
+  questionList: any;
+  setValidation: any;
+  setDeleteSectionKey: any;
+  setSaveAsIsNested: any;
+  imageUrls: any;
+  suerveyIsPublished: any;
+  currentQuestionDetails: any
 }
 
 function SectionContainer({
@@ -40,11 +47,16 @@ function SectionContainer({
   _setNestedRows,
   _nestedRows,
   isNested,
-  currentPossitionDetails
+  currentPossitionDetails,
+  questionList,
+  setValidation,
+  setDeleteSectionKey,
+  setSaveAsIsNested,
+  imageUrls,
+  suerveyIsPublished,
+  currentQuestionDetails
 }: SectionProps) {
-  const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [rowData, setRowData] = useState<any>();
-
   const [toggleEnableMin, setToggledEnableMin] = useState<any | null>(false);
   const [toggleEnableMax, setToggledEnableMax] = useState<any | null>(false);
   const [minCheckboxEnabled, setMinCheckboxEnabled] = useState<any | null>(
@@ -57,10 +69,8 @@ function SectionContainer({
   const [minValue, setMinValue] = useState<any>();
   const [maxValue, setMaxValue] = useState<any>();
   const [minMaxValue, setMinMaxValue] = useState<any>();
-  const [questionList, setQuestionList] = useState<any[]>([]);
+  const [minMaxValidation, setMinMaxValidation] = useState<any>(true);
   const [defaultActions, setDefaultActions] = useState<any[]>([]);
-
-  // const [rows, setRows] = useState<Row[]>(_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.fields);
   const [rows, setRows] = useState<Row[]>([
     {
       level: 1,
@@ -91,159 +101,207 @@ function SectionContainer({
         ] as Row[]
     );
   };
+  
+  useEffect(() => {
+      let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
+      if (releatedFields) {
+        let releatedSection = releatedFields[sectionLevel]
+        let releatedActions = releatedFields[sectionLevel]?.actions
+        console.log("ACTSSSSS releatedFields", releatedActions);
+        // if (actions && actions.length)
+        // if (actions && actions.length && releatedSection?.fields?.length) {
+          _setNestedRows(
+            updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+              {
+                checkBoxValues: actions && actions.length ? actions : [],
+                minMax: releatedActions.map((x: { minMax: any; }) => x?.minMax)[0] || null
+              }
+            ])
+            );
+        // }
+         
+      }
 
-  const addNestedRow = () => {
-    setRows(
-      (prevRows) =>
-        [
-          ...prevRows,
-          {
-            level: 1,
-            column1: "",
-            column2: "",
-            column3: "",
-            column4: "",
-            column5: "",
-            column6: "",
-            innerConditions: "",
-          },
-        ] as Row[]
-    );
-  };
-
-  // useEffect(() => {
-  //   console.log("nestedRows from sectionnnnn", _nestedRows);
-  //     if (_nestedRows) {
-  //       setRows(_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.fields || [])
-  //     }
-  // }, [_nestedRows]);
+  }, [actions]);
 
   useEffect(() => {
-    // const releatedFields = _nestedRows.find((x: any[]) => x[sectionLevel])[sectionLevel];
-    // console.log("nestedRows from sectionnnnn", releatedFields?.actions);
+    console.log("Min Max Rendering ..... ", minMaxValue);
+    console.log("Min Max Rendering minValue ..... ", minValue?.input);
+    console.log("Min Max Rendering maxValue ..... ", maxValue?.input);
+    console.log("Min Max Rendering Only minValue ..... ", minValue);
+
+    if (minValue?.input || maxValue?.input) {
+      setMinMaxValue({ minValue: minValue?.input, maxValue: maxValue?.input });
+      let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
+      if (releatedFields) {
+        const previousActions = releatedFields[sectionLevel]?.actions?.map((obj: { checkBoxValues: any; }) => obj.checkBoxValues);
+        const minMaxDisplay = { minValue: minValue?.input, maxValue: maxValue?.input };
+        console.log("MINMAX", minMaxDisplay)
+        _setNestedRows(
+          updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+            {
+              checkBoxValues: previousActions[0] || [],
+              minMax: minMaxDisplay 
+            }
+          ])
+        );
+      }
+    }
+    if(minValue?.input && minValue?.input) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } })
+    if(!minValue?.input && !minValue?.input) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } })
+
     
-    // const existingLevel1Index = defaultActions.findIndex(
-    //   (item) => sectionLevel in item
-    // );
-    // console.log("existingLevel1Index from sectionnnnn", existingLevel1Index);
-  
-    // // Create a copy of the current defaultActions to avoid directly modifying state
-    // let updatedDefaultActions = [...defaultActions];
-  
-    // if (existingLevel1Index !== -1) {
-    //   // Update the existing level1 object with new fields
-    //   const existanceFields = updatedDefaultActions[existingLevel1Index][sectionLevel];
-    //   updatedDefaultActions[existingLevel1Index] = {
-    //     ...updatedDefaultActions[existingLevel1Index],
-    //     [sectionLevel]: existanceFields,
-    //   };
-    // } else {
-    //   // Add a new level1 object at the beginning with the relevant fields
-    //   updatedDefaultActions = [
-    //     {
-    //       [sectionLevel]: releatedFields?.actions,
-    //     },
-    //     ...updatedDefaultActions,
-    //   ];
-    // }
-  
-    // // Set the modified defaultActions in the state
-    // setDefaultActions(updatedDefaultActions);
-    // const ref = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.actions[0]?.checkBoxValues || []
-    // console.log("RESSSSsdddd", ref);
-    // if (ref && ref?.length) setActions(Object.keys(ref))
-    
-    setDefaultActions([
+  }, [minValue, maxValue]);
+
+  useEffect(() => {
+    if (typeof minMaxValue?.minValue === 'number' && typeof minMaxValue?.maxValue === 'number' && minMaxValue?.maxValue < minMaxValue?.minValue) {
+      setMinMaxValidation(false);
+      
+    }
+    else {
+      setMinMaxValidation(true)
+    }
+    // if (!minMaxValidation) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } });
+    // else if (typeof minMaxValue?.minValue === 'number' && typeof minMaxValue?.maxValue === 'number' && minMaxValue?.maxValue < minMaxValue?.minValue) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } });
+    // else { setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } }) }
+  }, [minMaxValue])
+
+
+  // useEffect(() => {
+  //   // if (!maxCheckboxEnabled && !minCheckboxEnabled) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } })    
+  //   if (!maxCheckboxEnabled && !minCheckboxEnabled) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } })
+  //   else if(!maxCheckboxEnabled || !minCheckboxEnabled) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } })
+  //   else if(maxCheckboxEnabled && minCheckboxEnabled) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } })
+  // }, [maxCheckboxEnabled, minCheckboxEnabled])
+
+  const handleSectionRemove = () => {
+      setDeleteSectionKey(sectionLevel)
+  }
+
+  useEffect(() => {
+    let releatedFields = _nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel]);
+    if (releatedFields && sectionLevel && releatedFields[sectionLevel] && currentPossitionDetails) {
+      let releatedActions = releatedFields[sectionLevel]?.actions
+      _setNestedRows(
+        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+          {
+            checkBoxValues: releatedActions.map((x: any) => x?.checkBoxValues)[0],
+            minMax: releatedActions.map((x: { minMax: any; }) => x?.minMax)[0] || null
+          }
+        ])
+      );
+      setMinCheckboxEnabled(_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue || false);
+      setToggledEnableMin(typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue !== 'string')
+      setMaxCheckboxEnabled(_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || false);
+      setToggledEnableMax(typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue !== 'string')
+      setMinMaxValue({
+        minValue: _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue,
+        maxValue: _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue
+      });
+      setMinValue({ input: _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue, changedId: "", fieldName: "minValue" })
+      setMaxValue({ input: _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue, changedId: "", fieldName: "maxValue" })
+
+    } else {
+      setToggledEnableMin(true)
+      setToggledEnableMax(true)
+    }
+  }, []);
+
+  useEffect(() => {
+    setDefaultActions(currentPossitionDetails && currentPossitionDetails?.currentPosition === "question" ? [
       {
         label: "Show",
         value: "show",
       },
       {
-        label: "Enable",
-        value: "enable",
-      },
-      {
         label: "Show in Document",
         value: "OutPutDoc:Show",
       },
-    ]);
-
-  }, [_nestedRows]);
-  
-
-
-  useEffect(() => {
-    loadQuestionHandler();
-  }, []);
+    ] : [
+      {
+        label: "Show",
+        value: "show",
+      }
+    ])
+  }, [currentPossitionDetails]);
 
   useEffect(() => {
-      console.log("questionList", questionList)
-  }, [questionList])
+    console.log("currentQuestionDetails ", currentQuestionDetails)
+  }, [currentQuestionDetails]);
 
-  useEffect(() => {
-    console.log("questionList rowsrowsrows", rows)
-  }, [rows])
-  
-  useEffect(() => {
-    console.log("ACTSSSSS", actions);
+  // useEffect(() => {
+  //   setMinValue({ input: "", changedId: "", fieldName: "minValue" })
+  // }, [toggleEnableMin])
+
+  // useEffect(() => {
+  //   setMaxValue({ input: "", changedId: "", fieldName: "maxValue" })
+  // }, [toggleEnableMax])
+
+
+  // useEffect(() => {
+  //   if(!minCheckboxEnabled) setMinValue({ input: null, changedId: "", fieldName: "minValue" })
+  // }, [minCheckboxEnabled])
+
+  // useEffect(() => {
+  //   if(!maxCheckboxEnabled) setMaxValue({ input: null, changedId: "", fieldName: "maxValue" })
+  // }, [maxCheckboxEnabled])
+
+  const handleMinMaxWhenToggleChanged = (minValue: any, maxValue: any) => {
+    setMinMaxValue((prev: any) => ({...prev, minValue, maxValue }));
     let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
     if (releatedFields) {
-      releatedFields = releatedFields[sectionLevel].actions
-      console.log("ACTSSSSS releatedFields", releatedFields);
-      // if (actions && actions.length)
-        _setNestedRows(
-        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
-          {
-            checkBoxValues: actions,
-            minMax: releatedFields.map((x: { minMax: any; }) => x?.minMax)[0] || {}
-          }
-        ])
-        );
-    }
-   
-  }, [actions]);
-
-  useEffect(() => {
-    setMinMaxValue({ minValue: minValue?.input, maxValue: maxValue?.input });
-    let releatedFields = _nestedRows.find((x: { [x: string]: any; }) => x[sectionLevel]);
-    if (releatedFields) {
-      const previousActions = releatedFields[sectionLevel]?.actions?.map((obj: { checkBoxValues: any; }) => obj.checkBoxValues)
+      const previousActions = releatedFields[sectionLevel]?.actions?.map((obj: { checkBoxValues: any; }) => obj.checkBoxValues);
+      const minMaxDisplay = { minValue, maxValue};
+      console.log("MINMAX", minMaxDisplay)
       _setNestedRows(
         updateAllLevelActionsArray(_nestedRows, sectionLevel, [
           {
             checkBoxValues: previousActions[0] || [],
-            minMax: { minValue: minValue?.input, maxValue: maxValue?.input }
+            minMax:  !minValue && !maxValue ? null : minMaxDisplay 
           }
         ])
       );
     }
-  }, [minValue, maxValue]);
-  
+  }
 
-  const loadQuestionHandler = async () => {
-    const result = await loadAllQuestionsInSurvey();
-    console.log('resss =====> ', result);
-    
-    let questionListArray = result.data || [];
-    // Check if 'result.data' exists and has 'entities' property
-    if (questionListArray && questionListArray.length) {
-        const formattedQuestionList = questionListArray.map((quesNme:any) => {
-            return { label: quesNme.gyde_name, value: quesNme.gyde_name, questionType: quesNme.questionType}
-        })
-        formattedQuestionList && formattedQuestionList.length && setQuestionList(formattedQuestionList);
-    } else {
-      // Handle the case when 'entities' property is not present
-      setQuestionList([]);
+  const toggleEnableOnClickMin = () => {
+    console.log("DFFOnCLICK")
+    setToggledEnableMin(!toggleEnableMin);
+    setMinValue({ input: "", changedId: "", fieldName: "minValue" });
+    handleMinMaxWhenToggleChanged(null, null);
+  }
+
+  const toggleEnableOnClickMax = () => {
+    setToggledEnableMax(!toggleEnableMax);
+    setMaxValue({ input: "", changedId: "", fieldName: "maxValue" })
+    handleMinMaxWhenToggleChanged(null, null);
+  }
+
+  const onChangeCheckBoxMin = (e:any) => {
+    setMinCheckboxEnabled(e.target.checked)
+    if (!e.target.checked) {
+      setMinValue({ input: "", changedId: "", fieldName: "minValue" })
+      handleMinMaxWhenToggleChanged(null, null);
+    }else {
+      if (!minValue?.input) {
+        setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } })
+      }
     }
-  };
+  }
 
-  useEffect(() => {
-    console.log("DEFAULt ACTS", defaultActions);
-    // setMinCheckboxEnabled(defaultActions[0]?.minMax?.minValue ? true : false);
-    // setMaxCheckboxEnabled(defaultActions[0]?.minMax?.maxValue ? true : false);
-    // setToggledEnableMin(defaultActions[0]?.minMax?.minValue ? true : false);
-    // setToggledEnableMax(defaultActions[0]?.minMax?.maxValue ? true : false);
-  }, [defaultActions]);
+  const onChangeCheckBoxMax = (e:any) => {
+    setMaxCheckboxEnabled(e.target.checked)
+    console.log("EEEEEE", e)
+    if (!e.target.checked) {
+      setMaxValue({ input: "", changedId: "", fieldName: "maxValue" })
+      handleMinMaxWhenToggleChanged(null, null);
+    }
+    else {
+      if (!maxValue?.input) {
+        setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } })
+      }
+    }
+  }
 
   return (
     <div>
@@ -259,6 +317,10 @@ function SectionContainer({
           _setNestedRows={_setNestedRows}
           _nestedRows={_nestedRows}
           questionList={questionList}
+          handleSectionRemove={handleSectionRemove}
+          setSaveAsIsNested={setSaveAsIsNested}
+          imageUrls={imageUrls}
+          suerveyIsPublished={suerveyIsPublished}
         />
       ))}
 
@@ -267,41 +329,36 @@ function SectionContainer({
           <div className="subTitle w-10">Actions</div>
           <div className="flex-row">
             <CheckBox
-  checkboxDefaultSelectedValues={
-    _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.checkBoxValues
-      ?.map((obj: any) => ({ value: obj[Object.keys(obj)[0]]?.value }))
-      ?.map((x: any) => x?.value) || []
-  }              checkboxValuesFromConfig={[
-                {
-                  label: "Show",
-                  value: "show",
-                },
-                {
-                  label: "Enable",
-                  value: "enable",
-                },
-                {
-                  label: "Show in Document",
-                  value: "OutPutDoc:Show",
-                },
-              ]}
-              setCheckboxValues={setActions}
+                checkboxDefaultSelectedValues={
+                  _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.checkBoxValues
+                    ?.map((obj: any) => ({ value: obj[Object.keys(obj)[0]]?.value }))
+                    ?.map((x: any) => x?.value) || []
+                }
+                checkboxValuesFromConfig={defaultActions}
+                setCheckboxValues={setActions}
+                isDisabled={suerveyIsPublished}
+              
             />
           </div>
         </div>
         {
-          currentPossitionDetails && currentPossitionDetails?.currentPosition === "question" &&
+          currentPossitionDetails &&
+          currentPossitionDetails?.currentPosition === "question" &&
+          currentQuestionDetails?.questionType !== "Header" &&
+          currentQuestionDetails?.questionType !== "List" && 
+          currentQuestionDetails?.questionType !== "Date" && 
               
           <div className="subTitle mt-10 mb-30 w-100 flex-start">
-            <div className="subTitle w-10">Min/Max Field</div>
+            <div className="subTitle w-10">{ currentQuestionDetails?.questionType === "String" ? 'MinLength/MaxLength Field ' : "Min/Max Field " } </div>
             <div className="flex-start">
               <div className="flex-start mr-30">
                 <div style={{ marginRight: "10px" }}>
                   {" "}
                   <Checkbox
-                      onChange={(e) => setMinCheckboxEnabled(e.target.checked)}
+                      onChange={(e) => onChangeCheckBoxMin(e)}
                       // defaultChecked={_nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel])[sectionLevel]?.actions[0]?.minMax?.minValue}
                       defaultChecked={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue || false}
+                      disabled={suerveyIsPublished}
                   />{" "}
                 </div>
                 <div style={{ marginRight: "10px" }}>
@@ -309,26 +366,29 @@ function SectionContainer({
                     className="custom-toggle"
                     checkedChildren="Value"
                     unCheckedChildren="Question"
-                    onChange={() => setToggledEnableMin(!toggleEnableMin)}
-                      disabled={!minCheckboxEnabled}
+                    onChange={() => toggleEnableOnClickMin()}
+                      disabled={suerveyIsPublished ? suerveyIsPublished : !minCheckboxEnabled}
                       defaultChecked={typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue !== 'string'}
+                      
                   />
                 </div>
 
-                <div className="minmaxText">Min:</div>
+                  <div className="minmaxText">{ currentQuestionDetails?.questionType === "String" ? 'MinLength: ' : "Min: " }</div>
                 {toggleEnableMin ? (
                   <NumberInputField
-                    selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue}
-                    handleNumberChange={{}}
-                    defaultDisabled={!minCheckboxEnabled}
-                    setInputNumber={setMinValue}
-                    changedId={undefined}
-                    fieldName={"minValue"}
-                  />
+                      selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue}
+                      handleNumberChange={{}}
+                      defaultDisabled={suerveyIsPublished ? suerveyIsPublished : !minCheckboxEnabled}
+                      setInputNumber={setMinValue}
+                      changedId={undefined}
+                      fieldName={"minValue"}
+                      validatingSuccess={minMaxValidation}
+                      
+                    />
                 ) : (
                   <DropDown
-                    dropDownData={sampleInputQuestion}
-                    isDisabled={!minCheckboxEnabled}
+                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric') : []}
+                    isDisabled={suerveyIsPublished ? suerveyIsPublished : !minCheckboxEnabled}
                     setExpression={setMinValue}
                     changedId={undefined}
                     fieldName={"minValue"}
@@ -341,8 +401,9 @@ function SectionContainer({
                 <div style={{ marginRight: "10px" }}>
                   {" "}
                   <Checkbox
-                      onChange={(e) => setMaxCheckboxEnabled(e.target.checked)}
+                      onChange={(e) => onChangeCheckBoxMax(e)}
                       defaultChecked={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue}
+                      disabled={suerveyIsPublished}
                   />{" "}
                 </div>
                 <div style={{ marginRight: "10px" }}>
@@ -350,25 +411,26 @@ function SectionContainer({
                     className="custom-toggle"
                     checkedChildren="Value"
                     unCheckedChildren="Question"
-                    onChange={() => setToggledEnableMax(!toggleEnableMax)}
-                      disabled={!maxCheckboxEnabled}
+                    onChange={() => toggleEnableOnClickMax()}
+                      disabled={suerveyIsPublished ? suerveyIsPublished : !maxCheckboxEnabled}
                       defaultChecked={typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue !== 'string'}
                   />
                 </div>
 
-                <div className="minmaxText">Max:</div>
+                <div className="minmaxText">{ currentQuestionDetails?.questionType === "String" ? 'MaxLength: ' : "Max: " }</div>
                 {toggleEnableMax ? (
                   <NumberInputField
-                    selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || ''}
-                    handleNumberChange={{}}
-                    defaultDisabled={!maxCheckboxEnabled}
-                    setInputNumber={setMaxValue}
-                    changedId={undefined}
-                    fieldName={"maxValue"} />
+                      selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || ''}
+                      handleNumberChange={{}}
+                      defaultDisabled={suerveyIsPublished ? suerveyIsPublished : !maxCheckboxEnabled}
+                      setInputNumber={setMaxValue}
+                      changedId={undefined}
+                      fieldName={"maxValue"}
+                      validatingSuccess={minMaxValidation} />
                 ) : (
                   <DropDown
-                    dropDownData={sampleInputQuestion}
-                    isDisabled={!maxCheckboxEnabled}
+                    dropDownData={questionList && questionList?.length ? questionList.filter((ques: any) => ques?.questionType === 'Numeric') : []}
+                    isDisabled={suerveyIsPublished ? suerveyIsPublished : !maxCheckboxEnabled}
                     setExpression={setMaxValue}
                     changedId={undefined}
                     fieldName={"maxValue"}

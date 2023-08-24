@@ -1,64 +1,55 @@
 [ 
     {
-        "1" : {
+        "level1" : {
             "fields": [{
                 "field": "Question01",
-                "condition": "==",
-                "value": "123",
+                "condition": "",
+                "value": "",
                 "sort": 1,
                 "level": 1,
                 "hasNested": true,
-                "expression": "",
-                "collapse": false,
+                "expression": "OR",
                 "innerConditions":[
                         {
                             "field":  "Question 01 01",
-                            "condition": "==",
-                            "value": "22",
+                            "condition": "",
+                            "value": "",
                             "sort": 1,
                             "level": 11,
                             "hasNested": true,
-                            "expression": "&&",
-                            "collapse": false,
+                            "expression": "AND",
                             "innerConditions": [
                                 {
                                     "field": "Question 01 01 01",
-                                    "condition": "==",
-                                    "value": "12",
+                                    "condition": "",
+                                    "value": "",
                                     "sort": 1,
                                     "hasNested": false,
                                     "level": 111,
-                                    "expression": "",
-                                    "innerConditions": [],
-                                    "collapse": false
+                                    "expression": ""
                                 },
                                 {
                                     "field": "Question 01 01 02",
-                                    "condition": ">=",
-                                    "value": "211",
+                                    "condition": "",
+                                    "value": "",
                                     "sort": 1,
                                     "level": 112,
-                                    "expression": "&&",
-                                    "innerConditions": [],
-                                    "collapse": false
+                                    "expression": "AND"
                                 },
                                 {
                                     "field": "Question 01 01 03",
-                                    "condition": "==",
-                                    "value": "34",
+                                    "condition": "",
+                                    "value": "",
                                     "sort": 1,
                                     "level": 113,
                                     "hasNested": true,
-                                    "expression": "&&",
-                                    "collapse": false,
+                                    "expression": "OR",
                                     "innerConditions": [{
                                         "field": "Question 01 01 03 01",
-                                        "condition": "==",
-                                        "value": "76",
+                                        "condition": "",
+                                        "value": "",
                                         "sort": 1,
-                                        "level": 1131,
-                                        "innerConditions": [],
-                                        "collapse": false
+                                        "level": 1131
                                     }]
                                 }
                         ]
@@ -83,56 +74,27 @@
                             }],
                             "minMax": {
                                 "logicalName": "minMax",
-                                "minValue":12,
-                                "maxValue": 21
+                                "min":12,
+                                "max": 21
                             }
                         }
                 ]
         }
     },
     {
-        "2": {
+        "level2": {
             "fields":[{
                 "field": "Question 02",
-                "condition": ">=",
-                "value": "21",
+                "condition": "",
+                "value": "",
                 "sort": 1,
                 "level": 2,
                 "hasNested": false,
-                "expression": "",
-                "innerConditions": [],
-                "collapse": false
+                "expression": "AND"
             }],
-            "actions": [{
-              "checkBoxValues": [{
-                  "outputDoc": {
-                      "logicalName": "outputDoc",
-                      "value": "OutPutDoc:Show"
-                  },
-                  "enable": {
-                      "logicalName": "EnableField",
-                      "value": "enable"
-                  }
-              }],
-              "minMax": {
-                  "logicalName": "minMax",
-                  "minValue":1222,
-                  "maxValue": 2121
-              }
-          }]
+            "actions": ["ShowOutputDoc"]
     }
 }
 ]
-
-
-
-
-
-
-
-
-
-
-
 
 
