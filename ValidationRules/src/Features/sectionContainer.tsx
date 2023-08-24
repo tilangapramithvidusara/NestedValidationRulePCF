@@ -346,9 +346,10 @@ function SectionContainer({
           currentPossitionDetails?.currentPosition === "question" &&
           currentQuestionDetails?.questionType !== "Header" &&
           currentQuestionDetails?.questionType !== "List" && 
+          currentQuestionDetails?.questionType !== "Date" && 
               
           <div className="subTitle mt-10 mb-30 w-100 flex-start">
-            <div className="subTitle w-10">Min/Max Field</div>
+            <div className="subTitle w-10">{ currentQuestionDetails?.questionType === "String" ? 'MinLength/MaxLength Field ' : "Min/Max Field " } </div>
             <div className="flex-start">
               <div className="flex-start mr-30">
                 <div style={{ marginRight: "10px" }}>
@@ -372,7 +373,7 @@ function SectionContainer({
                   />
                 </div>
 
-                <div className="minmaxText">Min:</div>
+                  <div className="minmaxText">{ currentQuestionDetails?.questionType === "String" ? 'MinLength: ' : "Min: " }</div>
                 {toggleEnableMin ? (
                   <NumberInputField
                       selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue}
@@ -416,7 +417,7 @@ function SectionContainer({
                   />
                 </div>
 
-                <div className="minmaxText">Max:</div>
+                <div className="minmaxText">{ currentQuestionDetails?.questionType === "String" ? 'MaxLength: ' : "Max: " }</div>
                 {toggleEnableMax ? (
                   <NumberInputField
                       selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || ''}

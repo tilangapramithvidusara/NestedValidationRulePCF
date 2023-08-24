@@ -180,11 +180,11 @@ const ParentComponent = ({
   useEffect(() => {
     console.log("_visibilityRulePrev", _visibilityRulePrev);
     if (_visibilityRulePrev?.length) {
-      let key = 30;
+      let key = 45;
       _visibilityRulePrev.forEach((dbData) => {
         console.log("Loading Visibility Data", dbData);
         _setNestedRows((prevData: any) => {
-          let visibilityString = dbData?.visibility?.if?.length ? dbData?.visibility?.if : [dbData?.visibility]
+          let visibilityString = dbData?.visibility?.if?.length ? dbData?.visibility?.if : dbData?.visibility?.length ? dbData?.visibility : [dbData?.visibility]
           console.log("visibilityString", visibilityString);
           if (visibilityString) {
             // const visibilityString = dbData?.visibility?.if;
@@ -194,8 +194,11 @@ const ParentComponent = ({
             const isRetrieveAsNormal = visibilityDta?.some(
               (x: any) => x?.or?.length || x?.and?.length
             );
-            const isFirstExp = visibilityDta?.some(
+            const isFirstExpWithEmptyStringKey = visibilityDta?.some(
               (x: any) => !Object.keys(x)[0]
+            );
+            const isFirstExpWithoutEmptyStringKey = visibilityDta?.some(
+              (x: any) => (x[Object.keys(x)[0]] as any[])?.length === 2
             );
             const isAllAreNormal = visibilityDta?.every((x: { or: any[] }) => {
               const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
@@ -203,19 +206,21 @@ const ParentComponent = ({
             });
             const isNestedIfs = visibilityDta?.some((x: {}) => Object.keys(x)[0] === 'if')
             console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
-            console.log("Fetch Type isFirstExp", isFirstExp);
+            console.log("Fetch Type isFirstExpWithEmptyStringKey", isFirstExpWithEmptyStringKey);
+            console.log("Fetch Type isFirstExpWithoutEmptyStringKey", isFirstExpWithoutEmptyStringKey);
             console.log("Fetch Type isAllAreNormal", isAllAreNormal);
             console.log("Fetch Type isNestedIfs", isNestedIfs);
 
             if (isNestedIfs) {
               refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
-            }
-            else if (isAllAreNormal) {
+            } else if (isAllAreNormal) {
               refactorDta = visibilityDta[0]?.or;
             } else if (isRetrieveAsNormal) {
               // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
               refactorDta = visibilityDta;
-            } else if (isFirstExp) {
+            } else if (isFirstExpWithoutEmptyStringKey) { 
+              refactorDta = [{ or: [visibilityString[0]] }];
+            } else if (isFirstExpWithEmptyStringKey) {
               // refactorDta = visibilityDta;
               refactorDta = [{ or: Object.values(visibilityDta[0])[0] }];
             } else {
@@ -251,8 +256,9 @@ const ParentComponent = ({
               });
 
               if (showUpdatedDataArray && showUpdatedDataArray.length) {
+                // const reversedArray = showUpdatedDataArray.reverse();
                 console.log(
-                  "Validation DB Dataaa showUpdatedDataArray ",
+                  "Visibility Data Retrieving ",
                   showUpdatedDataArray
                 );
                 console.log("Validation DB Dataaa showUpdatedDataArray ", [
@@ -268,6 +274,7 @@ const ParentComponent = ({
       setIsApiDataLoaded(false);
     }
   }, [_visibilityRulePrev]);
+
 
   useEffect(() => {
     if (_documentOutputRulePrev?.length) {
@@ -296,19 +303,32 @@ const ParentComponent = ({
             });
             const isNestedIfs = docRuleOutput?.some((x: {}) => Object.keys(x)[0] === 'if')
 
+            const isFirstExpWithEmptyStringKey = docRuleOutput?.some(
+              (x: any) => !Object.keys(x)[0]
+            );
+            const isFirstExpWithoutEmptyStringKey = docRuleOutput?.some(
+              (x: any) => (x[Object.keys(x)[0]] as any[])?.length === 2
+            );
+
             console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
             console.log("Fetch Type isFirstExp", isFirstExp);
             console.log("Fetch Type isAllAreNormal", isAllAreNormal);
             console.log("Fetch Type isNestedIfs", isNestedIfs);
+            console.log("Fetch Type isFirstExpWithEmptyStringKey", isFirstExpWithEmptyStringKey);
+            console.log("Fetch Type isFirstExpWithoutEmptyStringKey", isFirstExpWithoutEmptyStringKey);
 
             if (isNestedIfs) {
               docOutputDta = removeIfKeyAndGetDbProperty(docRuleOutput);
-            }
-            else if (isAllAreNormal) {
+            } else if (isAllAreNormal) {
               docOutputDta = docRuleOutput[0]?.or;
             } else if (isRetrieveAsNormal) {
               // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
               docOutputDta = docRuleOutput;
+            } else if (isFirstExpWithoutEmptyStringKey) { 
+              docOutputDta = [{ or: [docRuleOutput[0]] }];
+            } else if (isFirstExpWithEmptyStringKey) {
+              // refactorDta = visibilityDta;
+              docOutputDta = [{ or: Object.values(docRuleOutput[0])[0] }];
             } else if (isFirstExp) {
               // refactorDta = visibilityDta;
               docOutputDta = [{ or: Object.values(docRuleOutput[0])[0] }];
@@ -340,15 +360,17 @@ const ParentComponent = ({
                 });
               });
               console.log(
-                "Validation DB Dataaa showUpdatedDataArray ",
+                "showUpdatedDocOutputDataArray DB Data ",
                 showUpdatedDocOutputDataArray
               );
               if (
                 showUpdatedDocOutputDataArray &&
                 showUpdatedDocOutputDataArray.length
               ) {
+                // const reversedArray = showUpdatedDocOutputDataArray.reverse();
+
                 console.log(
-                  "Validation DB Dataaa showUpdatedDataArray ",
+                  "Update Doc DB Data retrieving ",
                   showUpdatedDocOutputDataArray
                 );
                 console.log("Validation DB Dataaa showUpdatedDataArray ", [
@@ -365,9 +387,11 @@ const ParentComponent = ({
     }
   }, [_documentOutputRulePrev]);
 
+
+
   useEffect(() => {
     if (_minMaxRulePrev?.length) {
-      let key = 20;
+      let key = 15;
       _minMaxRulePrev.forEach((dbData) => {
         console.log("Loading _minMaxRulePrev", dbData);
         _setNestedRows((prevData: any) => {
@@ -378,66 +402,94 @@ const ParentComponent = ({
             minMaxDta.forEach((fieldMinMax: any) => {
               console.log("fieldMinMax", fieldMinMax);
 
-              const _refactorDtaMin = removeMinMaxIfKeyAndGetDbProperty([fieldMinMax[0]?.value]);
-              const _refactorDtaMax = removeMinMaxIfKeyAndGetDbProperty([fieldMinMax[1]?.value]);
+              let _refactorDtaMin = removeMinMaxIfKeyAndGetDbProperty([fieldMinMax[0]?.value]);
+              let _refactorDtaMax = removeMinMaxIfKeyAndGetDbProperty([fieldMinMax[1]?.value]);
+              console.log("_refactorDtaMin", _refactorDtaMin);
+              console.log("_refactorDtaMax", _refactorDtaMax);
+              const refactoredMinMax = _refactorDtaMin[0]?.ifConditions || _refactorDtaMax[0]?.ifConditions;
+              console.log("refactorDta Min Maxxx", refactoredMinMax);
+              let _minMaxArrayStr = refactoredMinMax?.length ? refactoredMinMax : [refactoredMinMax]
 
-              console.log("refactorDta Min Maxxx", _refactorDtaMin[0]?.minMax);
-              console.log("refactorDta Min Maxxx _refactorDtaMax", _refactorDtaMax[0]?.minMax);
 
-              // refactorDta?.forEach((fieldDta: any): any => {
-              // const minimumLength = fieldDta?.minMax?.find(
-              //   (x: { type: string }) => x?.type === "MINIMUM_LENGTH"
-              // );
-              // const maximumLength = fieldDta?.minMax?.find(
-              //   (x: { type: string }) => x?.type === "MAXIMUM_LENGTH"
-              // );
-  
-              // if (
-              //   (minimumLength?.value && maximumLength?.value) ||
-              //   (minimumLength?.value?.var?.minValue &&
-              //     maximumLength?.value?.var?.maxValue)
-              // ) {
-              //   console.log("minimumLength Min ", minimumLength);
-              //   console.log("maximumLength Max ", maximumLength);
-              if (_refactorDtaMin[0]?.minMax && _refactorDtaMax[0]?.minMax) {
-                minMaxOutputDataArray.push({
-                  [key++]: {
-                    actions: [
-                      {
-                        minMax: {
-                          logicalName: "minMax",
-                          minValue: _refactorDtaMin[0]?.minMax?.var
-                            ? _refactorDtaMin[0]?.minMax?.var
-                            : _refactorDtaMin[0]?.minMax,
-                          maxValue: _refactorDtaMax[0]?.minMax?.var
-                            ? _refactorDtaMax[0]?.minMax?.var
-                            : _refactorDtaMax[0]?.minMax,
+              const isRetrieveAsNormal = _minMaxArrayStr?.some(
+                (x: any) => x?.or?.length || x?.and?.length
+              );
+              const isFirstExp = _minMaxArrayStr?.some(
+                (x: any) => !Object.keys(x)[0]
+              );
+              const isAllAreNormal = _minMaxArrayStr?.every((x: { or: any[] }) => {
+                const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
+                return keys?.includes("and") || keys?.includes("or");
+              });
+              const isNestedIfs = _minMaxArrayStr?.some((x: {}) => Object.keys(x)[0] === 'if')
+
+              console.log("isRetrieveAsNormal Min Max", isRetrieveAsNormal)
+              console.log("isFirstExp Min Max", isFirstExp)
+              console.log("isAllAreNormal Min Max", isAllAreNormal)
+              console.log("isNestedIfs Min Max", isNestedIfs)
+
+              let _minMaxArray
+              if (isNestedIfs) {
+                _minMaxArray = removeIfKeyAndGetDbProperty(_minMaxArrayStr);
+              }
+              else if (isAllAreNormal) {
+                _minMaxArray = _minMaxArrayStr[0]?.or;
+              } else if (isRetrieveAsNormal) {
+                // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
+                _minMaxArray = _minMaxArrayStr;
+              } else if (isFirstExp) {
+                // refactorDta = visibilityDta;
+                _minMaxArray = [{ or: Object.values(_minMaxArrayStr[0])[0] }];
+              } else {
+                _minMaxArray = removeIfKeyAndGetDbProperty(_minMaxArrayStr);
+              }
+
+              console.log("visibilityStringvisibilityString", _minMaxArray)
+              if (_minMaxArray && _minMaxArray?.length) {
+                _minMaxArray?.forEach((fieldDta: any): any => {
+                  console.log("Each Section Field Data", fieldDta);
+                  let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
+
+                  minMaxOutputDataArray.push({
+                    [key++]: {
+                      actions: [
+                        {
+                          minMax: {
+                            logicalName: "minMax",
+                            minValue: _refactorDtaMin[0]?.minMax?.var
+                              ? _refactorDtaMin[0]?.minMax?.var
+                              : _refactorDtaMin[0]?.minMax,
+                            maxValue: _refactorDtaMax[0]?.minMax?.var
+                              ? _refactorDtaMax[0]?.minMax?.var
+                              : _refactorDtaMax[0]?.minMax,
+                          },
                         },
-                      },
-                    ],
-                    fields: normalConverter([_refactorDtaMin[0]?.ifConditions]),
-                  },
+                      ],
+                      fields: normalConverter([_fieldDta]),
+                    },
+                  });
                 });
               }
                  
             })
+            if (minMaxOutputDataArray && minMaxOutputDataArray.length) {
+              console.log(
+                "Validation DB Dataaa showUpdatedDataArray ",
+                minMaxOutputDataArray
+              );
+              console.log("Validation DB Dataaa showUpdatedDataArray ", [
+                ...prevData,
+                minMaxOutputDataArray,
+              ]);
+              return [...prevData, ...minMaxOutputDataArray];
+            }
           }
               // });
               // console.log(
               //   "Validation DB Dataaa showUpdatedDataArray ",
               //   minMaxOutputDataArray
               // );
-              if (minMaxOutputDataArray && minMaxOutputDataArray.length) {
-                console.log(
-                  "Validation DB Dataaa showUpdatedDataArray ",
-                  minMaxOutputDataArray
-                );
-                console.log("Validation DB Dataaa showUpdatedDataArray ", [
-                  ...prevData,
-                  minMaxOutputDataArray,
-                ]);
-                return [...prevData, ...minMaxOutputDataArray];
-              }
+              
             // })
 
           
@@ -634,11 +686,11 @@ const ParentComponent = ({
     // _setVisibilityRulePrev((prevData: any) => [
     //   ...prevData,
     //   {
-    //     visibility: [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-08" ] } ] } ],
+    //     visibility:{ "or": [ { "or": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-23" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "11" ] } ] }, { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "2" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "4" ] } ] } ] }
     //   },
     // ]);
-    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [ [ { "type": "MINIMUM_LENGTH", "value": { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1234 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1111" ] } ] }, 2 ] } }, { "type": "MAXIMUM_LENGTH", "value": { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1234 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1111" ] } ] }, { "var": "NTemp_C01_s01_grd" } ] } } ], [ { "type": "MINIMUM_LENGTH", "value": { "if": [ { "or": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-17" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "1222" ] } ] }, { "var": "NTemp_C01_s01_grd" } ] } }, { "type": "MAXIMUM_LENGTH", "value": { "if": [ { "or": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-17" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "1222" ] } ] }, { "var": "NTemp_C01_s01_grid" } ] } } ] ]}]);
-    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"if":[{"and":[{"==":[{"var":"26862_C1_S1_002"},4]},{"==":[{"var":"26862_C1_S1_001"},5]},{"and":[{"==":[{"var":"26862_C1_S1_002"},7]}]}]},[{"type":"MINIMUM_LENGTH","value":1,"inclusive":true},{"type":"MAXIMUM_LENGTH","value":{"var":"26862_C1_S1_002"},"inclusive":true}]]}]}]);
+    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [ [ { "type": "MINIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, 2 ] } }, { "type": "MAXIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, null ] } } ] ]}]);
+    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [[{"type":"MINIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]}]}},{"type":"MAXIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]},4]}}]]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
   };
@@ -788,10 +840,10 @@ const ParentComponent = ({
           const checkBoxValues = innerObj?.actions[0]?.checkBoxValues;
 
          
-        if (minMax === null && !checkBoxValues?.length) {
-            openNotificationWithIcon("error", "One Action(s) Has to be selected!");
-            return
-        } 
+        // if (minMax === null && !checkBoxValues?.length) {
+        //     openNotificationWithIcon("error", "One Action(s) Has to be selected!");
+        //     return
+        // } 
         // if (minMax !== null && minMax !== undefined ) {
         //   if (!minMax?.minValue || !minMax?.maxValue) {
         //     openNotificationWithIcon("error", "Min Value or Max Value cannot be empty!");
@@ -852,7 +904,9 @@ const ParentComponent = ({
             )
           );
           const _visibility = convertJSONFormatToDBFormat(sec[key], true);
-          visibilityRuleNormal.push(_visibility);
+          const __visibility = JSON.parse(JSON.stringify(_visibility));
+          console.log("Pushing visibility", __visibility)
+          visibilityRuleNormal.push(__visibility['']?.length ? __visibility[''][0] : _visibility);
           visibilityRule = findAndUpdateLastNestedIf(
             visibilityRule,
             { if: [_visibility] },
@@ -862,12 +916,15 @@ const ParentComponent = ({
         if (isOutputDocShowExists) {
           outputDocShowCount = outputDocShowCount + 1;
           const _outputDocShow = convertJSONFormatToDBFormat(sec[key], true);
+          const __outputDocShow = JSON.parse(JSON.stringify(_outputDocShow));
+
           isShowInDocNested.push(
             sec[key]?.fields?.some(
               (flds: { hasNested: any }) => flds?.hasNested
             )
           );
-          outputDocShowNormal.push(_outputDocShow);
+          // outputDocShowNormal.push(_outputDocShow);
+          outputDocShowNormal.push(__outputDocShow['']?.length ? __outputDocShow[''][0] : _outputDocShow);
           outputDocShow = findAndUpdateLastNestedIf(
             outputDocShow,
             { if: [_outputDocShow] },
@@ -901,8 +958,8 @@ const ParentComponent = ({
           true
         );
         const minMax = sec[key]?.actions[0]?.minMax;
-        let minValue = minMax?.minValue;
-        let maxValue = minMax?.maxValue;
+        let minValue = minMax?.minValue || null;
+        let maxValue = minMax?.maxValue || null;
         // if (!minValue || !maxValue) {
         //   openNotificationWithIcon("error", "Min Max Fields cannot be empty!");
         //   setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } });
@@ -912,13 +969,13 @@ const ParentComponent = ({
         // }
         console.log("Min Max ", minMax);
 
-        if (minMax && minMax?.minValue && minMax?.maxValue) {
-          if (typeof minMax.minValue === "string") {
+        if (minMax) {
+          if (minMax.minValue && typeof minMax.minValue === "string" ) {
             minValue = {
               var: minMax?.minValue,
             };
           }
-          if (typeof minMax.maxValue === "string") {
+          if (minMax.maxValue && typeof minMax.maxValue === "string") {
             maxValue = {
               var: minMax?.maxValue,
             };
@@ -994,17 +1051,21 @@ const ParentComponent = ({
         visibilityRuleNormal.length === 1
       ) {
         // savedVisibilityRuleFinalFormat = visibilityRuleNormal;
-        savedVisibilityRuleFinalFormat = {
-          if: visibilityRuleNormal
-        };
-
+        // savedVisibilityRuleFinalFormat = {
+        //   if: visibilityRuleNormal
+        // };
+        if (visibilityRuleNormal[0][""] && visibilityRuleNormal[0][""][0]) {
+          savedVisibilityRuleFinalFormat = visibilityRuleNormal[0][""][0]
+        } else {
+          savedVisibilityRuleFinalFormat = visibilityRuleNormal[0]
+        }
       } else {
         savedVisibilityRuleFinalFormat = {
-          if: [
-            {
+          // if: [
+          //   {
               or: visibilityRuleNormal,
-            },
-          ]
+        //     },
+        //   ]
         };
       }
     } else {
@@ -1018,21 +1079,28 @@ const ParentComponent = ({
       if (
         outputDocShowNormal.length === 1
       ) {
-        savedOutputDocShowRuleFinalFormat = {
-          if: outputDocShowNormal
-        };
+        // savedOutputDocShowRuleFinalFormat = {
+        //   if: outputDocShowNormal
+        // };
+
+        if (outputDocShowNormal[0][""] && outputDocShowNormal[0][""][0]) {
+          savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0][""][0]
+        } else {
+          savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0]
+        }
+
       } else {
         savedOutputDocShowRuleFinalFormat = {
-          if: [
-            {
+          // if: [
+          //   {
               or: outputDocShowNormal,
-            }
-          ]
-        }
+        //     },
+        //   ]
+        };
       }
     } else {
       savedOutputDocShowRuleFinalFormat = outputDocShow[0];
-    }
+      }
     if (
       isMinMaxNested.length &&
       isMinMaxNested.length > 0 &&
@@ -1067,7 +1135,7 @@ const ParentComponent = ({
         savedVisibilityRuleFinalFormat ? savedVisibilityRuleFinalFormat : {},
         savedValidationRuleFinalFormat ? savedValidationRuleFinalFormat : {},
         savedOutputDocShowRuleFinalFormat ? savedOutputDocShowRuleFinalFormat : {},
-        !savedMinMaxRuleFinalFormat?.length ? undefined : savedMinMaxRuleFinalFormat
+        !savedMinMaxRuleFinalFormat?.length ? {} : savedMinMaxRuleFinalFormat
       );
     } else {
       openNotificationWithIcon("error", "Validation Must be passed!");

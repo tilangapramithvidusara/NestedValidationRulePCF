@@ -617,7 +617,7 @@ function removeMinMaxIfKeyAndGetDbProperty(obj: any[]){
           ifConditions.push({ ifConditions: x?.if, minOrMax });
         }
       } else {
-        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or);
+        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or || x);
         if (filteredVal) {
           console.log("x?.if", x?.if);
           // const minMax = x?.if?.map((x: any[]) => x[1])?.filter((x: any) => x);

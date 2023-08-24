@@ -37,6 +37,7 @@
     font-size: 14px;
     font-weight: 500;
     color: #333;
+    display: contents;
   }
 
   .validation-wrap .ant-btn {
@@ -253,6 +254,7 @@
     display: flex;
     justify-content:space-between;
     align-items: center;
+    padding-left: 12px
   }
 
   .validation-wrap .flex-row-start{
@@ -361,7 +363,7 @@
     border-radius: 2px;
   }
 
-  .validation-wrap .anticon {
+  .validation-wrap .anticon-caret-down {
     position: absolute;
     right: 10px;
   }
