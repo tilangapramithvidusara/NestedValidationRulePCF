@@ -371,6 +371,11 @@
     right: 10px;
   }
 
+  .validation-wrap .anticon-caret-right {
+    position: absolute;
+    right: 10px;
+  }
+
   .validation-wrap .custom-width {
     width: 250px;
   }
