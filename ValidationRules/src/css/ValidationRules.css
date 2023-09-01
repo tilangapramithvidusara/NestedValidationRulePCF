@@ -87,10 +87,6 @@
     display: flex;
   }
 
-  .validation-wrap .ant-select  {
-    width: 100% !important;
-  }
-
   .validation-wrap .checkbox-switch-container {
     display: flex;
     align-items: center;
@@ -209,20 +205,26 @@
     font-size: 14px;
     font-weight: 500;
     color: #333333;
-    width: 200px;
     text-align: left;
+  }
+
+  .validation-wrap .remove-text {
+    font-size: 14px;
+    color: rgb(51, 51, 51);
+    vertical-align: middle;
+    margin-left: 5px;
   }
 
   .validation-wrap .loop {
     position: relative;
     background: #ffffff;
-    margin-left: 35px;
+    margin-left: 15px;
     padding: 10px 0px 10px 10px;
     max-width: 100%;
     overflow-x: auto;
   }
 
-  .validation-wrap .loop:before {
+  /* .validation-wrap .loop:before {
     border-style: solid;
     content: "";
     left: -11px;
@@ -233,7 +235,7 @@
     top: -15px;
     border-color: rgb(153, 187, 255);
       
-  }
+  } */
 
   .validation-wrap .mb-15 {
     margin-bottom: 15px;
@@ -371,10 +373,6 @@
 
   .validation-wrap .custom-width {
     width: 250px;
-  }
-
-  .validation-wrap .ant-select-selector {
-    min-width: 200px;
   }
 
   .validation-wrap .custom-btn-wrap {

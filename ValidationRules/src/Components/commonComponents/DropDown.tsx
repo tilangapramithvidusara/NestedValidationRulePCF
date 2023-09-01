@@ -48,7 +48,7 @@ const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, set
     <div>
       <Select
         showSearch
-        style={{ width: 200 }}
+        style={{ width: '150px' }}
         placeholder="Search to Select"
         optionFilterProp="children"
         filterOption={(input, option) => (option?.label ?? "").includes(input)}

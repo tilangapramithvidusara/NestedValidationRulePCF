@@ -54,7 +54,7 @@ const DatePickerCustom: React.FC<DateTimeProps> = ({
         format={dateFormat}
         disabled={isDisabled}
         onChange={(input, option) => onChnageDate(input, option)}
-        style={{ width: 200 }}
+        style={{ width: '150px' }}
       />
     </Space>
   );

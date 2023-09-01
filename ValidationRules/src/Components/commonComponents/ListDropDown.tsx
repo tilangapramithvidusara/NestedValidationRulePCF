@@ -21,7 +21,7 @@ const ListDropDown: React.FC<ListDropDownCommonProps> = ({ dropDownData, isDisab
     <div>
       <Select
         showSearch
-        style={{ width: 200 }}
+        style={{ width: '150px' }}
         placeholder="Search to Select"
         optionFilterProp="children"
         options={listDropDownData && listDropDownData?.length ? listDropDownData : []}

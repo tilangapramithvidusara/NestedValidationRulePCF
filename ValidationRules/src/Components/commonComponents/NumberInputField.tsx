@@ -44,7 +44,7 @@ const FieldInput: React.FC<NumberInputField> = ({
         formatter={numberFormatter}
         parser={numberParser}
         disabled={defaultDisabled ? defaultDisabled : false}
-        style={{ width: "100%" }}
+        style={{ width: "100px" }}
         onChange={(value) => setInputNumber({ input: value, changedId, fieldName })}
         value={selectedValue}
         status={!validatingSuccess ? "error" : "" }

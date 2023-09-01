@@ -800,13 +800,13 @@ const RowContainer: React.FC<TableRowProps> = ({
                           // </img>
                           <></>
                           :
-                          <div>  <img
-                          src={imageUrls?.imageUrl} alt="icon"
-                          onClick={() => _handleDeleteRow(condition?.level)}
-                          width={'15px'}
-                          height={'15px'}
-                          />
-                          Remove
+                          <div className="flex-wrap">  
+                            <img
+                            src={imageUrls?.imageUrl} alt="icon"
+                            onClick={() => _handleDeleteRow(condition?.level)}
+                            height={'15px'}
+                            />
+                            <span className="remove-text">Remove</span>
                           </div>
                          
                       }
@@ -884,57 +884,57 @@ const RowContainer: React.FC<TableRowProps> = ({
       {!isLoad ? (
         <div>
           <div className="flex-wrap mb-10">
-            <div>
-              {" "}
-              {_nestedRows &&
-                _nestedRows?.length &&
-                "if(" +
-                  generateOutputString(
-                    _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
-                      sectionLevel
-                    ]?.fields || []
-                  ) +
-                  ")"}{" "}
-            </div>
-            <div>
-              {" "}
-              {showActionOutput && "{ " + showActionOutput + " }"}{" "}
-              <div className="flex-end-wrap">
+              <div>
+                {" "}
+                {_nestedRows &&
+                  _nestedRows?.length &&
+                  "if(" +
+                    generateOutputString(
+                      _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
+                        sectionLevel
+                      ]?.fields || []
+                    ) +
+                    ")"}{" "}
+              </div>
+              <div>
+                {" "}
+                {showActionOutput && "{ " + showActionOutput + " }"}{" "}
+              <div>
 
-            { suerveyIsPublished ?
-              <img
-                src={imageUrls?.imageUrl} alt="icon"
-                width={'15px'}
-                height={'15px'}
-              >
-                </img> :
-                <div>
-              <img
+              { suerveyIsPublished ?
+                <img
                   src={imageUrls?.imageUrl} alt="icon"
-                  width={'15px'}
                   height={'15px'}
-                  /> Remove
-                  </div>
-              }
-              
-                {/* <Button
-                  className="btn-default"
-                onClick={() => handleSectionRemove(sectionLevel)}
-                disabled={suerveyIsPublished}
                 >
-                  {" "}
-                  Remove Section
-                </Button> */}
-            </div>
-          </div>
-
+                  </img> :
+                  <div className="flex-wrap">
+                    <img
+                        src={imageUrls?.imageUrl} alt="icon"
+                        height={'15px'}
+                        /> 
+                    <span className="remove-text">Remove</span>
+                  </div>
+                }
+                
+                  {/* <Button
+                    className="btn-default"
+                  onClick={() => handleSectionRemove(sectionLevel)}
+                  disabled={suerveyIsPublished}
+                  >
+                    {" "}
+                    Remove Section
+                  </Button> */}
+                </div>
+              </div>
+         </div>
           {_nestedRows &&
             _nestedRows?.length &&
             renderNestedConditions(
               _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
                 ?.fields || []
             )}
-        </div></div>
+        
+        </div>
       ) : (
         <div>
           <Space size="middle">

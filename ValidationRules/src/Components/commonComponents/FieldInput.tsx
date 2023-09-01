@@ -31,7 +31,7 @@ const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overr
         <div>
             <Select
                 showSearch={overrideSearch ? overrideSearch : true}
-                style={{ width: 200 }}
+                style={{ width: '200px' }}
                 placeholder="Search to Select"
                 optionFilterProp="children"
                 filterOption={searchFilterOption}
