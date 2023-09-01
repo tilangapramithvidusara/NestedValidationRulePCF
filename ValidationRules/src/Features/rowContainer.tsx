@@ -790,34 +790,39 @@ const RowContainer: React.FC<TableRowProps> = ({
                     </div>
 
                     <div className="custom-btn-wrap">
-                      {/* {
+                      {
                         (suerveyIsPublished || condition?.level === 1) ?
-                          <img
-                            // src={imageUrls?.imageUrl} alt="icon"
-                            width={'15px'}
-                            height={'15px'}
-                          >
-                          </img> :
-                          <img
-                            src={imageUrls?.imageUrl} alt="icon"
-                            onClick={() => _handleDeleteRow(condition?.level)}
-                            width={'15px'}
-                            height={'15px'}
+                          // <img
+                          //   // src={imageUrls?.imageUrl} alt="icon"
+                          //   width={'15px'}
+                          //   height={'15px'}
+                          // >
+                          // </img>
+                          <></>
+                          :
+                          <div>  <img
+                          src={imageUrls?.imageUrl} alt="icon"
+                          onClick={() => _handleDeleteRow(condition?.level)}
+                          width={'15px'}
+                          height={'15px'}
                           />
-                      } */}
-                      <Button
+                          Remove
+                          </div>
+                         
+                      }
+                      {/* <Button
                       className="btn-default"
                       onClick={() => _handleDeleteRow(condition?.level)}
                       disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
                     >
                      
                       Remove
-                      {/* <img
+                      <img
                         src={imageUrls.imageUrl} alt="icon"
                         onClick={() => _handleDeleteRow(condition?.level)}
                         disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
-                      /> */}
-                    </Button>
+                      />
+                    </Button> */}
                       {/* <a><img src={deleteImg} className="delete-img" alt="delete"/></a> */}
                     </div>
                   </div>
@@ -895,29 +900,31 @@ const RowContainer: React.FC<TableRowProps> = ({
             {showActionOutput && "{ " + showActionOutput + " }"}{" "}
             <div className="flex-end-wrap">
 
-            {/* { suerveyIsPublished ?
+            { suerveyIsPublished ?
               <img
                 src={imageUrls?.imageUrl} alt="icon"
                 width={'15px'}
                 height={'15px'}
               >
-              </img> :
+                </img> :
+                <div>
               <img
                   src={imageUrls?.imageUrl} alt="icon"
                   onClick={() => handleSectionRemove(sectionLevel)}
                   width={'15px'}
                   height={'15px'}
-              />
-              } */}
+                  /> Remove
+                  </div>
+              }
               
-                <Button
+                {/* <Button
                   className="btn-default"
                 onClick={() => handleSectionRemove(sectionLevel)}
                 disabled={suerveyIsPublished}
                 >
                   {" "}
                   Remove Section
-                </Button>
+                </Button> */}
             </div>
           </div>
 
