@@ -578,7 +578,7 @@ function _removeIfKeyAndGetDbProperty(obj: any) {
       if (!x.if.length) {
         ifConditions.push(x.if);
       } else {
-        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or);
+        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or );
         console.log("LKKKKKKKKKxadawad", filteredVal)
 
         if (filteredVal) {
@@ -587,6 +587,9 @@ function _removeIfKeyAndGetDbProperty(obj: any) {
         // Recursively call the function and merge results with ifConditions
         ifConditions.push(..._removeIfKeyAndGetDbProperty(x.if));
       }
+    } else if (x[""]) {
+      console.log("XXXXXX", x[""])
+      ifConditions.push({ or: [x[""][0]] });
     }
   });
   return ifConditions;
@@ -595,8 +598,10 @@ function removeIfKeyAndGetDbProperty(obj: any[]) {
   console.log("removeIfKeyAndGetDbProperty", obj);
   const initialHasNormal = obj?.some(x => Object.keys(x)[0] === 'and' || Object.keys(x)[0] === 'or');
   let _rmvFinal = _removeIfKeyAndGetDbProperty(obj);
+  console.log("_rmvFinal_rmvFinal", _rmvFinal);
+
   if (initialHasNormal) {
-    _rmvFinal.push(obj?.find(x => Object.keys(x)[0] === 'and' ||Object.keys(x)[0] === 'or' ))
+    _rmvFinal.push(obj?.find(x => Object.keys(x)[0] === 'and' || Object.keys(x)[0] === 'or' ))
   }
   console.log("_rmvFinal", _rmvFinal)
   return _rmvFinal;

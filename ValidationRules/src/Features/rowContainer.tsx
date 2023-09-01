@@ -619,239 +619,240 @@ const RowContainer: React.FC<TableRowProps> = ({
     console.log("conditions----->", conditions);
 
     if (conditions && conditions?.length) {
-      return conditions.map((condition: any) => (
-        <div key={condition.level}>
-          {!condition?.collapse ? (
-            <div className="collapse-wrap">
-              <div className="flex-col-start">
-                <div className="flex-row-start">
-                  {!condition.state && (
-                    <CaretDownOutlined
-                      style={{ color: "#0093FE" }}
+      return conditions.map((condition: any, index: any) => {
+        return <>
+          <div key={condition.level}>
+            {!condition?.collapse ? (
+              <div className="collapse-wrap">
+                <div className="flex-col-start">
+                  <div className="flex-row-start">
+                    {!condition.state && (
+                      <CaretDownOutlined
+                        style={{ color: "#0093FE" }}
+                        onClick={() =>
+                          setCollapse({
+                            state: true,
+                            fieldId: condition?.level,
+                          })
+                        }
+                      />
+                    )}
+                    <div className="validation-text"></div>
+                  </div>
+                  <div className="flex-row-start mb-15">
+                    <Button
+                      className="mr-10 btn-default"
                       onClick={() =>
-                        setCollapse({
-                          state: true,
-                          fieldId: condition?.level,
-                        })
+                        _handleAddRow(condition?.level, false, "AND")
                       }
-                    />
-                  )}
-                  <div className="validation-text"></div>
-                </div>
-                <div className="flex-row-start mb-15">
-                  <Button
-                    className="mr-10 btn-default"
-                    onClick={() =>
-                      _handleAddRow(condition?.level, false, "AND")
-                    }
-                    disabled={suerveyIsPublished}
-                  >
-                    + Add
-                  </Button>
-                  <Button
-                    className="btn-default"
-                    onClick={() =>
-                      _handleAddNestedRow(condition?.level, true, "AND")
-                    }
-                    disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
-                  >
-                    + Add Nested
-                  </Button>
-                </div>
-              </div>
-              <div className="loop">
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                  }}
-                >
-                  <div className="mr-20">
-                  <div className="condition-label">And/Or </div>
-                    <DropDown
-                      dropDownData={expressionSampleData}
-                      isDisabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
-                      setExpression={setFieldValue}
-                      changedId={condition?.level}
-                      fieldName={"expression"}
-                      selectedValue={condition?.expression}
-                    />{" "}
+                      disabled={suerveyIsPublished}
+                    >
+                      + Add
+                    </Button>
+                    <Button
+                      className="btn-default"
+                      onClick={() =>
+                        _handleAddNestedRow(condition?.level, true, "AND")
+                      }
+                      disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
+                    >
+                      + Add Nested
+                    </Button>
                   </div>
+                </div>
+                <div className="loop">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <div className="mr-20">
+                      <div className="condition-label">And/Or </div>
+                      <DropDown
+                        dropDownData={expressionSampleData}
+                        isDisabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
+                        setExpression={setFieldValue}
+                        changedId={condition?.level}
+                        fieldName={"expression"}
+                        selectedValue={condition?.expression}
+                      />{" "}
+                    </div>
 
-                  <div className="mr-20">
-                  <div className="condition-label">Field </div>
-                    <FieldInput
-                      sampleData={
-                        dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
+                    <div className="mr-20">
+                      <div className="condition-label">Field </div>
+                      <FieldInput
+                        sampleData={
+                          dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
                           
-                      }
-                      selectedValue={condition?.field}
-                      overrideSearch={false}
-                      setFieldValue={setFieldValue}
-                      changedId={condition?.level}
-                      fieldName={"field"}
-                      isDisabled={suerveyIsPublished}
-                    />{" "}
-                  </div>
-                  <div className="mr-20">
-                    <div className="condition-label">Operator</div>
-                    { dropDownQuestionList?.find(
+                        }
+                        selectedValue={condition?.field}
+                        overrideSearch={false}
+                        setFieldValue={setFieldValue}
+                        changedId={condition?.level}
+                        fieldName={"field"}
+                        isDisabled={suerveyIsPublished}
+                      />{" "}
+                    </div>
+                    <div className="mr-20">
+                      <div className="condition-label">Operator</div>
+                      {dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.stringQuestion || dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.listQuestion ?
                         <DropDown
-                        dropDownData={operationalSampleData[0]?.options?.filter((item: { value: string; }) => item?.value === "==" || item?.value === "!=")}
-                        isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                        setExpression={setFieldValue}
-                        changedId={condition?.level}
-                        fieldName={"condition"}
-                        selectedValue={condition?.condition}
-                      /> 
-                      :
-                      <DropDown
-                        dropDownData={operationalSampleData}
-                        isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                        setExpression={setFieldValue}
-                        changedId={condition?.level}
-                        fieldName={"condition"}
-                        selectedValue={condition?.condition}
+                          dropDownData={operationalSampleData[0]?.options?.filter((item: { value: string; }) => item?.value === "==" || item?.value === "!=")}
+                          isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
+                          setExpression={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"condition"}
+                          selectedValue={condition?.condition}
                         />
-                    }
+                        :
+                        <DropDown
+                          dropDownData={operationalSampleData}
+                          isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
+                          setExpression={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"condition"}
+                          selectedValue={condition?.condition}
+                        />
+                      }
                     
-                  </div>
-                  <div className="mr-20">
-                  <div className="condition-label">Value </div>
-                    {dropDownQuestionList?.find(
-                      (x: { value: string }) => x?.value === condition?.field
-                    )?.questionType === dbConstants.questionTypes.numericQuestion ? (
-                      <NumberInputField
-                        selectedValue={condition?.value}
-                        handleNumberChange={{}}
-                        defaultDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                        setInputNumber={setFieldValue}
-                        changedId={condition?.level}
-                        fieldName={"value"}
-                        validatingSuccess={true}
-                      />
-                    ) : dropDownQuestionList?.find(
+                    </div>
+                    <div className="mr-20">
+                      <div className="condition-label">Value </div>
+                      {dropDownQuestionList?.find(
+                        (x: { value: string }) => x?.value === condition?.field
+                      )?.questionType === dbConstants.questionTypes.numericQuestion ? (
+                        <NumberInputField
+                          selectedValue={condition?.value}
+                          handleNumberChange={{}}
+                          defaultDisabled={suerveyIsPublished ? suerveyIsPublished : false}
+                          setInputNumber={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"value"}
+                          validatingSuccess={true}
+                        />
+                      ) : dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.stringQuestion ? (
-                      <FieldStringInputProps
-                        sampleData={
-                          dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList 
-                        }
-                        selectedValue={condition?.value}
-                        overrideSearch={false}
-                        setFieldValue={setFieldValue}
-                        changedId={condition?.level}
-                            fieldName={"value"}
-                            isDisabled={suerveyIsPublished}
-                      />
-                    ) : dropDownQuestionList?.find(
-                      (x: { value: string }) => x?.value === condition?.field
-                        )?.questionType === dbConstants.questionTypes.dateTimeQuestion ? (
-                            <DatePickerCustom
-                              isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                              setFieldValue={setFieldValue}
-                              changedId={condition?.level}
-                              fieldName={"value"}
-                              selectedValue={condition?.value ? condition?.value : moment()}
+                        <FieldStringInputProps
+                          sampleData={
+                            dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
+                          }
+                          selectedValue={condition?.value}
+                          overrideSearch={false}
+                          setFieldValue={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"value"}
+                          isDisabled={suerveyIsPublished}
+                        />
+                      ) : dropDownQuestionList?.find(
+                        (x: { value: string }) => x?.value === condition?.field
+                      )?.questionType === dbConstants.questionTypes.dateTimeQuestion ? (
+                        <DatePickerCustom
+                          isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
+                          setFieldValue={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"value"}
+                          selectedValue={condition?.value ? condition?.value : moment()}
                     
-                    />
-                  ) : dropDownQuestionList?.find(
+                        />
+                      ) : dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.listQuestion ? (
-                      <ListDropDown
-                        dropDownData={{}}
-                        isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                        setFieldValue={setFieldValue}
-                        changedId={condition?.level}
-                        fieldName={"value"}
-                        selectedValue={condition?.value}
-                        listDropDownData={answersDropDownData}
+                        <ListDropDown
+                          dropDownData={{}}
+                          isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
+                          setFieldValue={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"value"}
+                          selectedValue={condition?.value}
+                          listDropDownData={answersDropDownData}
                         // getDropDownData={getDropDownData(condition?.field)} // Pass the getDropDownData function as a prop
                         // answerCallback={getDropDownData(condition?.field)}
-                      />
-                    ) : (
-                      <FieldStringInputProps
-                        sampleData={
-                          dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
-                        }
-                        selectedValue={condition?.value}
-                        overrideSearch={false}
-                        setFieldValue={setFieldValue}
-                        changedId={condition?.level}
-                                fieldName={"value"}
-                                isDisabled={suerveyIsPublished}
-                      />
-                    )}
-                  </div>
+                        />
+                      ) : (
+                        <FieldStringInputProps
+                          sampleData={
+                            dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
+                          }
+                          selectedValue={condition?.value}
+                          overrideSearch={false}
+                          setFieldValue={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"value"}
+                          isDisabled={suerveyIsPublished}
+                        />
+                      )}
+                    </div>
 
-                  <div className="custom-btn-wrap">
-                    {
-                      (suerveyIsPublished || condition?.level === 1) ?
-                        <img
-                          src={imageUrls?.imageUrl} alt="icon"
-                          width={'15px'}
-                          height={'15px'}
-                        >
-                        </img> :
-                        <img
-                          src={imageUrls?.imageUrl} alt="icon"
-                          onClick={() => _handleDeleteRow(condition?.level)}
-                          width={'15px'}
-                          height={'15px'}
-                      />
-                    }
-                    {/* <Button
+                    <div className="custom-btn-wrap">
+                      {/* {
+                        (suerveyIsPublished || condition?.level === 1) ?
+                          <img
+                            // src={imageUrls?.imageUrl} alt="icon"
+                            width={'15px'}
+                            height={'15px'}
+                          >
+                          </img> :
+                          <img
+                            src={imageUrls?.imageUrl} alt="icon"
+                            onClick={() => _handleDeleteRow(condition?.level)}
+                            width={'15px'}
+                            height={'15px'}
+                          />
+                      } */}
+                      <Button
                       className="btn-default"
                       onClick={() => _handleDeleteRow(condition?.level)}
                       disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
                     >
                      
                       Remove
-                      <img
+                      {/* <img
                         src={imageUrls.imageUrl} alt="icon"
                         onClick={() => _handleDeleteRow(condition?.level)}
                         disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
-                      />
-                    </Button> */}
-                    {/* <a><img src={deleteImg} className="delete-img" alt="delete"/></a> */}
+                      /> */}
+                    </Button>
+                      {/* <a><img src={deleteImg} className="delete-img" alt="delete"/></a> */}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex-row-start mb-10 collapse-wrap custom-width">
-              {!condition.state && (
-                <div>
-                  <CaretRightOutlined
-                    style={{ color: "#0093FE" }}
-                    onClick={() =>
-                      setCollapse({
-                        state: false,
-                        fieldId: condition?.level,
-                      })
-                    }
-                  />
-                  <div className="condition-label">
-                    <DropDown
-                      dropDownData={expressionSampleData}
-                      isDisabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
-                      setExpression={setFieldValue}
-                      changedId={condition?.level}
-                      fieldName={"expression"}
-                      selectedValue={condition?.expression}
-                    />{" "}
+            ) : (
+              <div className="flex-row-start mb-10 collapse-wrap custom-width">
+                {!condition.state && (
+                  <div>
+                    <CaretRightOutlined
+                      style={{ color: "#0093FE" }}
+                      onClick={() =>
+                        setCollapse({
+                          state: false,
+                          fieldId: condition?.level,
+                        })
+                      }
+                    />
+                    <div className="condition-label">
+                      <DropDown
+                        dropDownData={expressionSampleData}
+                        isDisabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
+                        setExpression={setFieldValue}
+                        changedId={condition?.level}
+                        fieldName={"expression"}
+                        selectedValue={condition?.expression}
+                      />{" "}
+                    </div>
                   </div>
-                </div>
-              )}
-              <div className="validation-text"></div>
-            </div>
-          )}
+                )}
+                <div className="validation-text"></div>
+              </div>
+            )}
 
-          {/* {condition.hasNested && (
+            {/* {condition.hasNested && (
             <div style={{ paddingLeft: "30px" }}>
               {renderNestedConditions(
                 condition.innerConditions,
@@ -859,11 +860,12 @@ const RowContainer: React.FC<TableRowProps> = ({
               )}
             </div>
           )} */}
-          <div style={{ paddingLeft: "30px" }}>
-            {renderNestedConditions(condition?.innerConditions, marginLeft + 5)}
+            <div style={{ paddingLeft: "30px" }}>
+              {renderNestedConditions(condition?.innerConditions, marginLeft + 5)}
+            </div>
           </div>
-        </div>
-      ));
+        </>  
+    });
     }
     // }
     // }
@@ -893,7 +895,7 @@ const RowContainer: React.FC<TableRowProps> = ({
             {showActionOutput && "{ " + showActionOutput + " }"}{" "}
             <div className="flex-end-wrap">
 
-            { suerveyIsPublished ?
+            {/* { suerveyIsPublished ?
               <img
                 src={imageUrls?.imageUrl} alt="icon"
                 width={'15px'}
@@ -906,16 +908,16 @@ const RowContainer: React.FC<TableRowProps> = ({
                   width={'15px'}
                   height={'15px'}
               />
-              }
+              } */}
               
-                {/* <Button
+                <Button
                   className="btn-default"
                 onClick={() => handleSectionRemove(sectionLevel)}
                 disabled={suerveyIsPublished}
                 >
                   {" "}
                   Remove Section
-                </Button> */}
+                </Button>
             </div>
           </div>
 

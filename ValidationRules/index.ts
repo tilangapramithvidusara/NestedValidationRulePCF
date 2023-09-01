@@ -30,8 +30,8 @@ export class ValidationRules implements ComponentFramework.StandardControl<IInpu
         this.imgElement2 = document.createElement("img");
 
         context.resources.getResource("delete.png", this.setImage.bind(this, false, "png"), this.showError.bind(this));
-        context.resources.getResource("expand.png", this.setImage.bind(this, false, "png"), this.showError.bind(this));
-		context.resources.getResource("shrink.png", this.setImage.bind(this, false, "png"), this.showError.bind(this));
+        context.resources.getResource("delete.png", this.setImage.bind(this, false, "png"), this.showError.bind(this));
+		context.resources.getResource("delete.png", this.setImage.bind(this, false, "png"), this.showError.bind(this));
 
         container.appendChild(this.imgElement);
         container.appendChild(this.imgElement1);
