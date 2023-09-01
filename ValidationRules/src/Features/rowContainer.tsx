@@ -883,22 +883,23 @@ const RowContainer: React.FC<TableRowProps> = ({
             {contextHolder}
       {!isLoad ? (
         <div>
-          <div style={{ textAlign: "left" }}>
-            {" "}
-            {_nestedRows &&
-              _nestedRows?.length &&
-              "if(" +
-                generateOutputString(
-                  _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
-                    sectionLevel
-                  ]?.fields || []
-                ) +
-                ")"}{" "}
-          </div>
-          <div style={{ textAlign: "left", marginBottom: "10px" }}>
-            {" "}
-            {showActionOutput && "{ " + showActionOutput + " }"}{" "}
-            <div className="flex-end-wrap">
+          <div className="flex-wrap mb-10">
+            <div>
+              {" "}
+              {_nestedRows &&
+                _nestedRows?.length &&
+                "if(" +
+                  generateOutputString(
+                    _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
+                      sectionLevel
+                    ]?.fields || []
+                  ) +
+                  ")"}{" "}
+            </div>
+            <div>
+              {" "}
+              {showActionOutput && "{ " + showActionOutput + " }"}{" "}
+              <div className="flex-end-wrap">
 
             { suerveyIsPublished ?
               <img
@@ -910,7 +911,6 @@ const RowContainer: React.FC<TableRowProps> = ({
                 <div>
               <img
                   src={imageUrls?.imageUrl} alt="icon"
-                  onClick={() => handleSectionRemove(sectionLevel)}
                   width={'15px'}
                   height={'15px'}
                   /> Remove
@@ -934,7 +934,7 @@ const RowContainer: React.FC<TableRowProps> = ({
               _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
                 ?.fields || []
             )}
-        </div>
+        </div></div>
       ) : (
         <div>
           <Space size="middle">
