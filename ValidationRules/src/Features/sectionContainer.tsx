@@ -33,11 +33,11 @@ interface SectionProps {
   currentPossitionDetails: any;
   questionList: any;
   setValidation: any;
-  setDeleteSectionKey: any;
   setSaveAsIsNested: any;
   imageUrls: any;
   suerveyIsPublished: any;
-  currentQuestionDetails: any
+  currentQuestionDetails: any;
+  handleSectionRemove: any;
 }
 
 function SectionContainer({
@@ -50,11 +50,11 @@ function SectionContainer({
   currentPossitionDetails,
   questionList,
   setValidation,
-  setDeleteSectionKey,
   setSaveAsIsNested,
   imageUrls,
   suerveyIsPublished,
-  currentQuestionDetails
+  currentQuestionDetails,
+  handleSectionRemove
 }: SectionProps) {
   const [rowData, setRowData] = useState<any>();
   const [toggleEnableMin, setToggledEnableMin] = useState<any | null>(false);
@@ -174,9 +174,9 @@ function SectionContainer({
   //   else if(maxCheckboxEnabled && minCheckboxEnabled) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } })
   // }, [maxCheckboxEnabled, minCheckboxEnabled])
 
-  const handleSectionRemove = () => {
-      setDeleteSectionKey(sectionLevel)
-  }
+  // const handleSectionRemove = () => {
+  //     setDeleteSectionKey(sectionLevel)
+  // }
 
   useEffect(() => {
     let releatedFields = _nestedRows?.find((x: { [x: string]: any; }) => x[sectionLevel]);

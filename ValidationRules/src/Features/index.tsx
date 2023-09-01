@@ -43,10 +43,10 @@ const ParentComponent = ({
   const [isLoadData, setIsLoadData] = useState<boolean>(false);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-  //   currentPosition: "question",
-  // });
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+    currentPosition: "question",
+  });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -59,7 +59,6 @@ const ParentComponent = ({
   const [isApiDataLoaded, setIsApiDataLoaded] = useState<boolean>(false);
   const [api, contextHolder]: any = notification.useNotification();
   const [questionList, setQuestionList] = useState<any[]>([]);
-  const [deleteSectionKey, setDeleteSectionKey] = useState<any>();
   const [validation, setValidation] = useState<any>({
     minMaxValidation: true,
     andOrValidation: true,
@@ -499,76 +498,6 @@ const ParentComponent = ({
     }
   }, [_minMaxRulePrev]);
 
-  // useEffect(() => {
-  //   if (_minMaxRulePrev?.length) {
-  //     let key = 20;
-  //     _minMaxRulePrev.forEach((dbData) => {
-  //       console.log("Loading _minMaxRulePrev", dbData);
-  //       _setNestedRows((prevData: any) => {
-  //         if (dbData?.minMax?.length?.if) {
-  //           const minMax = dbData?.minMax;
-  //           const minMaxOutputDataArray: any[] = [];
-  //           let minMaxDta = minMax;
-  //           const refactorDta = removeMinMaxIfKeyAndGetDbProperty(minMaxDta);
-  //           console.log("refactorDta Min Maxxx", refactorDta);
-  //           refactorDta?.forEach((fieldDta: any): any => {
-  //             const minimumLength = fieldDta?.minMax?.find(
-  //               (x: { type: string }) => x?.type === "MINIMUM_LENGTH"
-  //             );
-  //             const maximumLength = fieldDta?.minMax?.find(
-  //               (x: { type: string }) => x?.type === "MAXIMUM_LENGTH"
-  //             );
-
-  //             if (
-  //               (minimumLength?.value && maximumLength?.value) ||
-  //               (minimumLength?.value?.var?.minValue &&
-  //                 maximumLength?.value?.var?.maxValue)
-  //             ) {
-  //               console.log("minimumLength Min ", minimumLength);
-  //               console.log("maximumLength Max ", maximumLength);
-
-  //               minMaxOutputDataArray.push({
-  //                 [key++]: {
-                    // actions: [
-                    //   {
-                    //     minMax: {
-                    //       logicalName: "minMax",
-                    //       minValue: minimumLength?.value?.var
-                    //         ? minimumLength?.value?.var
-                    //         : minimumLength.value,
-                    //       maxValue: maximumLength?.value?.var
-                    //         ? maximumLength?.value?.var
-                    //         : maximumLength.value,
-                    //     },
-                    //   },
-                    // ],
-  //                   fields: normalConverter([fieldDta?.ifConditions]),
-  //                 },
-  //               });
-  //             }
-  //           });
-  //           console.log(
-  //             "Validation DB Dataaa showUpdatedDataArray ",
-  //             minMaxOutputDataArray
-  //           );
-  //           if (minMaxOutputDataArray && minMaxOutputDataArray.length) {
-  //             console.log(
-  //               "Validation DB Dataaa showUpdatedDataArray ",
-  //               minMaxOutputDataArray
-  //             );
-  //             console.log("Validation DB Dataaa showUpdatedDataArray ", [
-  //               ...prevData,
-  //               minMaxOutputDataArray,
-  //             ]);
-  //             return [...prevData, ...minMaxOutputDataArray];
-  //           }
-  //         }
-  //       });
-  //     });
-  //     setIsApiDataLoaded(false);
-  //   }
-  // }, [_minMaxRulePrev]);
-
   const openNotificationWithIcon = (type: any, message: any) => {
     api[type]({
       message: type,
@@ -673,7 +602,7 @@ const ParentComponent = ({
     //   ...prevValue,
     //   {
     //     visibility:
-    //     {"if":[{"and":[{"==":[{"var":"IDGR1_C1_S1_002"},"3"]},{"==":[{"var":"IDGR1_C1_S1_003"},"Y"]}]},{"if":[{"or":[{"==":[{"var":"IDGR1_C1_S1_002"},"222"]},{"==":[{"var":"IDGR1_C1_S1_002"},"344"]},{"and":[{"==":[{"var":"IDGR1_C1_S1_002"},"4444"]},{"==":[{"var":"IDGR1_C1_S1_003"},"Y"]},{"and":[{"==":[{"var":"IDGR1_C1_S1_002"},"444"]},{"==":[{"var":"IDGR1_C1_S1_002"},"5555"]}]}]}]},{"if":[{"and":[{"==":[{"var":"IDGR1_C1_S1_002"},"1234"]},{"==":[{"var":"IDGR1_C1_S1_002"},"33"]},{"and":[{"==":[{"var":"IDGR1_C1_S1_002"},"222"]},{"==":[{"var":"IDGR1_C1_S1_002"},"1234"]}]}]}]}]}]}
+    //     {"if":[{"and":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},22]},{"==":[{"var":"AS_Tst_C01_S01_Q01"},333]},{"or":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},444]},{"==":[{"var":"AS_Tst_C01_S01_Q01"},444]}]}]},{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},66666]}]},{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},55555]}]}]}]}]}
     //   }
     // ])
 
@@ -712,7 +641,26 @@ const ParentComponent = ({
 
   }, [currentPossitionDetails]);
 
-  useEffect(() => {
+  // useEffect(() => {
+    // console.log("deleteSectionKey", deleteSectionKey);
+    // if (deleteSectionKey) {
+    //   _setNestedRows((prevNestedRows: any) => {
+    //     if (prevNestedRows && prevNestedRows.length === 1) {
+    //       saveVisibilityData({}, {}, {}, {});
+    //     }
+    //     return prevNestedRows.filter(
+    //       (key: any) => parseInt(Object.keys(key)[0]) !== deleteSectionKey
+    //     )
+    //   }
+        
+    //   );
+    //   setSections((prev: any) =>
+    //     prev.filter((prevKeys: any) => prevKeys.key !== deleteSectionKey)
+    //   );
+    // }
+  // }, [deleteSectionKey]);
+
+  const handleSectionRemove = (deleteSectionKey: any) => {
     console.log("deleteSectionKey", deleteSectionKey);
     if (deleteSectionKey) {
       _setNestedRows((prevNestedRows: any) => {
@@ -729,7 +677,7 @@ const ParentComponent = ({
         prev.filter((prevKeys: any) => prevKeys.key !== deleteSectionKey)
       );
     }
-  }, [deleteSectionKey]);
+  }
 
   const _getCurrentState = async () => {
     const result = await getCurrentState();
@@ -763,9 +711,10 @@ const ParentComponent = ({
       (currentPossitionDetails.currentPosition === "section" ||
         currentPossitionDetails?.currentPosition === "chapter") 
     ) {
+
       await saveRequest(logicalName, currentPossitionDetails?.id, {
         [dbConstants.common.gyde_visibilityrule]:
-          JSON.stringify(visibilityRule),
+        Object.keys(visibilityRule).length === 0 ? null : JSON.stringify(visibilityRule),
       });
     } else if (
       currentPossitionDetails?.id &&
@@ -777,19 +726,19 @@ const ParentComponent = ({
      
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.common.gyde_visibilityrule]:
-            JSON.stringify(visibilityRule),
+            Object.keys(visibilityRule).length === 0 ? null : JSON.stringify(visibilityRule),
         });
       
      
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.question.gyde_minmaxvalidationrule]:
-            JSON.stringify(minMaxDBFormatArray),
+          Object.keys(minMaxDBFormatArray).length === 0 ? null : JSON.stringify(minMaxDBFormatArray),
         });
     
     
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.question.gyde_documentOutputRule]:
-            JSON.stringify(outputDocShow),
+          Object.keys(outputDocShow).length === 0 ? null : JSON.stringify(outputDocShow),
         });
      
     }
@@ -1174,11 +1123,12 @@ const ParentComponent = ({
                       currentPossitionDetails={currentPossitionDetails}
                       questionList={questionList}
                       setValidation={setValidation}
-                      setDeleteSectionKey={setDeleteSectionKey}
+                      // setDeleteSectionKey={setDeleteSectionKey}
                       setSaveAsIsNested={setSaveAsIsNested}
                       imageUrls={{ imageUrl, imageUrl1, imageUrl2 }}
                       suerveyIsPublished={suerveyIsPublished}
                       currentQuestionDetails={currentQuestionDetails}
+                      handleSectionRemove={handleSectionRemove}
                     />
                   </div>
                 ))}
