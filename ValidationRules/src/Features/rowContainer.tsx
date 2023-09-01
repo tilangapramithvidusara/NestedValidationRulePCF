@@ -878,46 +878,48 @@ const RowContainer: React.FC<TableRowProps> = ({
             {contextHolder}
       {!isLoad ? (
         <div>
-          <div style={{ textAlign: "left" }}>
-            {" "}
-            {_nestedRows &&
-              _nestedRows?.length &&
-              "if(" +
-                generateOutputString(
-                  _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
-                    sectionLevel
-                  ]?.fields || []
-                ) +
-                ")"}{" "}
-          </div>
-          <div style={{ textAlign: "left", marginBottom: "10px" }}>
-            {" "}
-            {showActionOutput && "{ " + showActionOutput + " }"}{" "}
-            <div className="flex-end-wrap">
+          <div className="flex-wrap mb-10">
+            <div>
+              {" "}
+              {_nestedRows &&
+                _nestedRows?.length &&
+                "if(" +
+                  generateOutputString(
+                    _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
+                      sectionLevel
+                    ]?.fields || []
+                  ) +
+                  ")"}{" "}
+            </div>
+            <div>
+              {" "}
+              {showActionOutput && "{ " + showActionOutput + " }"}{" "}
+              <div className="flex-end-wrap">
 
-            {/* { suerveyIsPublished ?
-              <img
-                src={imageUrls?.imageUrl} alt="icon"
-                width={'15px'}
-                height={'15px'}
-              >
-              </img> :
-              <img
+              {/* { suerveyIsPublished ?
+                <img
                   src={imageUrls?.imageUrl} alt="icon"
-                  onClick={() => handleSectionRemove(sectionLevel)}
                   width={'15px'}
                   height={'15px'}
-              />
-              } */}
-              
-                <Button
-                  className="btn-default"
-                onClick={() => handleSectionRemove(sectionLevel)}
-                disabled={suerveyIsPublished}
                 >
-                  {" "}
-                  Remove Section
-                </Button>
+                </img> :
+                <img
+                    src={imageUrls?.imageUrl} alt="icon"
+                    onClick={() => handleSectionRemove(sectionLevel)}
+                    width={'15px'}
+                    height={'15px'}
+                />
+                } */}
+                
+                  <Button
+                    className="btn-default"
+                  onClick={() => handleSectionRemove(sectionLevel)}
+                  disabled={suerveyIsPublished}
+                  >
+                    {" "}
+                    Remove Section
+                  </Button>
+              </div>
             </div>
           </div>
 
