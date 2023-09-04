@@ -38,6 +38,7 @@ interface SectionProps {
   suerveyIsPublished: any;
   currentQuestionDetails: any;
   handleSectionRemove: any;
+  languageConstants: any
 }
 
 function SectionContainer({
@@ -54,7 +55,8 @@ function SectionContainer({
   imageUrls,
   suerveyIsPublished,
   currentQuestionDetails,
-  handleSectionRemove
+  handleSectionRemove,
+  languageConstants
 }: SectionProps) {
   const [rowData, setRowData] = useState<any>();
   const [toggleEnableMin, setToggledEnableMin] = useState<any | null>(false);
@@ -321,12 +323,13 @@ function SectionContainer({
           setSaveAsIsNested={setSaveAsIsNested}
           imageUrls={imageUrls}
           suerveyIsPublished={suerveyIsPublished}
+          languageConstants={languageConstants}
         />
       ))}
 
       <div className="action-container">
         <div className="w-100 flex-start">
-          <div className="subTitle w-10">Actions</div>
+          <div className="subTitle w-10">{ languageConstants?.actionsLabelConstants }</div>
           <div className="flex-row">
             <CheckBox
                 checkboxDefaultSelectedValues={
@@ -349,10 +352,10 @@ function SectionContainer({
           currentQuestionDetails?.questionType !== "Date" && 
               
           <div className="subTitle mt-10 mb-30 w-100 flex-start">
-            <div className="subTitle w-10">{ currentQuestionDetails?.questionType === "String" ? 'MinLength/MaxLength Field ' : "Min/Max Field " } </div>
+            <div className="subTitle w-10 ml-10">{ currentQuestionDetails?.questionType === "String" ? `${languageConstants?.minMaxFieldStringConstants }  ` : `${languageConstants?.minMaxFieldConstants }  `  } </div>
             <div className="flex-start">
               <div className="flex-start mr-30">
-                <div style={{ marginRight: "10px" }}>
+                <div style={{ marginRight: "10px" , marginLeft: "10px" }}>
                   {" "}
                   <Checkbox
                       onChange={(e) => onChangeCheckBoxMin(e)}
@@ -364,7 +367,7 @@ function SectionContainer({
                 <div style={{ marginRight: "10px" }}>
                   <Switch
                     className="custom-toggle"
-                    checkedChildren="Value"
+                    checkedChildren={languageConstants?.valueLabel}
                     unCheckedChildren="Question"
                     onChange={() => toggleEnableOnClickMin()}
                       disabled={suerveyIsPublished ? suerveyIsPublished : !minCheckboxEnabled}
@@ -373,7 +376,7 @@ function SectionContainer({
                   />
                 </div>
 
-                  <div className="minmaxText">{ currentQuestionDetails?.questionType === "String" ? 'MinLength: ' : "Min: " }</div>
+                  <div className="minmaxText">{ currentQuestionDetails?.questionType === "String" ? `${languageConstants?.minLengthStringConstants }` : `${languageConstants?.minLengthConstants }`}</div>
                 {toggleEnableMin ? (
                   <NumberInputField
                       selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.minValue}
@@ -409,7 +412,7 @@ function SectionContainer({
                 <div style={{ marginRight: "10px" }}>
                   <Switch
                     className="custom-toggle"
-                    checkedChildren="Value"
+                    checkedChildren={languageConstants?.valueLabel}
                     unCheckedChildren="Question"
                     onChange={() => toggleEnableOnClickMax()}
                       disabled={suerveyIsPublished ? suerveyIsPublished : !maxCheckboxEnabled}
@@ -417,7 +420,7 @@ function SectionContainer({
                   />
                 </div>
 
-                <div className="minmaxText">{ currentQuestionDetails?.questionType === "String" ? 'MaxLength: ' : "Max: " }</div>
+                <div className="minmaxText">{ currentQuestionDetails?.questionType === "String" ? `${languageConstants?.maxLengthStringConstants }` : `${languageConstants?.maxLengthConstants }` }</div>
                 {toggleEnableMax ? (
                   <NumberInputField
                       selectedValue={_nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]?.actions[0]?.minMax?.maxValue || ''}
