@@ -51,7 +51,8 @@ interface TableRowProps {
   handleSectionRemove: any;
   setSaveAsIsNested: any;
   imageUrls: any;
-  suerveyIsPublished: any
+  suerveyIsPublished: any;
+  languageConstants: any
 }
 
 interface Condition {
@@ -78,7 +79,8 @@ const RowContainer: React.FC<TableRowProps> = ({
   handleSectionRemove,
   setSaveAsIsNested,
   imageUrls,
-  suerveyIsPublished
+  suerveyIsPublished,
+  languageConstants
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
@@ -647,7 +649,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       }
                       disabled={suerveyIsPublished}
                     >
-                      + Add
+                      {languageConstants?.addButton}
                     </Button>
                     <Button
                       className="btn-default"
@@ -656,7 +658,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       }
                       disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
                     >
-                      + Add Nested
+                      {languageConstants?.addNestedButton}
                     </Button>
                   </div>
                 </div>
@@ -668,7 +670,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     }}
                   >
                     <div className="mr-20">
-                      <div className="condition-label">And/Or </div>
+                      <div className="condition-label">{languageConstants?.andorLabel} </div>
                       <DropDown
                         dropDownData={expressionSampleData}
                         isDisabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
@@ -680,7 +682,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     </div>
 
                     <div className="mr-20">
-                      <div className="condition-label">Field </div>
+                      <div className="condition-label">{languageConstants?.fieldLabel} </div>
                       <FieldInput
                         sampleData={
                           dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
@@ -695,7 +697,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       />{" "}
                     </div>
                     <div className="mr-20">
-                      <div className="condition-label">Operator</div>
+                      <div className="condition-label">{languageConstants?.operatorLabel} </div>
                       {dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.stringQuestion || dropDownQuestionList?.find(
@@ -722,7 +724,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     
                     </div>
                     <div className="mr-20">
-                      <div className="condition-label">Value </div>
+                      <div className="condition-label">{languageConstants?.valueLabel}  </div>
                       {dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.numericQuestion ? (
@@ -806,7 +808,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                             onClick={() => _handleDeleteRow(condition?.level)}
                             height={'15px'}
                             />
-                            <span className="remove-text">Remove</span>
+                            {/* <span className="remove-text">{languageConstants?.removeButton} </span> */}
                           </div>
                          
                       }
@@ -910,9 +912,10 @@ const RowContainer: React.FC<TableRowProps> = ({
                   <div className="flex-wrap">
                     <img
                         src={imageUrls?.imageUrl} alt="icon"
-                        height={'15px'}
+                      height={'15px'}
+                      onClick={() => handleSectionRemove(sectionLevel)}
                         /> 
-                    <span className="remove-text">Remove</span>
+                    {/* <span className="remove-text">{languageConstants?.removeButton} </span> */}
                   </div>
                 }
                 

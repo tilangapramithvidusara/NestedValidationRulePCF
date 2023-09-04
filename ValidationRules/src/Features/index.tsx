@@ -11,7 +11,7 @@ import {
 import sampleOutputData from "../SampleData/SampleOutputData";
 import utilHelper from "../utilHelper/utilHelper";
 // import removeIcon from '../assets/delete.png';
-import { Button, notification, Space, Spin } from "antd";
+import { Button, MenuProps, notification, Radio, Select, Space, Spin } from "antd";
 import SectionContainer from "./sectionContainer";
 import {
   updateDataRequest,
@@ -25,6 +25,10 @@ import {
 import { dbConstants } from "../constants/dbConstants";
 import { normalConverter } from "../Utils/dbFormatToJson";
 import { hasNullFields } from "../Utils/utilsHelper";
+import { languageConstantsForCountry } from "../constants/languageConstants";
+import Dropdown from "antd/es/dropdown/dropdown";
+import { DownOutlined } from "@ant-design/icons";
+import countryMappedConfigs from "../configs/countryMappedConfigs";
 // import NotificationPopup from "../Components/NotificationPopup";
 
 const ParentComponent = ({
@@ -67,6 +71,11 @@ const ParentComponent = ({
   const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
   const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
   const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<any>('en');
+
+  const [languageConstants, setLanguageConstants] = useState<any>(
+    languageConstantsForCountry.en
+  );
 
   let addNestedComponent = () => {
     setSections([
@@ -95,6 +104,54 @@ const ParentComponent = ({
 
     setIsNested(false);
   };
+
+  const loadResourceString = async () => {
+
+    const url = await window.parent.Xrm.Utility.getGlobalContext().getClientUrl();
+    const language = await window.parent.Xrm.Utility.getGlobalContext().userSettings.languageId
+    const webResourceUrl = `${url}/WebResources/gyde_localizedstrings.${language}.resx`;
+
+    try {
+      const response = await fetch(`${webResourceUrl}`);
+      const data = await response.text();
+      const filterKeys = [
+          'saveButtonConstants',
+          'questionsLoadingConstants',
+          'addButton',
+          'removeButton',
+          'addNestedButton',
+          'actionsLabelConstants',
+          'minMaxFieldStringConstants', 
+          'minMaxFieldConstants',
+          'minMaxLength',
+          'minLengthStringConstants',
+          'minLengthConstants',
+          'maxLengthConstants',
+          'maxLengthStringConstants',
+          'andorLabel',
+          'fieldLabel',
+          'operatorLabel',
+          'valueLabel'
+        ];
+      filterKeys.map((filterKey: string, index: number) => {
+        const parser = new DOMParser();
+        // Parse the XML string
+        const xmlDoc = parser.parseFromString(data, "text/xml");
+        // Find the specific data element with the given key
+        const dataNode: any = xmlDoc.querySelector(`data[name="${filterKey}"]`);
+        // Extract the value from the data element
+        const value: any = dataNode?.querySelector("value").textContent;
+
+     
+        console.log('data ====> ', index, value); 
+        
+        
+      });
+      // this.setState({ data });
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  }
 
   const loadQuestionHandler = async () => {
     setIsApiDataLoaded(true);
@@ -1091,10 +1148,33 @@ const ParentComponent = ({
     }
   };
 
+  const languageChangeHandler = (e: any) => {
+    console.log("EEEEcdsefef", e)
+    setSelectedLanguage(e?.target?.value)
+    setLanguageConstants(languageConstantsForCountry[e?.target?.value]);
+  }
+
   return (
     <div>
       {contextHolder}
-      <div></div>
+      <div className="country-lan">
+      {/* <Select
+        value={selectedLanguage}
+        style={{ width: 120 }}
+        allowClear
+        options={countryMappedConfigs}
+        onChange = { (e) => languageChangeHandler(e)}
+        /> */}
+        
+        <Radio.Group
+          options={countryMappedConfigs}
+          onChange = { (e) => languageChangeHandler(e)}
+          value={selectedLanguage}
+          optionType="button"
+          buttonStyle="solid"
+      />
+
+      </div>
       {!isApiDataLoaded ? (
         <div className="validation-wrap">
           {currentPossitionDetails && (
@@ -1104,10 +1184,10 @@ const ParentComponent = ({
                   className="mr-10 btn-default"
                   onClick={addComponent}
                   disabled={suerveyIsPublished}>
-                  + Add
+                  {languageConstants?.addButton}
                 </Button>
                 <Button className="btn-default" onClick={addNestedComponent} disabled={suerveyIsPublished}>
-                  + Add Nested
+                {languageConstants?.addNestedButton}
                 </Button>
               </div>
               {sections?.length > 0 &&
@@ -1129,6 +1209,7 @@ const ParentComponent = ({
                       suerveyIsPublished={suerveyIsPublished}
                       currentQuestionDetails={currentQuestionDetails}
                       handleSectionRemove={handleSectionRemove}
+                      languageConstants={languageConstants}
                     />
                   </div>
                 ))}
@@ -1140,7 +1221,7 @@ const ParentComponent = ({
                     className="btn-primary"
                     disabled={suerveyIsPublished}
                   >
-                    Save
+                    {languageConstants?.saveButtonConstants}
                     
                   </Button>
                 </div>
@@ -1151,7 +1232,7 @@ const ParentComponent = ({
       ) : (
         <Space size="middle">
           <div>
-            <div>Questions Loading!</div>
+            <div>{languageConstants?.questionsLoadingConstants}</div>
               <div style={{marginTop: '10px'}}>
               <Spin />
             </div>

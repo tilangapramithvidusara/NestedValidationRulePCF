@@ -389,3 +389,7 @@
   .validation-wrap .ant-input {
     border-radius: 2px;
   }
+  .country-lan {
+    text-align: left;
+    padding-bottom: 10px;
+  }
