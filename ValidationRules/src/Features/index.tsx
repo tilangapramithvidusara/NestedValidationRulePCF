@@ -47,10 +47,10 @@ const ParentComponent = ({
   const [isLoadData, setIsLoadData] = useState<boolean>(false);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-    currentPosition: "question",
-  });
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+  //   currentPosition: "question",
+  // });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -177,6 +177,7 @@ const ParentComponent = ({
                 "gyde_answertype@OData.Community.Display.V1.FormattedValue"
               ],
             questionId: quesNme?.gyde_surveytemplatechaptersectionquestionid,
+            questionLabel: quesNme?.gyde_label
           };
       });
       formattedQuestionList &&
@@ -1158,14 +1159,6 @@ const ParentComponent = ({
     <div>
       {contextHolder}
       <div className="country-lan">
-      {/* <Select
-        value={selectedLanguage}
-        style={{ width: 120 }}
-        allowClear
-        options={countryMappedConfigs}
-        onChange = { (e) => languageChangeHandler(e)}
-        /> */}
-        
         <Radio.Group
           options={countryMappedConfigs}
           onChange = { (e) => languageChangeHandler(e)}

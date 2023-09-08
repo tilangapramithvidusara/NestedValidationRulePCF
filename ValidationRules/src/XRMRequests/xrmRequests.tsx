@@ -14,7 +14,7 @@ export const loadAllQuestionsInSurvey = async () => {
   try {    
     const templateID = await window.parent.Xrm.Page.ui._formContext.getAttribute("gyde_surveytemplate").getValue()[0].id.replace("{", "").replace("}", "");
     console.log('template id =========> ', templateID);
-    const result = await window.parent.Xrm.WebApi.retrieveMultipleRecords("gyde_surveytemplatechaptersectionquestion", "?$select=gyde_name,gyde_answertype,gyde_shortname&$filter= _gyde_surveytemplate_value eq " + templateID);
+    const result = await window.parent.Xrm.WebApi.retrieveMultipleRecords("gyde_surveytemplatechaptersectionquestion", "?$select=gyde_name,gyde_answertype,gyde_shortname,gyde_label&$filter= _gyde_surveytemplate_value eq " + templateID);
     console.log("result ===========> ", result);
     console.log('result.entities=====> ', questionArraySample);
     

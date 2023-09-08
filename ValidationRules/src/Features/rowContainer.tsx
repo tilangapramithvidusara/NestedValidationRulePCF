@@ -723,8 +723,11 @@ const RowContainer: React.FC<TableRowProps> = ({
                       }
                     
                     </div>
+                    
                     <div className="mr-20">
                       <div className="condition-label">{languageConstants?.valueLabel}  </div>
+                    {!isLoad ? <div> 
+                      
                       {dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.numericQuestion ? (
@@ -789,6 +792,15 @@ const RowContainer: React.FC<TableRowProps> = ({
                           isDisabled={suerveyIsPublished}
                         />
                       )}
+
+                      </div> : <div>
+          <Space size="middle">
+            <Spin />
+          </Space>
+        </div>
+                    }
+                    
+                     
                     </div>
 
                     <div className="custom-btn-wrap">
@@ -808,7 +820,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                             onClick={() => _handleDeleteRow(condition?.level)}
                             height={'15px'}
                             />
-                            {/* <span className="remove-text">{languageConstants?.removeButton} </span> */}
+                            <span className="remove-text">{languageConstants?.removeButton} </span>
                           </div>
                          
                       }
@@ -883,10 +895,9 @@ const RowContainer: React.FC<TableRowProps> = ({
   return (
     <div>
             {contextHolder}
-      {!isLoad ? (
         <div>
           <div className="flex-wrap mb-10">
-              <div>
+              <div className="text-left">
                 {" "}
                 {_nestedRows &&
                   _nestedRows?.length &&
@@ -896,11 +907,18 @@ const RowContainer: React.FC<TableRowProps> = ({
                         sectionLevel
                       ]?.fields || []
                     ) +
-                    ")"}{" "}
-              </div>
-              <div>
-                {" "}
+                ")"}{" "}
+              
+              <div> 
+              {" "}
                 {showActionOutput && "{ " + showActionOutput + " }"}{" "}
+              </div>
+            </div>
+            
+
+            <div>
+             
+                
               <div>
 
               { suerveyIsPublished ?
@@ -915,7 +933,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       height={'15px'}
                       onClick={() => handleSectionRemove(sectionLevel)}
                         /> 
-                    {/* <span className="remove-text">{languageConstants?.removeButton} </span> */}
+                    <span className="remove-text">{languageConstants?.removeButton} </span>
                   </div>
                 }
                 
@@ -938,13 +956,7 @@ const RowContainer: React.FC<TableRowProps> = ({
             )}
         
         </div>
-      ) : (
-        <div>
-          <Space size="middle">
-            <Spin />
-          </Space>
-        </div>
-      )}
+    
     </div>
   );
 };

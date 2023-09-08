@@ -9,47 +9,15 @@ interface DropDownCommonProps {
   fieldName: any;
   selectedValue: any;
 }
-[
-  {
-      "and": [
-          {
-              "==": [
-                  {
-                      "var": "NTemp_C01_s01_grd"
-                  },
-                  123
-              ]
-          },
-          {
-              "==": [
-                  {
-                      "var": "NTemp_C01_s01_grd"
-                  },
-                  22
-              ]
-          },
-          {
-              "and": [
-                  {
-                      "==": [
-                          {
-                              "var": "NTemp_C2_S1_Q1"
-                          },
-                          " 224"
-                      ]
-                  }
-              ]
-          }
-      ]
-  }
-]
+
 const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, setExpression, changedId, fieldName, selectedValue }) => {
   return (
     <div>
       <Select
         showSearch
-        style={{ width: '150px' }}
-        placeholder="Search to Select"
+        // style={{ width: '150px' }}
+        style={fieldName === 'expression' ? { width: '100px' } : fieldName === 'condition' ? { width: '150px' } : { width: '150px' }}
+        placeholder={fieldName === 'expression' ? "": "Value"}
         optionFilterProp="children"
         filterOption={(input, option) => (option?.label ?? "").includes(input)}
         filterSort={(optionA, optionB) =>
@@ -61,6 +29,7 @@ const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, set
         disabled={isDisabled ? isDisabled : false}
         onChange={(input, option) => setExpression({ input: option.value, changedId, fieldName })}
         value={selectedValue}
+        
       />
     </div>
   );

@@ -3,7 +3,7 @@ export const languageConstantsForCountry : any = {
         saveButtonConstants: "Save",
         questionsLoadingConstants: "Questions Loading...!",
         addButton: "+ Add",
-        removeButton: "Remove",
+        removeButton: "Delete",
         addNestedButton: "+ Add Nested",
         actionsLabelConstants: "Actions",
         minMaxFieldStringConstants: "MinLength/MaxLength Field", 

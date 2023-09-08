@@ -31,7 +31,7 @@ const FieldStringInput: React.FC<FieldStringInputProps> = ({sampleData, selected
         <div>
             <Input
                 style={{ width: '150px' }}
-                placeholder="Search to Select"
+                placeholder="Value"
                 onChange={onChangeSearchEvent}
                 defaultValue={selectedValue}
                 disabled={isDisabled}

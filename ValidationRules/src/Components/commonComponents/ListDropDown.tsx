@@ -22,7 +22,7 @@ const ListDropDown: React.FC<ListDropDownCommonProps> = ({ dropDownData, isDisab
       <Select
         showSearch
         style={{ width: '150px' }}
-        placeholder="Search to Select"
+        placeholder="Value"
         optionFilterProp="children"
         options={listDropDownData && listDropDownData?.length ? listDropDownData : []}
         disabled={isDisabled ? isDisabled : false}

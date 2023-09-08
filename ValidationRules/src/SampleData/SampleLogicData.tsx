@@ -108,7 +108,8 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "gt",
   "questionType": "numeric",
-  "gyde_surveytemplatechaptersectionquestionid": "7cf0f07a-41f5-ed11-8848-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "7cf0f07a-41f5-ed11-8848-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 },
 {
   "@odata.etag": "W/\"7940133\"",
@@ -117,7 +118,8 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "Q_04",
   "questionType": "Date",
-  "gyde_surveytemplatechaptersectionquestionid": "52020283-6af5-ed11-8848-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "52020283-6af5-ed11-8848-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 },
 {
   "@odata.etag": "W/\"7404144\"",
@@ -135,7 +137,8 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "grid",
   "questionType": "numeric",
-  "gyde_surveytemplatechaptersectionquestionid": "4635af14-dbee-ed11-8849-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "4635af14-dbee-ed11-8849-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 },
 {
   "@odata.etag": "W/\"6487437\"",
@@ -144,7 +147,8 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "grd",
   "questionType": "numeric",
-  "gyde_surveytemplatechaptersectionquestionid": "8f08d012-e2ee-ed11-8849-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "8f08d012-e2ee-ed11-8849-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 },
 {
   "@odata.etag": "W/\"7376952\"",
@@ -153,7 +157,8 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "qr3",
   "questionType": "numeric",
-  "gyde_surveytemplatechaptersectionquestionid": "a8727af8-e3ee-ed11-8849-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "a8727af8-e3ee-ed11-8849-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 },
 {
   "@odata.etag": "W/\"6495402\"",
@@ -162,7 +167,8 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "q01",
   "questionType": "numeric",
-  "gyde_surveytemplatechaptersectionquestionid": "b6ec4ebd-83f0-ed11-8849-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "b6ec4ebd-83f0-ed11-8849-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 },
 {
   "@odata.etag": "W/\"7735770\"",
@@ -171,7 +177,8 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "gdRD",
   "questionType": "text",
-  "gyde_surveytemplatechaptersectionquestionid": "30581950-61f8-ed11-8849-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "30581950-61f8-ed11-8849-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 },
 {
   "@odata.etag": "W/\"7723318\"",
@@ -180,7 +187,8 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "q02",
   "questionType": "Date",
-  "gyde_surveytemplatechaptersectionquestionid": "441e2655-69f8-ed11-8849-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "441e2655-69f8-ed11-8849-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 },
 {
   "@odata.etag": "W/\"7779661\"",
@@ -189,7 +197,8 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "Q_01",
   "questionType": "Date",
-  "gyde_surveytemplatechaptersectionquestionid": "cf6fb011-8af8-ed11-8849-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "cf6fb011-8af8-ed11-8849-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 },
 {
   "@odata.etag": "W/\"7770616\"",
@@ -198,6 +207,7 @@ export const questionArraySample = [{
   "gyde_answertype": 528670004,
   "gyde_shortname": "rd",
   "questionType": "Date",
-  "gyde_surveytemplatechaptersectionquestionid": "55a62735-26f9-ed11-8849-000d3a338dd2"
+  "gyde_surveytemplatechaptersectionquestionid": "55a62735-26f9-ed11-8849-000d3a338dd2",
+  "gyde_label": "NTemp_C01_s01_gt"
 }
 ]
