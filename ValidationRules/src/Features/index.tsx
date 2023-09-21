@@ -158,7 +158,7 @@ const ParentComponent = ({
     const result = await loadAllQuestionsInSurvey();
     console.log("resss =====> ", result);
     let questionListArray = result.data || [];
-    if (questionListArray && questionListArray.length) {
+    if (questionListArray && questionListArray.length && currentPossitionDetails) {
       const formattedQuestionList = questionListArray.map((quesNme: any) => {
         if (
           quesNme
@@ -179,10 +179,37 @@ const ParentComponent = ({
             questionId: quesNme?.gyde_surveytemplatechaptersectionquestionid,
             questionLabel: quesNme?.gyde_label
           };
-      });
-      formattedQuestionList &&
-        formattedQuestionList.length &&
-        setQuestionList(formattedQuestionList?.filter((x: any) => x));
+      })?.filter((secQues: any) => {
+        if (currentPossitionDetails?.currentPosition !== "question") {
+          let result = currentPossitionDetails?.currentName
+          // if (currentPossitionDetails?.currentPosition === "question") {
+          //   const value = currentPossitionDetails?.currentName;
+          //   const index = value.lastIndexOf("_");
+          //   result = value.substring(0, index); 
+          // }
+          console.log(result);
+          console.log("Quering Ress", secQues?.value?.includes(result));
+          if (secQues?.value && result) return !secQues?.value?.includes(result);
+        } else {
+          return secQues
+        }
+        
+      })?.filter((x: any) => x);
+      if (formattedQuestionList && formattedQuestionList?.length) {
+          formattedQuestionList?.sort(function(a: { label: string; }, b: { label: string; }) {
+          var labelA = a?.label?.toLowerCase();
+          var labelB = b?.label?.toLowerCase();
+          if (labelA < labelB) {
+            return -1;
+          }
+          if (labelA > labelB) {
+            return 1;
+          }
+          return 0;
+        });
+          setQuestionList(formattedQuestionList);
+        }
+        
         setIsApiDataLoaded(false);
     } else {
       setQuestionList([]);
@@ -823,6 +850,7 @@ const ParentComponent = ({
     let isShowInDocNested: any = [];
     let isMinMaxNested: any = [];
 
+    let isfieldsHasEmptyFields = false;
     // if (!validation.minMaxValidation) {
     //   openNotificationWithIcon("error", "MinMax Validation Must be passed!");
     //   return;
@@ -894,7 +922,7 @@ const ParentComponent = ({
       prepareForValidation[0].expression = "Emp";
       const _hasNullFields = hasNullFields(prepareForValidation);
       if (_hasNullFields) {
-        openNotificationWithIcon("error", "Fields cannot be empty!");
+        isfieldsHasEmptyFields = true
         return;
       }
 
@@ -1133,6 +1161,11 @@ const ParentComponent = ({
     );
     console.log("savedMinMaxRuleFinalFormat", savedMinMaxRuleFinalFormat);
 
+    if (isfieldsHasEmptyFields) {
+      openNotificationWithIcon("error", "Fields cannot be empty!");
+      return;
+    }
+    
     if (
       validation?.minMaxValidation &&
       validation.andOrValidation &&
@@ -1146,6 +1179,7 @@ const ParentComponent = ({
       );
     } else {
       openNotificationWithIcon("error", "Validation Must be passed!");
+      return;
     }
   };
 

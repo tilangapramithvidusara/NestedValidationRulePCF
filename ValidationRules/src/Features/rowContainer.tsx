@@ -92,6 +92,10 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   const [answersDropDownData, setAnswersDropDownData] = useState<any[]>([]);
   const [api, contextHolder]: any = notification.useNotification();
+  const [listAnsersWithQuestionIds, setListAnsersWithQuestionIds] = useState<any>();
+  const [listQuestionLoading, setListQuestionLoading]  = useState<any>(false);
+
+  const [listQuestionIds, setListQuestionIds]  = useState<any>();
 
   const findConditionByLevel = (
     level: any,
@@ -584,6 +588,7 @@ const RowContainer: React.FC<TableRowProps> = ({
         setIsLoad(false);
       }
      
+      
     } catch (error) {
       console.error("Error fetching data:", error);
       // setSelectedFieldData([]); // Reset the data to an empty array in case of an error
@@ -611,17 +616,102 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   useEffect(() => {
     if (questionList && questionList.length) {
+      const listQuestions = questionList?.filter((x: any) => x["questionType"] === dbConstants?.questionTypes?.listQuestion)?.map((x: any) => x?.value);
+      let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
+      if (releatedFields) {
+        const fields = releatedFields[sectionLevel]?.fields?.map((x: any) => x?.field);
+        const matchedValues = listQuestions?.filter((value: any) => fields?.includes(value));
+        console.log("matchedValues", matchedValues);
+        console.log("matchedValues listQuestions", listQuestions);
+        console.log("matchedValues fields", fields);
+
+        if (matchedValues && matchedValues?.length) setListQuestionIds(matchedValues);
+      }
       setDropDownQuestionList(questionList?.filter((quesNme: any) =>
         quesNme &&
         quesNme["questionType"] !== "Grid" &&
-          quesNme["questionType"] !== "Header"
-    ))}
-  }, [questionList])
+        quesNme["questionType"] !== "Header"
+      ))
+    }
+  }, [questionList]);
+
+  useEffect(() => {
+    console.log("setListQuestionIds", listQuestionIds)
+    if (listQuestionIds && listQuestionIds?.length) {
+      setListQuestionLoading(true);
+      fetchQuestionDetails(listQuestionIds);
+    }
+  }, [listQuestionIds]);
+
+
+  // useEffect(() => {
+  //   // const questionList = 
+  //   let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
+  //   if (releatedFields) {
+  //     console.log("releatedFieldsreleatedFields", releatedFields)
+  //     const feilds = releatedFields[sectionLevel]?.fields?.map((x: any) => x?.field)
+  //     console.log("feildsfeilds", feilds);
+      
+  //     if (feilds && feilds?.length) fetchQuestionDetails(feilds)
+  //   }
+  // }, [questionList]);
+
+
+  const fetchQuestionDetails = async (questionIds: any) => {
+    const questionListArray: any = [];
+  
+    await Promise.all(
+      questionIds?.map(async (questionId: any) => {
+        const questionDetails = questionList?.find(
+          (x: any) => x.value === questionId
+        );
+  
+        if (questionDetails?.questionType === dbConstants.questionTypes.listQuestion) {
+          setIsLoad(true);
+  
+          const response = await getListAnswersByQuestionId(
+            questionDetails?.questionId
+          );
+  
+          let dropDownData = [];
+          if (response?.data?.entities) {
+            dropDownData = response?.data.entities.map((x: any) => ({
+              label: x.gyde_answervalue,
+              value: x.gyde_answervalue,
+            }));
+            questionListArray.push({ questionId, listAnswers: dropDownData });
+            setIsLoad(false);
+          }
+        }
+      })
+    );
+  
+    if (questionListArray && questionListArray?.length) {
+      setListAnsersWithQuestionIds(questionListArray);
+      
+    }
+    setListQuestionLoading(false);
+  };
+  
+
+  useEffect(() => {
+    console.log("listAnsersWithQuestionIds", listAnsersWithQuestionIds);
+    // if (listAnsersWithQuestionIds) {
+    //   setAnswersDropDownData(dropDownData);
+    // }
+  }, [listAnsersWithQuestionIds])
+
+  useEffect(() => {
+    console.log("answersDropDownData", answersDropDownData);
+  }, [answersDropDownData])
+  
   const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
     console.log("conditions----->", conditions);
 
     if (conditions && conditions?.length) {
+      
       return conditions.map((condition: any, index: any) => {
+        // fetchFieldData(condition?.field);
         return <>
           <div key={condition.level}>
             {!condition?.collapse ? (
@@ -710,7 +800,18 @@ const RowContainer: React.FC<TableRowProps> = ({
                           changedId={condition?.level}
                           fieldName={"condition"}
                           selectedValue={condition?.condition}
-                        />
+                        /> :
+                        dropDownQuestionList?.find(
+                          (x: { value: string }) => x?.value === condition?.field
+                        )?.questionType === dbConstants.questionTypes.dateTimeQuestion ?
+                          <DropDown
+                            dropDownData={operationalSampleData[0]?.options?.filter((item: { value: string; }) => item?.value === "==")}
+                            isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
+                            setExpression={setFieldValue}
+                            changedId={condition?.level}
+                            fieldName={"condition"}
+                            selectedValue={condition?.condition}
+                          />
                         :
                         <DropDown
                           dropDownData={operationalSampleData}
@@ -769,13 +870,19 @@ const RowContainer: React.FC<TableRowProps> = ({
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.listQuestion ? (
                         <ListDropDown
-                          dropDownData={{}}
-                          isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                          setFieldValue={setFieldValue}
-                          changedId={condition?.level}
-                          fieldName={"value"}
-                          selectedValue={condition?.value}
-                          listDropDownData={answersDropDownData}
+                                    dropDownData={{}}
+                                    isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
+                                    setFieldValue={setFieldValue}
+                                    changedId={condition?.level}
+                                    fieldName={"value"}
+                                    selectedValue={condition?.value}
+                                    listDropDownData={
+                                      // answersDropDownData?.length ? answersDropDownData :
+                                      // listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.value)?.listAnswers?.length ? 
+                                      answersDropDownData.concat(listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.field)?.listAnswers)?.filter(x => x)
+                                      // [...answersDropDownData ,...listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.value)?.listAnswers]
+                          // answersDropDownData
+                        }
                         // getDropDownData={getDropDownData(condition?.field)} // Pass the getDropDownData function as a prop
                         // answerCallback={getDropDownData(condition?.field)}
                         />
@@ -880,7 +987,10 @@ const RowContainer: React.FC<TableRowProps> = ({
             </div>
           )} */}
             <div style={{ paddingLeft: "30px" }}>
-              {renderNestedConditions(condition?.innerConditions, marginLeft + 5)}
+              {
+                !listQuestionLoading && renderNestedConditions(condition?.innerConditions, marginLeft + 5)
+              }
+              
             </div>
           </div>
         </>  

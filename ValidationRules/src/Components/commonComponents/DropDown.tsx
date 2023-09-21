@@ -11,6 +11,17 @@ interface DropDownCommonProps {
 }
 
 const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, setExpression, changedId, fieldName, selectedValue }) => {
+
+  const searchFilterSort = (optionA: any, optionB: any) => {
+    console.log("Drop orppPPPP", optionA, optionB);
+    return (optionA?.label ?? '')?.toLowerCase().localeCompare((optionB?.label ?? '')?.toLowerCase());
+}
+
+const searchFilterOption = (input: any, option: any) => {
+    console.log(" Drop orppPP option", input, option);
+    return (option?.label ?? '')?.toLowerCase()?.includes(input?.toLowerCase())
+}
+  
   return (
     <div>
       <Select
@@ -19,12 +30,8 @@ const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, set
         style={fieldName === 'expression' ? { width: '100px' } : fieldName === 'condition' ? { width: '150px' } : { width: '150px' }}
         placeholder={fieldName === 'expression' ? "": "Value"}
         optionFilterProp="children"
-        filterOption={(input, option) => (option?.label ?? "").includes(input)}
-        filterSort={(optionA, optionB) =>
-          (optionA?.label ?? "")
-            .toLowerCase()
-            .localeCompare((optionB?.label ?? "").toLowerCase())
-        }
+        filterOption={searchFilterOption}
+        filterSort={searchFilterSort}
         options={dropDownData}
         disabled={isDisabled ? isDisabled : false}
         onChange={(input, option) => setExpression({ input: option.value, changedId, fieldName })}

@@ -28,7 +28,7 @@ export const loadAllQuestionsInSurvey = async () => {
     return {
       error: true,
       // data: [],
-      data: questionArraySample
+      data: []
     }
   }
 }
@@ -44,15 +44,31 @@ export const getCurrentState = async () => {
     // result = result?.map((obj: any) => {
       // const updatedId = obj?.id.replace("{", "").replace("}", "");
       let currentPosition;
+    let currentName;
+    let currentEntityNme;
+    if (entityTypeName.includes('question')) {
+      currentPosition = 'question';
+      currentEntityNme = dbConstants?.question?.fieldName;
+      
+    }
+    else if (entityTypeName.includes('section')) {
+      currentPosition = 'section';
+      currentEntityNme = dbConstants?.section?.fieldName;
+    }
+    else if (entityTypeName.includes('chapter')) {
+      currentPosition = 'chapter';
+      currentEntityNme = dbConstants?.chapter?.fieldName;
+    }
+    if (currentEntityNme && updatedId) {
+      let result = await window.parent.Xrm.WebApi.retrieveRecord(currentEntityNme, updatedId);
+      currentName = result?.gyde_name;
+    }
 
-      if (entityTypeName.includes('question')) currentPosition = 'question';
-      else if (entityTypeName.includes('section')) currentPosition = 'section';
-      else if (entityTypeName.includes('chapter')) currentPosition = 'chapter';
       // return { id: updatedId, currentPosition };
     // });
     return {
       error: false,
-      data: [{ id: updatedId, currentPosition }]
+      data: [{ id: updatedId, currentPosition, currentName }]
     }
   } catch (error) {
     console.log("error ========> ", operationsSampleData);
@@ -206,8 +222,8 @@ export const getPublishedStatus = async (currentPositionDetails: any) : Promise<
         currentFieldName = dbConstants.chapter.fieldName
         currentIdKey = "gyde_surveytemplatechapterid"
         expectedStatusCodeForPublished = dbConstants.chapter.publishedStatus;
-
       }
+
       console.log("currentFieldName", currentFieldName);
       console.log("currentIdKey" , currentIdKey)
 

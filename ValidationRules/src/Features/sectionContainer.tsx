@@ -212,20 +212,20 @@ function SectionContainer({
   useEffect(() => {
     setDefaultActions(currentPossitionDetails && currentPossitionDetails?.currentPosition === "question" ? [
       {
-        label: "Show",
+        label: languageConstants?.actionLbl,
         value: "show",
       },
       {
-        label: "Show in Document",
+        label: languageConstants?.showInDoc,
         value: "OutPutDoc:Show",
       },
     ] : [
       {
-        label: "Show",
+        label: languageConstants?.actionLbl,
         value: "show",
       }
     ])
-  }, [currentPossitionDetails]);
+  }, [currentPossitionDetails, languageConstants]);
 
   useEffect(() => {
     console.log("currentQuestionDetails ", currentQuestionDetails)
