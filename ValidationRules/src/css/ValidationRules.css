@@ -393,3 +393,32 @@
     text-align: right;
     padding-bottom: 10px;
   }
+
+  .tabs-configs {
+    text-align: left;
+    padding-bottom: 10px;
+  }
+
+  /* .default-acts {
+    display: flex;
+  } */
+
+  .referneces-acts {
+    text-align: left;
+    display: flex;
+    margin-top: 12px;
+  }
+  .default-options {
+    text-align: left;
+    width: 50%;
+    margin-top: 12px;
+  }
+  .referneces-checkbx {
+  text-align: left;
+  margin-top: 12px;
+  }
+
+  .numberlist {
+    margin-top: 10px;
+    text-align: center;
+  }

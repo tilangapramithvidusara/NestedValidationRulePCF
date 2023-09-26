@@ -29,6 +29,7 @@ import { languageConstantsForCountry } from "../constants/languageConstants";
 import Dropdown from "antd/es/dropdown/dropdown";
 import { DownOutlined } from "@ant-design/icons";
 import countryMappedConfigs from "../configs/countryMappedConfigs";
+import tabsConfigs from "../configs/tabsConfigs";
 // import NotificationPopup from "../Components/NotificationPopup";
 
 const ParentComponent = ({
@@ -44,13 +45,16 @@ const ParentComponent = ({
 
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
+  const [defaultSections, setDefaultSections] = useState<any[]>([]);
+
   const [isLoadData, setIsLoadData] = useState<boolean>(false);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
+  const [_defaultRows, _setDefaultRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-  //   currentPosition: "question",
-  // });
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+    currentPosition: "question",
+  });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -72,6 +76,8 @@ const ParentComponent = ({
   const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
   const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<any>('en');
+  const [selectedTab, setSelectedTab] = useState<any>('vr');
+  const [hovered, setHovered] = useState(false);
 
   const [languageConstants, setLanguageConstants] = useState<any>(
     languageConstantsForCountry.en
@@ -91,18 +97,29 @@ const ParentComponent = ({
     setSaveAsIsNested(true);
   };
 
-  let addComponent = () => {
-    setSections([
-      ...sections,
-      {
-        key:
-          sections && sections.length
-            ? Math.max(...sections.map((item) => item.key)) + 1
-            : 1,
-      },
-    ]);
-
-    setIsNested(false);
+  let addComponent = (type: any) => {
+    if (type === 'defaultValueTab') {
+      setDefaultSections([
+        ...defaultSections,
+        {
+          key:
+          defaultSections && defaultSections.length
+              ? Math.max(...defaultSections.map((item) => item.key)) + 1
+              : 1,
+        },
+      ])
+    } else {
+      setSections([
+        ...sections,
+        {
+          key:
+            sections && sections.length
+              ? Math.max(...sections.map((item) => item.key)) + 1
+              : 1,
+        },
+      ]);
+      setIsNested(false);
+    }
   };
 
   const loadResourceString = async () => {
@@ -1189,6 +1206,19 @@ const ParentComponent = ({
     setLanguageConstants(languageConstantsForCountry[e?.target?.value]);
   }
 
+  const tabsChangeHandler = (e: any) => {
+    console.log("tabsChangeHandler", e)
+    setSelectedTab(e?.target?.value)
+  }
+  
+  useEffect(() => {
+    console.log("_defaultRows", _defaultRows)
+  }, [_defaultRows]);
+
+  useEffect(() => {
+    console.log("_nestedRows", _nestedRows)
+  }, [_nestedRows]);
+
   return (
     <div>
       {contextHolder}
@@ -1202,8 +1232,20 @@ const ParentComponent = ({
       />
 
       </div>
-      {!isApiDataLoaded ? (
-        <div className="validation-wrap">
+      <div className="tabs-configs">
+        <Radio.Group
+            options={tabsConfigs}
+            onChange = { (e) => tabsChangeHandler(e)}
+            value={selectedTab}
+            optionType="button"
+            buttonStyle="solid"
+        />
+      </div>
+      <div className="validation-wrap">
+      {
+        selectedTab === 'vr' ? <>
+              {!isApiDataLoaded ? (
+              <div>
           {currentPossitionDetails && (
             <div>
               <div className="nestedBtns">
@@ -1237,6 +1279,7 @@ const ParentComponent = ({
                       currentQuestionDetails={currentQuestionDetails}
                       handleSectionRemove={handleSectionRemove}
                       languageConstants={languageConstants}
+                      tabType={dbConstants?.tabTypes?.validationTab}
                     />
                   </div>
                 ))}
@@ -1255,7 +1298,7 @@ const ParentComponent = ({
               )}
             </div>
           )}
-        </div>
+       </div>
       ) : (
         <Space size="middle">
           <div>
@@ -1266,6 +1309,53 @@ const ParentComponent = ({
           </div>
         </Space>
       )}
+        </> : <>
+        <div className="nestedBtns">
+        <Button
+            className="mr-10 btn-default"
+            onClick={() => addComponent('defaultValueTab')}
+            disabled={suerveyIsPublished}>
+            {languageConstants?.addButton}
+        </Button>
+        </div>
+              {/* <div> Default Tab </div> */}
+              {defaultSections?.length > 0 &&
+                defaultSections.map((section) => (
+                  <div key={section.key} className="nested-wrap">
+                    <SectionContainer
+                      sectionLevel={section.key}
+                      conditionData={conditionData}
+                      setConditionData={setConditionData}
+                      _setNestedRows={_setDefaultRows}
+                      _nestedRows={_defaultRows}
+                      isNested={isNested}
+                      currentPossitionDetails={currentPossitionDetails}
+                      questionList={questionList}
+                      setValidation={setValidation}
+                      // setDeleteSectionKey={setDeleteSectionKey}
+                      setSaveAsIsNested={setSaveAsIsNested}
+                      imageUrls={{ imageUrl, imageUrl1, imageUrl2 }}
+                      suerveyIsPublished={suerveyIsPublished}
+                      currentQuestionDetails={currentQuestionDetails}
+                      handleSectionRemove={handleSectionRemove}
+                      languageConstants={languageConstants}
+                      tabType={dbConstants?.tabTypes?.defaultValueTab}
+                    />
+                  </div>
+                ))}
+              <div className="text-right">
+                  <Button
+                    onClick={handleSaveLogic}
+                    className="btn-primary"
+                    disabled={suerveyIsPublished}
+                  >
+                    {languageConstants?.saveButtonConstants}
+                    
+                  </Button>
+                </div>
+        </>
+      }
+      </div>
     </div>
   );
 };

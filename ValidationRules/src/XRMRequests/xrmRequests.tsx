@@ -28,7 +28,7 @@ export const loadAllQuestionsInSurvey = async () => {
     return {
       error: true,
       // data: [],
-      data: []
+      data: questionArraySample
     }
   }
 }

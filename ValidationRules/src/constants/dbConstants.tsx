@@ -24,4 +24,8 @@ export const dbConstants = {
     listQuestion: "List",
     dateTimeQuestion: "Date"
   },
+  tabTypes: {
+    validationTab: "validationTab",
+    defaultValueTab: "defaultValueTab"
+  }
 };
