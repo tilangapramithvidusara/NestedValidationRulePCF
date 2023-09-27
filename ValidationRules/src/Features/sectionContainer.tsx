@@ -671,7 +671,9 @@ function SectionContainer({
                 options={questionList}
               />
                   </div>
-
+                  {/* <div className="num-input-wrap">
+        <div className="num-input">1</div>
+      </div> */}
                   <div className="numberlist">
                         <Card onClick={(e) => onDefaultNumberClick(e)}>
                         <Card.Grid style={gridStyle} defaultValue={0}>0</Card.Grid>
