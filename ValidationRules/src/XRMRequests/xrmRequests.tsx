@@ -103,6 +103,7 @@ export const saveValidationRules = async(validationRuleData: object) => {
       else if(result?.gyde_visibilityrule) _result = result[dbConstants.common.gyde_visibilityrule];
       // else if(result?.gyde_validationrule?.length) _result = result[dbConstants.common.gyde_validationrule];
       else if (result?.gyde_documentoutputrule) _result = result[dbConstants.question.gyde_documentOutputRule];
+      else if(result?.gyde_questionresponsedefaultrule) _result = result[dbConstants.question.gyde_defaultValueFormula];
       // console.log("RESULTTT", _result)
       // if (_result) {
       //   _result = JSON.parse(_result)

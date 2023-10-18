@@ -326,6 +326,17 @@ const hasNullFields = (obj: any) => {
   });
 }
 
+const hasNullFieldsDefault = (obj: any) => {
+
+  return obj?.some((x: { innerConditions: any; value: any; expression: any; condition: any; }) => {
+    // if (x?.innerConditions) {
+      if (!x?.value || !x?.expression || !x.value || !x.condition) {
+        return true; // Found a null or undefined field
+      }
+    // }
+  });
+}
+
 export {
   updateByParentId,
   getNearestParentByItems,
@@ -338,5 +349,6 @@ export {
   getAllChildrenIDs,
   getNestedParentLevel,
   _updateExpressionByParentId,
-  hasNullFields
+  hasNullFields,
+  hasNullFieldsDefault
 };

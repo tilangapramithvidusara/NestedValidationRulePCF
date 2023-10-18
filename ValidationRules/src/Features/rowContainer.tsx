@@ -33,6 +33,7 @@ import ListDropDown from "../Components/commonComponents/ListDropDown";
 import { dbConstants } from "../constants/dbConstants";
 import DatePickerCustom from "../Components/commonComponents/DatePickerCustom";
 import moment from "moment";
+import tabsConfigs from "../configs/tabsConfigs";
 interface NestedRowProps {
   children: React.ReactNode;
 }
@@ -52,7 +53,8 @@ interface TableRowProps {
   setSaveAsIsNested: any;
   imageUrls: any;
   suerveyIsPublished: any;
-  languageConstants: any
+  languageConstants: any;
+  tabType: any
 }
 
 interface Condition {
@@ -80,7 +82,8 @@ const RowContainer: React.FC<TableRowProps> = ({
   setSaveAsIsNested,
   imageUrls,
   suerveyIsPublished,
-  languageConstants
+  languageConstants,
+  tabType
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
@@ -746,7 +749,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       onClick={() =>
                         _handleAddNestedRow(condition?.level, true, "AND")
                       }
-                      disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
+                      disabled={tabType === dbConstants?.tabTypes?.defaultValueTab ? true : suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
                     >
                       {languageConstants?.addNestedButton}
                     </Button>
@@ -1041,7 +1044,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     <img
                         src={imageUrls?.imageUrl} alt="icon"
                       height={'15px'}
-                      onClick={() => handleSectionRemove(sectionLevel)}
+                      onClick={() => handleSectionRemove(sectionLevel, tabType)}
                         /> 
                     <span className="remove-text">{languageConstants?.removeButton} </span>
                   </div>

@@ -421,6 +421,7 @@
   .numberlist {
     margin-top: 10px;
     text-align: center;
+    display: inline-flex;
   }
 
   .num-input {
@@ -440,4 +441,10 @@
   .num-input-wrap {
     display: flex;
     align-items: center;
+ }
+
+ .exp-input-wrap {
+    display: flex;
+    align-items: center;
+    margin-right: 20px
  }

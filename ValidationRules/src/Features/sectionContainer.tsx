@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
 import DropDown from "../Components/commonComponents/DropDown";
-import { Button, Card, Checkbox, Input, Pagination, Radio, Select, Switch } from "antd";
+import {
+  Button,
+  Card,
+  Checkbox,
+  DatePicker,
+  Input,
+  InputNumber,
+  Pagination,
+  Radio,
+  Select,
+  Space,
+  Switch,
+} from "antd";
 import RowContainer from "./rowContainer";
 import CheckBox from "../Components/commonComponents/CheckBox";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
@@ -10,16 +22,22 @@ import { updateAllLevelActionsArray } from "../Utils/utilsHelper";
 import { loadAllQuestionsInSurvey } from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
 import type { SelectProps } from "antd";
-import type { SizeType } from 'antd/es/config-provider/SizeContext';
+import type { SizeType } from "antd/es/config-provider/SizeContext";
+import moment from "moment";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
+
+const { Option } = Select;
 
 interface NestedRowProps {
   children: React.ReactNode;
 }
 
 const gridStyle: React.CSSProperties = {
-  width: '5%',
-  textAlign: 'center',
-  height: '2px'
+  width: "5%",
+  textAlign: "center",
+  height: "2px",
 };
 
 interface Row {
@@ -87,9 +105,15 @@ function SectionContainer({
   const [defaultActions, setDefaultActions] = useState<any[]>([]);
   const [checkedReferences, setCheckedReferences] = useState<any>(false);
   const [radioDefaultValOption, setRadioDefaultValOption] = useState<any>();
+  const [addValue, setAddValue] = useState<any>(null);
+  const [defaultActionSetWhenRetriving, setDefaultActionSetWhenRetriving] =
+    useState<any>(undefined);
+  const [defaultMathematicalOperators, setDefaultMathematicalOperators] =
+    useState<any>();
+  const [selectedValues, setSelectedValues] = useState<any>([]);
 
   const options: SelectProps["options"] = [];
-  const [size, setSize] = useState<SizeType>('middle');
+  const [size, setSize] = useState<SizeType>("middle");
 
   const [rows, setRows] = useState<Row[]>([
     {
@@ -122,6 +146,18 @@ function SectionContainer({
     );
   };
 
+  const handleSelectChange = (values: any[]) => {
+    // Filter out null and undefined values
+    const filteredValues: any = values.filter(
+      (value: null | undefined) => value !== null && value !== undefined
+    );
+    setSelectedValues(filteredValues);
+    setAddValue(filteredValues);
+  };
+
+  useEffect(() => {
+    console.log("_nestedRows from Section", _nestedRows);
+  }, [_nestedRows]);
   useEffect(() => {
     let releatedFields = _nestedRows.find(
       (x: { [x: string]: any }) => x[sectionLevel]
@@ -233,6 +269,44 @@ function SectionContainer({
           },
         ])
       );
+
+      let releatedActionsForSefaultValue =
+        releatedFields[sectionLevel]?.actions;
+      console.log(
+        "_defaultRowsdddddd releatedActionsForSefaultValue",
+        releatedActionsForSefaultValue
+      );
+      if (
+        releatedActionsForSefaultValue &&
+        releatedActionsForSefaultValue?.length &&
+        releatedActionsForSefaultValue[0]?.type
+      ) {
+        console.log(
+          "_defaultRowsdddddd releatedActions 1111",
+          releatedActionsForSefaultValue[0]
+        );
+
+        setDefaultActionSetWhenRetriving(releatedActionsForSefaultValue[0]);
+        // setRadioDefaultValOption(defaultActionSetWhenRetriving?.type)
+        setRadioDefaultValOption(releatedActionsForSefaultValue[0]?.type);
+        setCheckedReferences(true);
+        if (releatedActionsForSefaultValue[0]?.type === "MAT_F") {
+          console.log("Mathematical Operator");
+          const operator = Object.keys(
+            releatedActionsForSefaultValue[0]?.value
+          )[0];
+          const values = releatedActionsForSefaultValue[0].value[operator];
+          console.log("Mathematical Operator", values);
+          console.log("Mathematical Operator operator", values);
+
+          const array = [values[0]?.var, operator, values[1]];
+          setDefaultMathematicalOperators(array);
+          setSelectedValues(array);
+        } else if (releatedActionsForSefaultValue[0]?.type === "VAL_Q") {
+          setAddValue(releatedActionsForSefaultValue[0]?.value);
+        }
+      }
+
       setMinCheckboxEnabled(
         _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
           ?.actions[0]?.minMax?.minValue || false
@@ -270,6 +344,7 @@ function SectionContainer({
     } else {
       setToggledEnableMin(true);
       setToggledEnableMax(true);
+      setDefaultActionSetWhenRetriving(false);
     }
   }, []);
 
@@ -383,11 +458,16 @@ function SectionContainer({
   const onChangeRefrences = (e: any) => {
     console.log("References cliecked", e);
     setCheckedReferences(e);
-    if(!e) setRadioDefaultValOption(null);
+    if (!e) {
+      setRadioDefaultValOption(null);
+      _setNestedRows(updateAllLevelActionsArray(_nestedRows, sectionLevel, []));
+    }
+    setSelectedValues([]);
   };
 
   const handleDefaultNumberChange = (value: string[]) => {
     console.log(`selected ${value}`);
+    setAddValue(value);
   };
 
   for (let i = 10; i < 36; i++) {
@@ -404,12 +484,82 @@ function SectionContainer({
   const onReferencesActionChanged = (e: any) => {
     console.log("onReferencesActionChanged", e);
     setRadioDefaultValOption(e?.target?.value);
+    setAddValue(null);
+    setSelectedValues([]);
   };
 
   const onDefaultNumberClick = (e: any) => {
     console.log("EEDDDDDD", e?.target?.innerText);
+  };
 
-  }
+  const handleMathematicalOperator = (e: any) => {
+    console.log("EEEEddddssd", e);
+    if (!suerveyIsPublished) {
+      setAddValue(e);
+      setSelectedValues(e);
+    }
+  };
+
+  useEffect(() => {
+    // let releatedFields = _nestedRows.find(
+    //   (x: { [x: string]: any }) => x[sectionLevel]
+    // );
+    // if(!releatedFields) return
+    // let releatedActions = releatedFields[sectionLevel]?.actions;
+    // console.log("_defaultRowsdddddd releatedActions", releatedActions);
+    // if (releatedActions && releatedActions?.length && releatedActions[0]?.type) {
+    //   console.log("_defaultRowsdddddd releatedActions 1111", releatedActions[0]);
+
+    // setDefaultActionSetWhenRetriving(releatedActions[0])
+    // setRadioDefaultValOption(defaultActionSetWhenRetriving?.type)
+    // }
+    if (radioDefaultValOption === "CLE_Q") {
+      console.log("Clear Questions ");
+      _setNestedRows(
+        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+          {
+            type: "CLE_Q",
+            value: null,
+          },
+        ])
+      );
+    } else if (radioDefaultValOption === "ADD_V") {
+      console.log("Add Value Questions ");
+      _setNestedRows(
+        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+          {
+            type: "ADD_V",
+            value: addValue,
+          },
+        ])
+      );
+    } else if (radioDefaultValOption === "VAL_Q") {
+      console.log("Add Value Questions ");
+      _setNestedRows(
+        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+          {
+            type: "VAL_Q",
+            value: addValue,
+          },
+        ])
+      );
+    } else if (radioDefaultValOption === "MAT_F") {
+      console.log("Add Value Questions ");
+      _setNestedRows(
+        updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+          {
+            type: "MAT_F",
+            value: addValue,
+          },
+        ])
+      );
+    }
+  }, [radioDefaultValOption, addValue]);
+
+  useEffect(() => {
+    console.log("addValueaddValue", addValue);
+  }, [addValue]);
+
   return (
     <div>
       {rows &&
@@ -431,6 +581,7 @@ function SectionContainer({
             imageUrls={imageUrls}
             suerveyIsPublished={suerveyIsPublished}
             languageConstants={languageConstants}
+            tabType={tabType}
           />
         ))}
 
@@ -504,8 +655,8 @@ function SectionContainer({
 
                     <div className="minmaxText">
                       {currentQuestionDetails?.questionType === "String"
-                        ? `${languageConstants?.minLengthStringConstants}`
-                        : `${languageConstants?.minLengthConstants}`}
+                        ? `${languageConstants?.minLengthStringConstants + ":"}`
+                        : `${languageConstants?.minLengthConstants}` + ":"}
                     </div>
                     {toggleEnableMin ? (
                       <NumberInputField
@@ -587,7 +738,7 @@ function SectionContainer({
                     <div className="minmaxText">
                       {currentQuestionDetails?.questionType === "String"
                         ? `${languageConstants?.maxLengthStringConstants}`
-                        : `${languageConstants?.maxLengthConstants}`}
+                        : `${languageConstants?.maxLengthConstants}` + " :"}
                     </div>
                     {toggleEnableMax ? (
                       <NumberInputField
@@ -638,91 +789,323 @@ function SectionContainer({
         </div>
       ) : (
         <div className="default-acts">
-          <div className="referneces-acts">
-            <div className="mr-10">Add Question References :</div>
-            <div>
-              <Switch defaultChecked={false} onChange={onChangeRefrences} />
-            </div>
-          </div>
-          <div className="referneces-checkbx">
-            <Radio.Group
-              onChange={onReferencesActionChanged}
-                value={checkedReferences ? radioDefaultValOption : null}
-                disabled={!checkedReferences}
-            >
-              <Radio value={"CLE_Q"}>Clear Question</Radio>
-              <Radio value={"ADD_V"}>Add value or set value</Radio>
-              <Radio value={"VAL_Q"}>Value from another question</Radio>
-              <Radio value={"MAT_F"}>Mathematical formula</Radio>
-            </Radio.Group>
-            </div>
-            <div className="default-options"> 
-              {radioDefaultValOption === "MAT_F" ? (
+          {defaultActionSetWhenRetriving !== undefined && (
+            <>
+              <div className="referneces-acts">
+                <div className="mr-10">
+                  {languageConstants?.addQuesRef + " :"}
+                </div>
                 <div>
-            <div>
-              <Select
-                mode="tags"
-                      allowClear
-                      size={size}
-                style={{ width: "50%" }}
-                placeholder="Please select"
-                // defaultValue={['a10', 'c12']}
-                onChange={handleDefaultNumberChange}
-                options={questionList}
-              />
-                  </div>
-                  {/* <div className="num-input-wrap">
-        <div className="num-input">1</div>
-      </div> */}
-                  <div className="numberlist">
-                        <Card onClick={(e) => onDefaultNumberClick(e)}>
-                        <Card.Grid style={gridStyle} defaultValue={0}>0</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={1}>1</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={2}>2</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={3}>3</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={4}>4</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={5}>5</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={6}>6</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={7}>7</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={8}>8</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={9}>9</Card.Grid>
-                    </Card>
-                    <Card onClick={(e) => onDefaultNumberClick(e)}>
-                        <Card.Grid style={gridStyle} defaultValue={0}>+</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={1}>-</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={2}>x</Card.Grid>
-                        <Card.Grid style={gridStyle} defaultValue={3}>/</Card.Grid>
-                      </Card>
-                  </div>
-                  
-                 
-                  </div>
-          ) : radioDefaultValOption === "ADD_V" ? (
-                <Input
-                  placeholder="Add Value"
-                    width={'50%'}
-                />
-                ) : radioDefaultValOption === "VAL_Q" ? (
-                    <div>
-                    <div>
-            <Select
-              showSearch
-              placeholder="Select a Question"
-              optionFilterProp="children"
-              // onChange={onChange}
-              // onSearch={onSearch}
-              // filterOption={filterOption}
-              size="middle"
-              options={questionList}
-                      />
-                     
-                      </div>
-                     
-                      </div>
-          ) : (
-            <div> </div>
-              )}
+                  <Switch
+                    defaultChecked={
+                      defaultActionSetWhenRetriving?.type ? true : false
+                    }
+                      onChange={onChangeRefrences}
+                      disabled={suerveyIsPublished}
+                  />
+                </div>
               </div>
+              <div className="referneces-checkbx">
+                <Radio.Group
+                  onChange={onReferencesActionChanged}
+                  value={checkedReferences ? radioDefaultValOption : null}
+                  disabled={suerveyIsPublished ? suerveyIsPublished : !checkedReferences}
+                  defaultValue={defaultActionSetWhenRetriving?.type}
+                >
+                  <Radio value={"CLE_Q"}>{languageConstants?.clrQues}</Radio>
+                  <Radio value={"ADD_V"}>
+                    {languageConstants?.addValOrSetVal}
+                  </Radio>
+                  <Radio value={"VAL_Q"}>
+                    {languageConstants?.valFromAnotherQues}
+                    </Radio>
+                    {
+                      (currentQuestionDetails?.questionType === "Numeric" || currentQuestionDetails?.questionType === "String") &&
+                      <Radio value={"MAT_F"}>
+                        {languageConstants?.matheFormula}
+                      </Radio>
+                    }
+                  
+                </Radio.Group>
+              </div>
+              <div className="default-options">
+                {radioDefaultValOption === "MAT_F" ? (
+                  <div>
+                    <div>
+                      {/* {addValue ? ( */}
+                      {/* {addValue ? ( */}
+                      {/* <Select
+                          mode="tags"
+                          allowClear
+                          size={size}
+                          style={{ width: "100%" }}
+                          placeholder={languageConstants?.pleaseSlt}
+                          defaultValue={
+                            defaultMathematicalOperators?.length
+                              ? defaultMathematicalOperators
+                              : null
+                          }
+                          onChange={handleDefaultNumberChange}
+                          options={questionList?.filter(
+                            (x: any) =>
+                              x["questionType"] ===
+                              dbConstants?.questionTypes?.numericQuestion
+                          )}
+                          value={addValue}
+                        /> */}
+                      <Select
+                        mode="tags"
+                        allowClear
+                        style={{ width: "100%" }}
+                        placeholder="Select questions"
+                        value={selectedValues}
+                          onChange={handleSelectChange}
+                          disabled={suerveyIsPublished}
+                        // defaultValue={
+                        //   defaultMathematicalOperators?.length
+                        //     ? defaultMathematicalOperators
+                        //     : null
+                        // }
+                        options={questionList?.filter(
+                          (x: any) =>
+                            x["questionType"] ===
+                            dbConstants?.questionTypes?.numericQuestion
+                        )}
+                      >
+                        {selectedValues.map((value: any) => (
+                          <Option key={value} value={value}>
+                            {value}
+                          </Option>
+                        ))}
+                      </Select>
+
+                      {/* ) : (
+                        <Select
+                          mode="tags"
+                          allowClear
+                          size={size}
+                          style={{ width: "100%" }}
+                          placeholder={languageConstants?.pleaseSlt}
+                          defaultValue={
+                            defaultMathematicalOperators?.length
+                              ? defaultMathematicalOperators
+                              : null
+                          }
+                          onChange={handleDefaultNumberChange}
+                          options={questionList?.filter(
+                            (x: any) =>
+                              x["questionType"] ===
+                              dbConstants?.questionTypes?.numericQuestion
+                          )}
+                        />
+                      )} */}
+
+                      {/* ) : (
+                        <Select
+                          mode="tags"
+                          allowClear
+                          size={size}
+                          style={{ width: "100%" }}
+                          placeholder={languageConstants?.pleaseSlt}
+                          defaultValue={
+                            defaultMathematicalOperators?.length
+                              ? defaultMathematicalOperators
+                              : null
+                          }
+                          onChange={handleDefaultNumberChange}
+                          options={questionList}
+                        />
+                      )} */}
+                    </div>
+
+                    <div className="numberlist">
+                      <div className="exp-input-wrap">
+                        <div
+                            className="num-input"
+                          onClick={() => handleMathematicalOperator("+")}
+                        >
+                          +
+                        </div>
+                        <div
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator("-")}
+                        >
+                          -
+                        </div>
+                        <div
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator("*")}
+                        >
+                          *
+                        </div>
+                        <div
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator("/")}
+                        >
+                          /
+                        </div>
+                      </div>
+
+                      {/* <div className="num-input-wrap">
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(0)}
+                        >
+                          0
+                        </button>
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(1)}
+                        >
+                          1
+                        </button>
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(2)}
+                        >
+                          2
+                        </button>
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(3)}
+                        >
+                          3
+                        </button>
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(4)}
+                        >
+                          4
+                        </button>
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(5)}
+                        >
+                          5
+                        </button>
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(6)}
+                        >
+                          6
+                        </button>
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(7)}
+                        >
+                          7
+                        </button>
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(8)}
+                        >
+                          8
+                        </button>
+                        <button
+                          className="num-input"
+                          onClick={() => handleMathematicalOperator(9)}
+                        >
+                          9
+                        </button>
+                      </div> */}
+                    </div>
+                  </div>
+                ) : radioDefaultValOption === "ADD_V" ? (
+                  currentQuestionDetails?.questionType === "Numeric" ? (
+                    <InputNumber
+                          placeholder={languageConstants?.addValue}
+                          disabled={suerveyIsPublished}
+                      style={{ width: "50%" }}
+                      onChange={(e: any) => {
+                        console.log("EEEEESD", e);
+
+                        setAddValue(e);
+                      }}
+                      defaultValue={
+                        defaultActionSetWhenRetriving?.type === "ADD_V"
+                          ? defaultActionSetWhenRetriving?.value
+                          : null
+                      }
+                    />
+                  ) : currentQuestionDetails?.questionType === "Date" ? (
+                    <Space direction="vertical" size={17}>
+                            <DatePicker
+                              disabled={suerveyIsPublished}
+                        defaultValue={
+                          defaultActionSetWhenRetriving?.value &&
+                          moment(
+                            defaultActionSetWhenRetriving?.value,
+                            dbConstants?.common?.dateFormat
+                          ).isValid()
+                            ? dayjs(
+                                moment(
+                                  defaultActionSetWhenRetriving?.value,
+                                  dbConstants?.common?.dateFormat
+                                ).format(dbConstants?.common?.dateFormat)
+                              )
+                            : dayjs(
+                                moment().format(dbConstants?.common?.dateFormat)
+                              )
+                        }
+                        format={dbConstants?.common?.dateFormat}
+                        // disabled={isDisabled}
+                        onChange={(input, option) => setAddValue(input)}
+                        style={{ width: "150px" }}
+                      />
+                    </Space>
+                  ) : (
+                            <Input
+                              disabled={suerveyIsPublished}
+                      placeholder={languageConstants?.addValue}
+                      style={{ width: "50%" }}
+                      onChange={(e: any) => {
+                        console.log("EEEEESD", e);
+                        setAddValue(e);
+                      }}
+                      defaultValue={
+                        defaultActionSetWhenRetriving?.type === "ADD_V"
+                          ? defaultActionSetWhenRetriving?.value
+                          : null
+                      }
+                    />
+                  )
+                ) : radioDefaultValOption === "VAL_Q" ? (
+                  <div>
+                    <div>
+                      <Select
+                        showSearch
+                        placeholder={languageConstants?.selectaQues}
+                        optionFilterProp="children"
+                        // onChange={onChange}
+                        // onSearch={onSearch}
+                        // filterOption={filterOption}
+                        // defaultValue={
+                        //   defaultActionSetWhenRetriving?.type === "VAL_Q"
+                        //     ? defaultActionSetWhenRetriving?.value
+                        //     : null
+                        // }
+                        style={{ width: "50%" }}
+                              onChange={(e: any) => setAddValue(e)}
+                              disabled={suerveyIsPublished}
+                        options={
+                          currentQuestionDetails?.questionType === "Numeric"
+                            ? questionList?.filter(
+                                (x: any) =>
+                                  x["questionType"] ===
+                                  dbConstants?.questionTypes?.numericQuestion
+                              )
+                            : questionList
+                        }
+                        value={addValue}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
