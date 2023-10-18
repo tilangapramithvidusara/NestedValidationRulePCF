@@ -94,6 +94,7 @@ const [localTest, setLocalTest] = useState(true);
   const [languageConstants, setLanguageConstants] = useState<any>(
     languageConstantsForCountry.en
   );
+  const [defaultTabValidationPassed, setDefaultTabValidationPassed] = useState(true);
 
   let addNestedComponent = () => {
     setSections([
@@ -251,7 +252,7 @@ const [localTest, setLocalTest] = useState(true);
     console.log("currentPossitionDetails 1", currentPossitionDetails);
     console.log("questionList 1", questionList);
 
-    if (questionList && questionList?.length && currentPossitionDetails?.currentPosition === "question") {
+    if (questionList && questionList?.length && currentPossitionDetails?.currentPosition === "question" && !localTest) {
         const currnetQuestionDetails = questionList?.find(ques => ques?.questionId === currentPossitionDetails?.id?.toLowerCase())
         setCurrentQuestionDetails(currnetQuestionDetails)
     }
@@ -827,15 +828,6 @@ const [localTest, setLocalTest] = useState(true);
       );
 
       let defaultValueLogicalName = dbConstants?.question?.gyde_defaultValueFormula;
-      // if (currentQuestionDetails?.questionType !== "String") {
-      //   defaultValueLogicalName = "gyde_stringdefaultvalue"
-      // } else if (currentQuestionDetails?.questionType !== "Numeric") {
-      //   defaultValueLogicalName = "gyde_numericdefaultvalue"
-      // } else if (currentQuestionDetails?.questionType !== "List") {
-      //   defaultValueLogicalName = "_gyde_listdefaultvalue_value"
-      // } else if (currentQuestionDetails?.questionType !== "Date") {
-      //   defaultValueLogicalName = "gyde_datedefaultvalue"
-      // }
       if (defaultValueLogicalName) {
         defaultValueRule = await fetchRequest(
           logicalName,
@@ -911,7 +903,7 @@ const [localTest, setLocalTest] = useState(true);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [[{"type":"MINIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]}]}},{"type":"MAXIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]},4]}}]]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
-    // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}},"action":{"type":"SET_RESPONSE","value":{"var":"TSDTem_C01_S01_no2"}}}]}  }] )
+    _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } }]}  }] )
     // _setDefaultValyeRule([ { "id": "trigger_1", "rule": { "type": "QUESTION_RESPONSE", "rule": { "and": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-10-02" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "333" ] } ] } }, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } } ])
 
   };
@@ -1052,28 +1044,10 @@ const [localTest, setLocalTest] = useState(true);
       
       console.log("defaultValueRuleNormal", defaultValueRuleNormal)
       console.log("currentQuestionDetails?.questionType", currentQuestionDetails?.questionType)
-
-      // if (Object.keys(defaultValueRuleNormal).length !== 0) {
-        // let defaultValueLogicalName = dbConstants?.question?.gyde_defaultValueFormula;
-        // if (currentQuestionDetails?.questionType !== "String") {
-        //   defaultValueLogicalName = "gyde_legacydefaultdataformula"
-        // } else if (currentQuestionDetails?.questionType !== "Numeric") {
-        //   defaultValueLogicalName = "gyde_numericdefaultvalue"
-        // } else if (currentQuestionDetails?.questionType !== "List") {
-        //   defaultValueLogicalName = "_gyde_listdefaultvalue_value"
-        // } else if (currentQuestionDetails?.questionType !== "Date") {
-        //   defaultValueLogicalName = "gyde_datedefaultvalue"
-        // }
-        // console.log("defaultValueLogicalName", defaultValueLogicalName)
-        // if (defaultValueLogicalName) {
           await saveRequest(logicalName, currentPossitionDetails?.id, {
             [dbConstants?.question?.gyde_defaultValueFormula]:
             Object.keys(defaultValueRuleNormal).length === 0 ? null : JSON.stringify(defaultValueRuleNormal),
           });
-        // }
-      // }
-        
-     
     }
     openNotificationWithIcon("success", "Data Saved!");
   };
@@ -1189,6 +1163,12 @@ const [localTest, setLocalTest] = useState(true);
 
       if (typeOfAction !== "CLE_Q" && !defaultActionSet?.value) {
         console.log("Rej 2")
+        isfieldsHasEmptyFieldsDefault = true;
+        return;
+      }
+
+      if ((typeOfAction === 'MAT_F' && defaultActionSet?.value?.length !== 3) || !defaultTabValidationPassed) {
+        console.log("Rej 3")
         isfieldsHasEmptyFieldsDefault = true;
         return;
       }
@@ -1611,6 +1591,7 @@ const [localTest, setLocalTest] = useState(true);
                       handleSectionRemove={handleSectionRemove}
                       languageConstants={languageConstants}
                       tabType={dbConstants?.tabTypes?.validationTab}
+                      setDefaultTabValidationPassed={setDefaultTabValidationPassed}
                     />
                   </div>
                 ))}
@@ -1676,6 +1657,7 @@ const [localTest, setLocalTest] = useState(true);
                               handleSectionRemove={handleSectionRemove}
                               languageConstants={languageConstants}
                               tabType={dbConstants?.tabTypes?.defaultValueTab}
+                              setDefaultTabValidationPassed={setDefaultTabValidationPassed}
                             />
                           </div>
                         ))}

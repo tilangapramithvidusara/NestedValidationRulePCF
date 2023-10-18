@@ -26,6 +26,7 @@ import type { SizeType } from "antd/es/config-provider/SizeContext";
 import moment from "moment";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import mathOperators from "../configs/mathOperators";
 dayjs.extend(customParseFormat);
 
 const { Option } = Select;
@@ -68,6 +69,7 @@ interface SectionProps {
   handleSectionRemove: any;
   languageConstants: any;
   tabType: any;
+  setDefaultTabValidationPassed: any
 }
 
 function SectionContainer({
@@ -87,6 +89,7 @@ function SectionContainer({
   handleSectionRemove,
   languageConstants,
   tabType,
+  setDefaultTabValidationPassed
 }: SectionProps) {
   const [rowData, setRowData] = useState<any>();
   const [toggleEnableMin, setToggledEnableMin] = useState<any | null>(false);
@@ -104,6 +107,9 @@ function SectionContainer({
   const [minMaxValidation, setMinMaxValidation] = useState<any>(true);
   const [defaultActions, setDefaultActions] = useState<any[]>([]);
   const [checkedReferences, setCheckedReferences] = useState<any>(false);
+  const [checkedReferencesQuesOrVal, setCheckedReferencesQuesOrVal] =
+    useState<any>(false);
+
   const [radioDefaultValOption, setRadioDefaultValOption] = useState<any>();
   const [addValue, setAddValue] = useState<any>(null);
   const [defaultActionSetWhenRetriving, setDefaultActionSetWhenRetriving] =
@@ -114,6 +120,9 @@ function SectionContainer({
 
   const options: SelectProps["options"] = [];
   const [size, setSize] = useState<SizeType>("middle");
+  const [pickQuestionDefault, setPickQuestionDefault] = useState<any>();
+  const [pickOperatorDefault, setPickOperatorDefault] = useState<any>();
+  const [pickQuestion2Default, setPickQuestion2Default] = useState<any>();
 
   const [rows, setRows] = useState<Row[]>([
     {
@@ -148,11 +157,12 @@ function SectionContainer({
 
   const handleSelectChange = (values: any[]) => {
     // Filter out null and undefined values
-    const filteredValues: any = values.filter(
-      (value: null | undefined) => value !== null && value !== undefined
-    );
-    setSelectedValues(filteredValues);
-    setAddValue(filteredValues);
+    // const filteredValues: any = values.filter(
+    //   (value: null | undefined) => value !== null && value !== undefined
+    // );
+    // setSelectedValues(filteredValues);
+    // setAddValue(filteredValues);
+    setPickOperatorDefault(values);
   };
 
   useEffect(() => {
@@ -302,6 +312,10 @@ function SectionContainer({
           const array = [values[0]?.var, operator, values[1]];
           setDefaultMathematicalOperators(array);
           setSelectedValues(array);
+          setPickQuestionDefault(values[0]?.var);
+          setPickOperatorDefault(operator);
+          setPickQuestion2Default(values[1]);
+          setCheckedReferencesQuesOrVal(questionList?.filter((ques: any) => ques?.value === values[1])?.length ? true : false)
         } else if (releatedActionsForSefaultValue[0]?.type === "VAL_Q") {
           setAddValue(releatedActionsForSefaultValue[0]?.value);
         }
@@ -463,6 +477,20 @@ function SectionContainer({
       _setNestedRows(updateAllLevelActionsArray(_nestedRows, sectionLevel, []));
     }
     setSelectedValues([]);
+    setPickOperatorDefault(null);
+    setPickQuestionDefault(null);
+    setPickQuestion2Default(null);
+  };
+
+  const onChangeRefrencesPickValOrQues = (e: any) => {
+    console.log("References cliecked", e);
+    setCheckedReferencesQuesOrVal(e);
+    setPickQuestion2Default(null);
+    // if (!e) {
+    //   setRadioDefaultValOption(null);
+    //   _setNestedRows(updateAllLevelActionsArray(_nestedRows, sectionLevel, []));
+    // }
+    // setSelectedValues([]);
   };
 
   const handleDefaultNumberChange = (value: string[]) => {
@@ -486,6 +514,10 @@ function SectionContainer({
     setRadioDefaultValOption(e?.target?.value);
     setAddValue(null);
     setSelectedValues([]);
+
+    setPickOperatorDefault(null);
+    setPickQuestionDefault(null);
+    setPickQuestion2Default(null);
   };
 
   const onDefaultNumberClick = (e: any) => {
@@ -494,25 +526,14 @@ function SectionContainer({
 
   const handleMathematicalOperator = (e: any) => {
     console.log("EEEEddddssd", e);
-    if (!suerveyIsPublished) {
-      setAddValue(e);
-      setSelectedValues(e);
-    }
+    // if (!suerveyIsPublished) {
+    //   setAddValue(e);
+    //   setSelectedValues(e);
+    // }
+    setPickOperatorDefault(e);
   };
 
   useEffect(() => {
-    // let releatedFields = _nestedRows.find(
-    //   (x: { [x: string]: any }) => x[sectionLevel]
-    // );
-    // if(!releatedFields) return
-    // let releatedActions = releatedFields[sectionLevel]?.actions;
-    // console.log("_defaultRowsdddddd releatedActions", releatedActions);
-    // if (releatedActions && releatedActions?.length && releatedActions[0]?.type) {
-    //   console.log("_defaultRowsdddddd releatedActions 1111", releatedActions[0]);
-
-    // setDefaultActionSetWhenRetriving(releatedActions[0])
-    // setRadioDefaultValOption(defaultActionSetWhenRetriving?.type)
-    // }
     if (radioDefaultValOption === "CLE_Q") {
       console.log("Clear Questions ");
       _setNestedRows(
@@ -559,6 +580,26 @@ function SectionContainer({
   useEffect(() => {
     console.log("addValueaddValue", addValue);
   }, [addValue]);
+
+  useEffect(() => {
+    console.log("DFJFJJFJFJDDDD", pickOperatorDefault);
+    console.log("DFJFJJFJFJDDDD", pickQuestionDefault)
+    console.log("DFJFJJFJFJDDDD", pickQuestion2Default)
+
+    if (radioDefaultValOption === "MAT_F" && checkedReferences) {
+      if (pickOperatorDefault && pickQuestion2Default && pickQuestionDefault) {
+        setAddValue([pickQuestionDefault, pickOperatorDefault, pickQuestion2Default]);
+        setDefaultTabValidationPassed(true)
+      }
+      if (!pickOperatorDefault || !pickQuestion2Default || !pickQuestionDefault) {
+        setDefaultTabValidationPassed(false)
+      }
+    } else {
+      setDefaultTabValidationPassed(true)
+    }
+   
+
+  }, [pickOperatorDefault, pickQuestionDefault, pickQuestion2Default]);
 
   return (
     <div>
@@ -800,8 +841,8 @@ function SectionContainer({
                     defaultChecked={
                       defaultActionSetWhenRetriving?.type ? true : false
                     }
-                      onChange={onChangeRefrences}
-                      disabled={suerveyIsPublished}
+                    onChange={onChangeRefrences}
+                    disabled={suerveyIsPublished}
                   />
                 </div>
               </div>
@@ -809,7 +850,9 @@ function SectionContainer({
                 <Radio.Group
                   onChange={onReferencesActionChanged}
                   value={checkedReferences ? radioDefaultValOption : null}
-                  disabled={suerveyIsPublished ? suerveyIsPublished : !checkedReferences}
+                  disabled={
+                    suerveyIsPublished ? suerveyIsPublished : !checkedReferences
+                  }
                   defaultValue={defaultActionSetWhenRetriving?.type}
                 >
                   <Radio value={"CLE_Q"}>{languageConstants?.clrQues}</Radio>
@@ -818,110 +861,78 @@ function SectionContainer({
                   </Radio>
                   <Radio value={"VAL_Q"}>
                     {languageConstants?.valFromAnotherQues}
+                  </Radio>
+                  {(currentQuestionDetails?.questionType ===
+                    dbConstants?.questionTypes?.numericQuestion ||
+                    currentQuestionDetails?.questionType ===
+                      dbConstants?.questionTypes?.stringQuestion) && (
+                    <Radio value={"MAT_F"}>
+                      {languageConstants?.matheFormula}
                     </Radio>
-                    {
-                      (currentQuestionDetails?.questionType === "Numeric" || currentQuestionDetails?.questionType === "String") &&
-                      <Radio value={"MAT_F"}>
-                        {languageConstants?.matheFormula}
-                      </Radio>
-                    }
-                  
+                  )}
                 </Radio.Group>
               </div>
               <div className="default-options">
                 {radioDefaultValOption === "MAT_F" ? (
                   <div>
-                    <div>
-                      {/* {addValue ? ( */}
-                      {/* {addValue ? ( */}
-                      {/* <Select
-                          mode="tags"
+                    {/* <div style={{ paddingBottom: "10px", marginTop: "10px" }}> */}
+                      <div style={{ marginRight: "5px" }}>
+                        {" "}
+                        Select a Question : {" "}
+                      </div>
+                      <div>
+                        <Select
                           allowClear
-                          size={size}
-                          style={{ width: "100%" }}
-                          placeholder={languageConstants?.pleaseSlt}
-                          defaultValue={
-                            defaultMathematicalOperators?.length
-                              ? defaultMathematicalOperators
-                              : null
-                          }
-                          onChange={handleDefaultNumberChange}
-                          options={questionList?.filter(
-                            (x: any) =>
-                              x["questionType"] ===
-                              dbConstants?.questionTypes?.numericQuestion
-                          )}
-                          value={addValue}
-                        /> */}
-                      <Select
-                        mode="tags"
-                        allowClear
-                        style={{ width: "100%" }}
-                        placeholder="Select questions"
-                        value={selectedValues}
-                          onChange={handleSelectChange}
+                          style={{ width: "20%" }}
+                          placeholder="Select questions"
+                          // value={selectedValues}
+                          // onChange={handleSelectChange}
+                            onChange={(e) => setPickQuestionDefault(e)}
                           disabled={suerveyIsPublished}
-                        // defaultValue={
-                        //   defaultMathematicalOperators?.length
-                        //     ? defaultMathematicalOperators
-                        //     : null
-                        // }
-                        options={questionList?.filter(
-                          (x: any) =>
-                            x["questionType"] ===
-                            dbConstants?.questionTypes?.numericQuestion
-                        )}
-                      >
-                        {selectedValues.map((value: any) => (
-                          <Option key={value} value={value}>
-                            {value}
-                          </Option>
-                        ))}
-                      </Select>
-
-                      {/* ) : (
-                        <Select
-                          mode="tags"
-                          allowClear
-                          size={size}
-                          style={{ width: "100%" }}
-                          placeholder={languageConstants?.pleaseSlt}
-                          defaultValue={
-                            defaultMathematicalOperators?.length
-                              ? defaultMathematicalOperators
-                              : null
-                          }
-                          onChange={handleDefaultNumberChange}
+                          defaultValue={pickQuestionDefault}
                           options={questionList?.filter(
                             (x: any) =>
                               x["questionType"] ===
                               dbConstants?.questionTypes?.numericQuestion
                           )}
-                        />
-                      )} */}
+                        >
+                          {/* {selectedValues.map((value: any) => (
+                            <Option key={value} value={value}>
+                              {value}
+                            </Option>
+                          ))} */}
+                        </Select>
+                      </div>
+                    {/* </div> */}
 
-                      {/* ) : (
+                    {/* <div style={{ paddingBottom: "10px" }}> */}
+                      <div style={{ marginRight: "5px" }}>
+                        {" "}
+                        Select a Operator:{" "}
+                      </div>
+                      <div>
                         <Select
-                          mode="tags"
                           allowClear
-                          size={size}
-                          style={{ width: "100%" }}
-                          placeholder={languageConstants?.pleaseSlt}
-                          defaultValue={
-                            defaultMathematicalOperators?.length
-                              ? defaultMathematicalOperators
-                              : null
-                          }
-                          onChange={handleDefaultNumberChange}
-                          options={questionList}
-                        />
-                      )} */}
-                    </div>
-
-                    <div className="numberlist">
+                          style={{ width: "10%" }}
+                          placeholder="Pick a Operator"
+                          value={pickOperatorDefault}
+                            onChange={(e) => setPickOperatorDefault(e)}
+                            disabled={suerveyIsPublished}
+                          defaultValue={pickOperatorDefault}
+                          options={mathOperators}
+                        >
+                          {/* {selectedValues.map((value: any) => (
+                            <Option key={value} value={value}>
+                              {value}
+                            </Option>
+                          ))} */}
+                        </Select>
+                        </div>
+                        
+                        <div className="numberlist">
                       <div className="exp-input-wrap">
                         <div
-                            className="num-input"
+                          className="num-input"
                           onClick={() => handleMathematicalOperator("+")}
                         >
                           +
@@ -945,76 +956,79 @@ function SectionContainer({
                           /
                         </div>
                       </div>
-
-                      {/* <div className="num-input-wrap">
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(0)}
-                        >
-                          0
-                        </button>
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(1)}
-                        >
-                          1
-                        </button>
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(2)}
-                        >
-                          2
-                        </button>
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(3)}
-                        >
-                          3
-                        </button>
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(4)}
-                        >
-                          4
-                        </button>
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(5)}
-                        >
-                          5
-                        </button>
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(6)}
-                        >
-                          6
-                        </button>
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(7)}
-                        >
-                          7
-                        </button>
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(8)}
-                        >
-                          8
-                        </button>
-                        <button
-                          className="num-input"
-                          onClick={() => handleMathematicalOperator(9)}
-                        >
-                          9
-                        </button>
-                      </div> */}
                     </div>
+                    {/* </div> */}
+
+                    {/* <div style={{ paddingBottom: "10px" }}> */}
+                      <div style={{ marginRight: "5px" }}>
+                        {" "}
+                        Pick a Value or Question: {" "}
+                      </div>
+
+                      <Switch
+                        defaultChecked={
+                          questionList?.filter((ques: any) => ques?.value === pickQuestion2Default)?.length ? true : false
+                        }
+                        onChange={onChangeRefrencesPickValOrQues}
+                        disabled={suerveyIsPublished}
+                      />
+
+                        {checkedReferencesQuesOrVal ? (
+                          <div> 
+                          <div> Select Question : </div>
+                        <div>
+                          <Select
+                            allowClear
+                            style={{ width: "20%" }}
+                            placeholder="Select questions"
+                            // value={pickOperatorDefault}
+                            onChange={(e) => setPickQuestion2Default(e)}
+                            // onChange={handleSelectChange}
+                            disabled={suerveyIsPublished}
+                            defaultValue={pickQuestion2Default}
+                            options={questionList?.filter(
+                              (x: any) =>
+                                x["questionType"] ===
+                                dbConstants?.questionTypes?.numericQuestion
+                            )}
+                          >
+                            {selectedValues.map((value: any) => (
+                              <Option key={value} value={value}>
+                                {value}
+                              </Option>
+                            ))}
+                          </Select>
+                            </div>
+                            </div>
+                        ) : (
+                          <div> 
+                          <div> Select a value: </div>
+                        <div>
+                          <Input
+                            disabled={suerveyIsPublished}
+                            placeholder={languageConstants?.addValue}
+                                style={{ width: "20%" }}
+                                onChange={(e) => setPickQuestion2Default(e?.target?.value)}
+     
+                            // onChange={(e: any) => {
+                            //   console.log("EEEEESD", e);
+                            //   setAddValue(e);
+                            // }}
+                            defaultValue={pickQuestion2Default}
+                          />
+                              </div>
+                              </div>
+                      )}
+                    {/* </div> */}
+
+                    
                   </div>
                 ) : radioDefaultValOption === "ADD_V" ? (
-                  currentQuestionDetails?.questionType === "Numeric" ? (
+                  currentQuestionDetails?.questionType ===
+                  dbConstants?.questionTypes?.numericQuestion ? (
                     <InputNumber
-                          placeholder={languageConstants?.addValue}
-                          disabled={suerveyIsPublished}
+                      placeholder={languageConstants?.addValue}
+                      disabled={suerveyIsPublished}
                       style={{ width: "50%" }}
                       onChange={(e: any) => {
                         console.log("EEEEESD", e);
@@ -1029,8 +1043,8 @@ function SectionContainer({
                     />
                   ) : currentQuestionDetails?.questionType === "Date" ? (
                     <Space direction="vertical" size={17}>
-                            <DatePicker
-                              disabled={suerveyIsPublished}
+                      <DatePicker
+                        disabled={suerveyIsPublished}
                         defaultValue={
                           defaultActionSetWhenRetriving?.value &&
                           moment(
@@ -1054,8 +1068,8 @@ function SectionContainer({
                       />
                     </Space>
                   ) : (
-                            <Input
-                              disabled={suerveyIsPublished}
+                    <Input
+                      disabled={suerveyIsPublished}
                       placeholder={languageConstants?.addValue}
                       style={{ width: "50%" }}
                       onChange={(e: any) => {
@@ -1085,8 +1099,8 @@ function SectionContainer({
                         //     : null
                         // }
                         style={{ width: "50%" }}
-                              onChange={(e: any) => setAddValue(e)}
-                              disabled={suerveyIsPublished}
+                        onChange={(e: any) => setAddValue(e)}
+                        disabled={suerveyIsPublished}
                         options={
                           currentQuestionDetails?.questionType === "Numeric"
                             ? questionList?.filter(
