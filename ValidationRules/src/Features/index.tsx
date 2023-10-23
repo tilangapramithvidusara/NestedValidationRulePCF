@@ -21,6 +21,7 @@ import {
   saveRequest,
   loadAllQuestionsInSurvey,
   getPublishedStatus,
+  loadResourceString,
 } from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
 import { normalConverter } from "../Utils/dbFormatToJson";
@@ -53,10 +54,10 @@ const ParentComponent = ({
     const [_defaultRows, _setDefaultRows] = useState<any>([]);
   // const [_defaultRows, _setDefaultRows] = useState<any>([ { "1": { "fields": [ { "field": "NTemp_C01_04_Q_04", "condition": "==", "value": "2023-10-02", "sort": 1, "level": 1, "expression": "", "innerConditions": [], "collapse": false, "actions": [] }, { "field": "NTemp_C01_s01_rd", "condition": "==", "value": "333", "sort": 1, "level": 101, "hasNested": false, "innerConditions": [], "collapse": false, "expression": "&&" } ], "actions": [] } } ]);
   const [isNested, setIsNested] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-    currentPosition: "question",
-  });
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+  //   currentPosition: "question",
+  // });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -80,17 +81,18 @@ const ParentComponent = ({
   });
   const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
   const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
-  const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
-    "label": "TSDTem_C01_S01_date",
-    "value": "TSDTem_C01_S01_date",
-    "questionType": "Numeric",
-    "questionId": "b76bc889-6d66-ee11-9ae7-6045bdd0ef22",
-    "questionLabel": "date"
-});
+  const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>();
+//   const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
+//     "label": "TSDTem_C01_S01_date",
+//     "value": "TSDTem_C01_S01_date",
+//     "questionType": "Numeric",
+//     "questionId": "b76bc889-6d66-ee11-9ae7-6045bdd0ef22",
+//     "questionLabel": "date"
+// });
   const [selectedLanguage, setSelectedLanguage] = useState<any>('en');
   const [selectedTab, setSelectedTab] = useState<any>('vr');
   const [hovered, setHovered] = useState(false);
-const [localTest, setLocalTest] = useState(true);
+  const [localTest, setLocalTest] = useState(false);
   const [languageConstants, setLanguageConstants] = useState<any>(
     languageConstantsForCountry.en
   );
@@ -134,54 +136,6 @@ const [localTest, setLocalTest] = useState(true);
       setIsNested(false);
     }
   };
-
-  const loadResourceString = async () => {
-
-    const url = await window.parent.Xrm.Utility.getGlobalContext().getClientUrl();
-    const language = await window.parent.Xrm.Utility.getGlobalContext().userSettings.languageId
-    const webResourceUrl = `${url}/WebResources/gyde_localizedstrings.${language}.resx`;
-
-    try {
-      const response = await fetch(`${webResourceUrl}`);
-      const data = await response.text();
-      const filterKeys = [
-          'saveButtonConstants',
-          'questionsLoadingConstants',
-          'addButton',
-          'removeButton',
-          'addNestedButton',
-          'actionsLabelConstants',
-          'minMaxFieldStringConstants', 
-          'minMaxFieldConstants',
-          'minMaxLength',
-          'minLengthStringConstants',
-          'minLengthConstants',
-          'maxLengthConstants',
-          'maxLengthStringConstants',
-          'andorLabel',
-          'fieldLabel',
-          'operatorLabel',
-          'valueLabel'
-        ];
-      filterKeys.map((filterKey: string, index: number) => {
-        const parser = new DOMParser();
-        // Parse the XML string
-        const xmlDoc = parser.parseFromString(data, "text/xml");
-        // Find the specific data element with the given key
-        const dataNode: any = xmlDoc.querySelector(`data[name="${filterKey}"]`);
-        // Extract the value from the data element
-        const value: any = dataNode?.querySelector("value").textContent;
-
-     
-        console.log('data ====> ', index, value); 
-        
-        
-      });
-      // this.setState({ data });
-    } catch (error) {
-      console.error('Error loading data:', error);
-    }
-  }
 
   const loadQuestionHandler = async () => {
     setIsApiDataLoaded(true);
@@ -297,6 +251,7 @@ const [localTest, setLocalTest] = useState(true);
         .map((key: any) => ({ key: parseInt(key) }))
     );
     _getCurrentState();
+    messageHandler();
     console.log(
       "imageUrl, imageUrl1, imageUrl2",
       imageUrl,
@@ -903,16 +858,17 @@ const [localTest, setLocalTest] = useState(true);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [[{"type":"MINIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]}]}},{"type":"MAXIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]},4]}}]]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
-    _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } }]}  }] )
+    // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } }]}  }] )
     // _setDefaultValyeRule([ { "id": "trigger_1", "rule": { "type": "QUESTION_RESPONSE", "rule": { "and": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-10-02" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "333" ] } ] } }, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } } ])
+    // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": 55} }]}  }] )
 
   };
   const getCurrentPublishedStatus = async () => {
-    
     const { data = null } = await getPublishedStatus(currentPossitionDetails);
     console.log("Published Status", data);
     if(data?.isPublished) setSuerveyIsPublished(data?.isPublished);
   }
+
   useEffect(() => {
     console.log("currentId ----->", currentPossitionDetails);
 
@@ -921,28 +877,7 @@ const [localTest, setLocalTest] = useState(true);
     if (currentPossitionDetails) {
       getCurrentPublishedStatus();
     }
-
-
   }, [currentPossitionDetails]);
-
-  // useEffect(() => {
-    // console.log("deleteSectionKey", deleteSectionKey);
-    // if (deleteSectionKey) {
-    //   _setNestedRows((prevNestedRows: any) => {
-    //     if (prevNestedRows && prevNestedRows.length === 1) {
-    //       saveVisibilityData({}, {}, {}, {});
-    //     }
-    //     return prevNestedRows.filter(
-    //       (key: any) => parseInt(Object.keys(key)[0]) !== deleteSectionKey
-    //     )
-    //   }
-        
-    //   );
-    //   setSections((prev: any) =>
-    //     prev.filter((prevKeys: any) => prevKeys.key !== deleteSectionKey)
-    //   );
-    // }
-  // }, [deleteSectionKey]);
 
   const handleSectionRemove = (deleteSectionKey: any, tab: any) => {
     console.log("deleteSectionKey", deleteSectionKey);
@@ -1049,7 +984,7 @@ const [localTest, setLocalTest] = useState(true);
             Object.keys(defaultValueRuleNormal).length === 0 ? null : JSON.stringify(defaultValueRuleNormal),
           });
     }
-    openNotificationWithIcon("success", "Data Saved!");
+    openNotificationWithIcon("success", languageConstants?.ExpressionBuilder_DataSaved);
   };
   
   const createActionObject = (actionType: any, value: any) => {
@@ -1118,6 +1053,7 @@ const [localTest, setLocalTest] = useState(true);
 
     let isfieldsHasEmptyFields = false;
     let isfieldsHasEmptyFieldsDefault = false;
+    let isAddValuefieldsHasEmptyActionsDefault = false;
     let isReferencesEmpty = false
 
     const sortedData = [..._nestedRows].sort((a, b) => {
@@ -1161,7 +1097,7 @@ const [localTest, setLocalTest] = useState(true);
         return;
       }
 
-      if (typeOfAction !== "CLE_Q" && !defaultActionSet?.value) {
+      if (typeOfAction !== "CLE_Q" && !defaultActionSet?.value && defaultActionSet?.value !== 0) {
         console.log("Rej 2")
         isfieldsHasEmptyFieldsDefault = true;
         return;
@@ -1170,6 +1106,12 @@ const [localTest, setLocalTest] = useState(true);
       if ((typeOfAction === 'MAT_F' && defaultActionSet?.value?.length !== 3) || !defaultTabValidationPassed) {
         console.log("Rej 3")
         isfieldsHasEmptyFieldsDefault = true;
+        return;
+      }
+
+      if (typeOfAction === "ADD_V" && !defaultActionSet?.value && currentQuestionDetails?.questionType === dbConstants?.questionTypes?.numericQuestion && defaultActionSet?.value !== 0) {
+        isAddValuefieldsHasEmptyActionsDefault = true
+        console.log("Rej 4")
         return;
       }
 
@@ -1337,34 +1279,12 @@ const [localTest, setLocalTest] = useState(true);
               "value": { "if": formattingForMax }
             }
           ])
-          // minMaxDBFormatArray = findAndUpdateLastNestedIf(
-          //   minMaxDBFormatArray,
-          //   {
-          //     if: [
-          //       _minMaxDbFormarFields,
-          //       [
-          //         {
-          //           type: "MINIMUM_LENGTH",
-          //           value: minValue,
-          //           inclusive: true,
-          //         },
-          //         {
-          //           type: "MAXIMUM_LENGTH",
-          //           value: maxValue,
-          //           inclusive: true,
-          //         },
-          //       ],
-          //     ],
-          //   },
-          //   true
-          // );
         }
       }
     });
 
     console.log("Show saving logic visibilityRule", visibilityRule);
     console.log("Show saving logic visibilityRuleNormal", visibilityRuleNormal);
-
     console.log("Show saving logic ValidationRule", validationRule);
     console.log(
       "Show saving logic Validation Rule Normal",
@@ -1468,17 +1388,21 @@ const [localTest, setLocalTest] = useState(true);
     );
     console.log("savedMinMaxRuleFinalFormat", savedMinMaxRuleFinalFormat);
 
+    if (isAddValuefieldsHasEmptyActionsDefault) {
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_AddValErrorMessage);
+      return;
+    }
     if (isReferencesEmpty) {
-      openNotificationWithIcon("error", "Please select an action in Default Value tab!");
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_DefaultValueErrorMessage);
       return;
     }
     if (isfieldsHasEmptyFieldsDefault) {
-      openNotificationWithIcon("error", "Fields cannot be empty in Default value tab!");
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_DefaultValueErrorMessageFieldEmpty);
       return;
     }
 
     if (isfieldsHasEmptyFields) {
-      openNotificationWithIcon("error", "Fields cannot be empty in validarion rule tab!");
+      openNotificationWithIcon("error",languageConstants?.ExpressionBuilder_ValidationRuleFieldEmpty);
       return;
     }
     
@@ -1495,15 +1419,34 @@ const [localTest, setLocalTest] = useState(true);
         defaultTriggers ? defaultTriggers : {}
       );
     } else {
-      openNotificationWithIcon("error", "Validation Must be passed!");
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_ValidationMustPassed);
       return;
     }
   };
 
-  const languageChangeHandler = (e: any) => {
-    console.log("EEEEcdsefef", e)
-    setSelectedLanguage(e?.target?.value)
-    setLanguageConstants(languageConstantsForCountry[e?.target?.value]);
+  const messageHandler = async () => {
+    try {
+      const languageConstantsFromResTable = await loadResourceString();
+      if (languageConstantsFromResTable?.data && languageConstants?.length) {
+        console.log("languageConstantsFromResTable 2", languageConstantsFromResTable);
+        const mergedObject = languageConstantsFromResTable?.data.reduce((result: any, currentObject: any) => {
+          return Object.assign(result, currentObject);
+        }, {});
+        if (Object.keys(mergedObject).length) {
+          const originalConstants = languageConstants[0];
+          const updatedValues = mergedObject[0];
+  
+          for (const key in updatedValues) {
+            if (key in updatedValues && key in originalConstants) {
+              originalConstants[key] = updatedValues[key];
+            }
+          }
+          setLanguageConstants(originalConstants);
+        }
+      }
+    } catch (error) {
+      console.log('error ====>', error);
+    }
   }
 
   const tabsChangeHandler = (e: any) => {
@@ -1522,7 +1465,7 @@ const [localTest, setLocalTest] = useState(true);
   return (
     <div>
       {contextHolder}
-      <div className="country-lan">
+      {/* <div className="country-lan">
         <Radio.Group
           options={countryMappedConfigs}
           onChange = { (e) => languageChangeHandler(e)}
@@ -1531,17 +1474,17 @@ const [localTest, setLocalTest] = useState(true);
           buttonStyle="solid"
       />
 
-      </div>
+      </div> */}
      
       {
-        currentPossitionDetails?.currentPosition === 'question' &&
+        currentPossitionDetails?.currentPosition === 'question' && currentQuestionDetails?.questionType !== "Grid" &&
         < div className="tabs-configs">
         <Radio.Group
               options={tabsConfigs?.map((tab: any) => { 
                 if (tab.value === 'vr') {
-                  return { ...tab, label: languageConstants?.validationRuleTab };
+                  return { ...tab, label: languageConstants?.ExpressionBuilder_ValidationRuleTab };
                 } else if (tab.value === 'dv') {
-                  return { ...tab, label: languageConstants?.defaultValueTab };
+                  return { ...tab, label: languageConstants?.ExpressionBuilder_DefaultValueTab };
                 }
               })}
             onChange = { (e) => tabsChangeHandler(e)}
@@ -1564,10 +1507,10 @@ const [localTest, setLocalTest] = useState(true);
                   className="mr-10 btn-default"
                   onClick={addComponent}
                   disabled={suerveyIsPublished}>
-                  {languageConstants?.addButton}
+                  {"+ " + languageConstants?.ExpressionBuilder_AddButton}
                 </Button>
                 <Button className="btn-default" onClick={addNestedComponent} disabled={suerveyIsPublished}>
-                {languageConstants?.addNestedButton}
+                {"+ " + languageConstants?.ExpressionBuilder_AddNestedButton}
                 </Button>
               </div>
               {sections?.length > 0 &&
@@ -1603,7 +1546,7 @@ const [localTest, setLocalTest] = useState(true);
                     className="btn-primary"
                     disabled={suerveyIsPublished}
                   >
-                    {languageConstants?.saveButtonConstants}
+                    {languageConstants?.ExpressionBuilder_SaveButtonConstants}
                     
                   </Button>
                 </div>
@@ -1614,7 +1557,7 @@ const [localTest, setLocalTest] = useState(true);
       ) : (
         <Space size="middle">
           <div>
-            <div>{languageConstants?.questionsLoadingConstants}</div>
+            <div>{languageConstants?.ExpressionBuilder_QuestionsLoadingConstants}</div>
               <div style={{marginTop: '10px'}}>
               <Spin />
             </div>
@@ -1632,7 +1575,7 @@ const [localTest, setLocalTest] = useState(true);
                           className="mr-10 btn-default"
                           onClick={() => addComponent('defaultValueTab')}
                           disabled={suerveyIsPublished}>
-                          {languageConstants?.addButton}
+                          {"+ " + languageConstants?.ExpressionBuilder_AddButton}
                         </Button>
                       </div>
                       {/* <div> Default Tab </div> */}
@@ -1667,14 +1610,14 @@ const [localTest, setLocalTest] = useState(true);
                           className="btn-primary"
                           disabled={suerveyIsPublished}
                         >
-                          {languageConstants?.saveButtonConstants}
+                          {languageConstants?.ExpressionBuilder_SaveButtonConstants}
                     
                         </Button>
                       </div>
                     </div>)}</div>) : (
         <Space size="middle">
           <div>
-            <div>{languageConstants?.questionsLoadingConstants}</div>
+            <div>{languageConstants?.ExpressionBuilder_QuestionsLoadingConstants}</div>
               <div style={{marginTop: '10px'}}>
               <Spin />
             </div>

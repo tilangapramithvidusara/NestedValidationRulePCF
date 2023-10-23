@@ -183,8 +183,35 @@
    width: 10%;
   }
 
+  .validation-wrap .mr-11 {
+    margin-right: 11px;
+   }
+
   .validation-wrap .mr-10 {
     margin-right: 10px;
+  }
+  .validation-wrap .mr-13 {
+    margin-right: 13px;
+  }
+
+  .validation-wrap .mr-34 {
+    margin-right: 34px;
+  } 
+
+  .validation-wrap .mr-36 {
+    margin-right: 36px;
+  } 
+
+  .validation-wrap .mr-38 {
+    margin-right: 38px;
+  }
+
+  .validation-wrap .mr-15 {
+    margin-right: 15px;
+  }
+
+  .validation-wrap .mr-24 {
+    margin-right: 24px;
   }
 
   .validation-wrap {
@@ -419,7 +446,6 @@
   }
 
   .numberlist {
-    margin-top: 10px;
     text-align: center;
     display: inline-flex;
   }
@@ -447,4 +473,14 @@
     display: flex;
     align-items: center;
     margin-right: 20px
+ }
+
+ .select-ques-one {
+  display: flex;
+  margin-bottom: 15px;
+  margin-right: 20px
+ }
+
+.select-ques-one .ant-select .ant-select-selector  {
+  display: flex;
  }

@@ -24,7 +24,8 @@ export const dbConstants = {
     numericQuestion: "Numeric",
     stringQuestion: "String",
     listQuestion: "List",
-    dateTimeQuestion: "Date"
+    dateTimeQuestion: "Date",
+    gridQuestion: "Grid"
   },
   tabTypes: {
     validationTab: "validationTab",

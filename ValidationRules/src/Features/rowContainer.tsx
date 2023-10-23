@@ -742,7 +742,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       }
                       disabled={suerveyIsPublished}
                     >
-                      {languageConstants?.addButton}
+                      {"+ " + languageConstants?.ExpressionBuilder_AddButton}
                     </Button>
                     <Button
                       className="btn-default"
@@ -751,7 +751,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       }
                       disabled={tabType === dbConstants?.tabTypes?.defaultValueTab ? true : suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
                     >
-                      {languageConstants?.addNestedButton}
+                      {"+ " + languageConstants?.ExpressionBuilder_AddNestedButton}
                     </Button>
                   </div>
                 </div>
@@ -763,7 +763,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     }}
                   >
                     <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.andorLabel} </div>
+                      <div className="condition-label">{languageConstants?.ExpressionBuilder_AndorLabel} </div>
                       <DropDown
                         dropDownData={expressionSampleData}
                         isDisabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
@@ -775,7 +775,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     </div>
 
                     <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.fieldLabel} </div>
+                      <div className="condition-label">{languageConstants?.ExpressionBuilder_FieldLabel} </div>
                       <FieldInput
                         sampleData={
                           dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
@@ -790,7 +790,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       />{" "}
                     </div>
                     <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.operatorLabel} </div>
+                      <div className="condition-label">{languageConstants?.ExpressionBuilder_OperatorLabel} </div>
                       {dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.stringQuestion || dropDownQuestionList?.find(
@@ -829,7 +829,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     </div>
                     
                     <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.valueLabel}  </div>
+                      <div className="condition-label">{languageConstants?.ExpressionBuilder_ValueLabel}  </div>
                     {!isLoad ? <div> 
                       
                       {dropDownQuestionList?.find(
@@ -930,7 +930,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                             onClick={() => _handleDeleteRow(condition?.level)}
                             height={'15px'}
                             />
-                            <span className="remove-text">{languageConstants?.removeButton} </span>
+                            <span className="remove-text">{languageConstants?.ExpressionBuilder_RemoveButton} </span>
                           </div>
                          
                       }
@@ -1046,7 +1046,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       height={'15px'}
                       onClick={() => handleSectionRemove(sectionLevel, tabType)}
                         /> 
-                    <span className="remove-text">{languageConstants?.removeButton} </span>
+                    <span className="remove-text">{languageConstants?.ExpressionBuilder_RemoveButton} </span>
                   </div>
                 }
                 
