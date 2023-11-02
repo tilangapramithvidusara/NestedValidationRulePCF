@@ -47,12 +47,8 @@ const ParentComponent = ({
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
   const [defaultSections, setDefaultSections] = useState<any[]>([]);
-
-  const [isLoadData, setIsLoadData] = useState<boolean>(false);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
-  // const [_defaultRows, _setDefaultRows] = useState<any>([]);
-    const [_defaultRows, _setDefaultRows] = useState<any>([]);
-  // const [_defaultRows, _setDefaultRows] = useState<any>([ { "1": { "fields": [ { "field": "NTemp_C01_04_Q_04", "condition": "==", "value": "2023-10-02", "sort": 1, "level": 1, "expression": "", "innerConditions": [], "collapse": false, "actions": [] }, { "field": "NTemp_C01_s01_rd", "condition": "==", "value": "333", "sort": 1, "level": 101, "hasNested": false, "innerConditions": [], "collapse": false, "expression": "&&" } ], "actions": [] } } ]);
+  const [_defaultRows, _setDefaultRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
   const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
   // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
@@ -82,6 +78,12 @@ const ParentComponent = ({
   const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
   const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
   const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>();
+  const [minMaxCheckBoxEnabled, setMinMaxCheckboxEnabled] = useState<any>({
+    minCheckbox: false,
+    maxCheckbox: false
+  });
+
+
 //   const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
 //     "label": "TSDTem_C01_S01_date",
 //     "value": "TSDTem_C01_S01_date",
@@ -91,7 +93,6 @@ const ParentComponent = ({
 // });
   const [selectedLanguage, setSelectedLanguage] = useState<any>('en');
   const [selectedTab, setSelectedTab] = useState<any>('vr');
-  const [hovered, setHovered] = useState(false);
   const [localTest, setLocalTest] = useState(false);
   const [languageConstants, setLanguageConstants] = useState<any>(
     languageConstantsForCountry.en
@@ -112,18 +113,7 @@ const ParentComponent = ({
     setSaveAsIsNested(true);
   };
 
-  let addComponent = (type: any) => {
-    if (type === 'defaultValueTab') {
-      setDefaultSections([
-        ...defaultSections,
-        {
-          key:
-          defaultSections && defaultSections.length
-              ? Math.max(...defaultSections.map((item) => item.key)) + 1
-              : 1,
-        },
-      ])
-    } else {
+  let addComponent = () => {
       setSections([
         ...sections,
         {
@@ -134,8 +124,21 @@ const ParentComponent = ({
         },
       ]);
       setIsNested(false);
-    }
   };
+
+  let addDefaultComponent = () => {
+      setDefaultSections([
+        ...defaultSections,
+        {
+          key:
+          defaultSections && defaultSections.length
+              ? Math.max(...defaultSections.map((item) => item.key)) + 1
+              : 1,
+        },
+      ])
+  };
+
+
 
   const loadQuestionHandler = async () => {
     setIsApiDataLoaded(true);
@@ -607,7 +610,7 @@ const ParentComponent = ({
               console.log("defaultAction Type", typeof defaultAction)
     
               let actionMap: any;
-              if (!defaultAction) {
+              if (!defaultAction && defaultAction !== 0) {
                 actionMap = {
                   type: "CLE_Q",
                   value: null
@@ -950,7 +953,7 @@ const ParentComponent = ({
 
       await saveRequest(logicalName, currentPossitionDetails?.id, {
         [dbConstants.common.gyde_visibilityrule]:
-        Object.keys(visibilityRule).length === 0 ? null : JSON.stringify(visibilityRule),
+        Object.keys(visibilityRule).length === 0 ? "" : JSON.stringify(visibilityRule),
       });
     } else if (
       currentPossitionDetails?.id &&
@@ -962,26 +965,26 @@ const ParentComponent = ({
      
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.common.gyde_visibilityrule]:
-            Object.keys(visibilityRule).length === 0 ? null : JSON.stringify(visibilityRule),
+            Object.keys(visibilityRule).length === 0 ? "" : JSON.stringify(visibilityRule),
         });
       
      
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.question.gyde_minmaxvalidationrule]:
-          Object.keys(minMaxDBFormatArray).length === 0 ? null : JSON.stringify(minMaxDBFormatArray),
+          Object.keys(minMaxDBFormatArray).length === 0 ? "" : JSON.stringify(minMaxDBFormatArray),
         });
     
     
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.question.gyde_documentOutputRule]:
-          Object.keys(outputDocShow).length === 0 ? null : JSON.stringify(outputDocShow),
+          Object.keys(outputDocShow).length === 0 ? "" : JSON.stringify(outputDocShow),
         });
       
       console.log("defaultValueRuleNormal", defaultValueRuleNormal)
       console.log("currentQuestionDetails?.questionType", currentQuestionDetails?.questionType)
           await saveRequest(logicalName, currentPossitionDetails?.id, {
             [dbConstants?.question?.gyde_defaultValueFormula]:
-            Object.keys(defaultValueRuleNormal).length === 0 ? null : JSON.stringify(defaultValueRuleNormal),
+            Object.keys(defaultValueRuleNormal).length === 0 ? "" : JSON.stringify(defaultValueRuleNormal),
           });
     }
     openNotificationWithIcon("success", languageConstants?.ExpressionBuilder_DataSaved);
@@ -1055,13 +1058,14 @@ const ParentComponent = ({
     let isfieldsHasEmptyFieldsDefault = false;
     let isAddValuefieldsHasEmptyActionsDefault = false;
     let isReferencesEmpty = false
+    let isAtleastActionSelectedIfTheFieldsAreNotEmpty = false
 
+    let minMaxExmptyIfTheCheckBoxIsEnabled = false;
     const sortedData = [..._nestedRows].sort((a, b) => {
       const aKey = Object.keys(a)[0];
       const bKey = Object.keys(b)[0];
       return parseInt(aKey) - parseInt(bKey);
     });
-
 
     console.log("DDDD", sortedData);
     const sortedDataForDefaultValue = [..._defaultRows].sort((a, b) => {
@@ -1069,8 +1073,6 @@ const ParentComponent = ({
       const bKey = Object.keys(b)[0];
       return parseInt(aKey) - parseInt(bKey);
     });
-
-
 
     sortedDataForDefaultValue.forEach((sec: any) => {
       console.log("Default Section", sec);
@@ -1151,6 +1153,15 @@ const ParentComponent = ({
       const checkboxValues = sec[key]?.actions[0]?.checkBoxValues;
       const minMaxExists =
         Object.keys(sec[key]?.actions[0]?.minMax || {}).length !== 0;
+      if (minMaxExists) {
+        if (minMaxCheckBoxEnabled?.minCheckbox && (!sec[key]?.actions[0]?.minMax?.minValue || !sec[key]?.actions[0]?.minMax)) {
+          minMaxExmptyIfTheCheckBoxIsEnabled = true
+        }
+        if (minMaxCheckBoxEnabled?.maxCheckbox && (!sec[key]?.actions[0]?.minMax?.maxValue || !sec[key]?.actions[0]?.minMax)) {
+          minMaxExmptyIfTheCheckBoxIsEnabled = true
+        }
+      }
+     
       const isShowExists = checkboxValues?.some(
         (x: any) => Object.keys(x)[0] === "show"
       );
@@ -1166,8 +1177,13 @@ const ParentComponent = ({
       console.log("isOutputDocShowExists ----> ", isOutputDocShowExists);
       console.log("isEnableExists ----> ", isEnableExists);
 
+     
       let prepareForValidation = JSON.parse(JSON.stringify(sec[key].fields));
       console.log("prepareForValidation", prepareForValidation);
+      if (!isShowExists && !isOutputDocShowExists && !isEnableExists && !minMaxExists && prepareForValidation?.length) {
+        isAtleastActionSelectedIfTheFieldsAreNotEmpty = true
+        return;
+      }
       prepareForValidation[0].expression = "Emp";
       const _hasNullFields = hasNullFields(prepareForValidation);
       if (_hasNullFields) {
@@ -1388,6 +1404,10 @@ const ParentComponent = ({
     );
     console.log("savedMinMaxRuleFinalFormat", savedMinMaxRuleFinalFormat);
 
+    if (isAtleastActionSelectedIfTheFieldsAreNotEmpty) {
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_AtLeastOneActionNeedToSelect);
+      return;
+    }
     if (isAddValuefieldsHasEmptyActionsDefault) {
       openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_AddValErrorMessage);
       return;
@@ -1403,6 +1423,11 @@ const ParentComponent = ({
 
     if (isfieldsHasEmptyFields) {
       openNotificationWithIcon("error",languageConstants?.ExpressionBuilder_ValidationRuleFieldEmpty);
+      return;
+    }
+
+    if (minMaxExmptyIfTheCheckBoxIsEnabled) {
+      openNotificationWithIcon("error",languageConstants?.ExpressionBuilder_ValidationMustPassed);
       return;
     }
     
@@ -1535,6 +1560,9 @@ const ParentComponent = ({
                       languageConstants={languageConstants}
                       tabType={dbConstants?.tabTypes?.validationTab}
                       setDefaultTabValidationPassed={setDefaultTabValidationPassed}
+                      // setDefaultActionSetWhenRetriving={setDefaultActionSetWhenRetriving}
+                      // defaultActionSetWhenRetriving={defaultActionSetWhenRetriving}
+                      setMinMaxCheckboxEnabled={setMinMaxCheckboxEnabled}
                     />
                   </div>
                 ))}
@@ -1573,7 +1601,7 @@ const ParentComponent = ({
                       <div className="nestedBtns">
                         <Button
                           className="mr-10 btn-default"
-                          onClick={() => addComponent('defaultValueTab')}
+                          onClick={() => addDefaultComponent()}
                           disabled={suerveyIsPublished}>
                           {"+ " + languageConstants?.ExpressionBuilder_AddButton}
                         </Button>
@@ -1601,6 +1629,9 @@ const ParentComponent = ({
                               languageConstants={languageConstants}
                               tabType={dbConstants?.tabTypes?.defaultValueTab}
                               setDefaultTabValidationPassed={setDefaultTabValidationPassed}
+                              // setDefaultActionSetWhenRetriving={setDefaultActionSetWhenRetriving}
+                              // defaultActionSetWhenRetriving={defaultActionSetWhenRetriving}
+                              setMinMaxCheckboxEnabled={setMinMaxCheckboxEnabled}
                             />
                           </div>
                         ))}

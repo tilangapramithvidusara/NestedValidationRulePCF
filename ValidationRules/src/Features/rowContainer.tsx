@@ -54,7 +54,8 @@ interface TableRowProps {
   imageUrls: any;
   suerveyIsPublished: any;
   languageConstants: any;
-  tabType: any
+  tabType: any;
+  currentQuestionDetails: any
 }
 
 interface Condition {
@@ -83,7 +84,8 @@ const RowContainer: React.FC<TableRowProps> = ({
   imageUrls,
   suerveyIsPublished,
   languageConstants,
-  tabType
+  tabType,
+  currentQuestionDetails
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
@@ -699,9 +701,6 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   useEffect(() => {
     console.log("listAnsersWithQuestionIds", listAnsersWithQuestionIds);
-    // if (listAnsersWithQuestionIds) {
-    //   setAnswersDropDownData(dropDownData);
-    // }
   }, [listAnsersWithQuestionIds])
 
   useEffect(() => {
@@ -778,7 +777,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       <div className="condition-label">{languageConstants?.ExpressionBuilder_FieldLabel} </div>
                       <FieldInput
                         sampleData={
-                          dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
+                          dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList?.filter((x: { value: any; }) => x?.value !== currentQuestionDetails?.value)
                           
                         }
                         selectedValue={condition?.field}
@@ -880,14 +879,8 @@ const RowContainer: React.FC<TableRowProps> = ({
                                     fieldName={"value"}
                                     selectedValue={condition?.value}
                                     listDropDownData={
-                                      // answersDropDownData?.length ? answersDropDownData :
-                                      // listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.value)?.listAnswers?.length ? 
                                       answersDropDownData.concat(listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.field)?.listAnswers)?.filter(x => x)
-                                      // [...answersDropDownData ,...listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.value)?.listAnswers]
-                          // answersDropDownData
                         }
-                        // getDropDownData={getDropDownData(condition?.field)} // Pass the getDropDownData function as a prop
-                        // answerCallback={getDropDownData(condition?.field)}
                         />
                       ) : (
                         <FieldStringInputProps

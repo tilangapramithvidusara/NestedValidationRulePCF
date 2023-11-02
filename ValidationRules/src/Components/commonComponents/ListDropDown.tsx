@@ -26,7 +26,6 @@ const ListDropDown: React.FC<ListDropDownCommonProps> = ({ dropDownData, isDisab
   }, [listDropDownData]);
 
   const searchFilterSort = (optionA: any, optionB: any) => {
-    console.log("List orppPPPP", optionA, optionB);
     return (optionA?.label ?? '')?.toLowerCase().localeCompare((optionB?.label ?? '')?.toLowerCase());
 }
 

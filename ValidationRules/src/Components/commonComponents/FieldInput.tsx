@@ -15,7 +15,6 @@ interface SearchSortProps {
 const FieldInput: React.FC<SearchSortProps> = ({sampleData, selectedValue, overrideSearch, setFieldValue, changedId, fieldName, isDisabled}) => {
 
     const searchFilterSort = (optionA: any, optionB: any) => {
-        console.log("orppPPPP", optionA, optionB);
         return (optionA?.value ?? '')?.toLowerCase().localeCompare((optionB?.value ?? '')?.toLowerCase());
     }
 

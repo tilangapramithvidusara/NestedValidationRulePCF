@@ -43,7 +43,8 @@ export const languageConstantsForCountry : any = {
         ExpressionBuilder_FristExpCannotChanged: "First Selected Expression cannot be changed!",
         ExpressionBuilder_SelectQuestions: "Select Questions",
         ExpressionBuilder_FieldsEmpty: "Fields cannot be empty",
-        ExpressionBuilder_ErrorOccured: "Error Occured!"
+        ExpressionBuilder_ErrorOccured: "Error Occured!",
+        ExpressionBuilder_AtLeastOneActionNeedToSelect: "If the fields are not empty, you must select at least one action."
     },
     po: {
         "saveButtonConstants": "Salvar",

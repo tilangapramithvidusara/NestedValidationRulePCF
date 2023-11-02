@@ -315,9 +315,9 @@ const _updateExpressionByParentId = (
 
 const hasNullFields = (obj: any) => {
 
-  return obj?.some((x: { innerConditions: any; value: any; expression: any; condition: any; }) => {
+  return obj?.some((x: { innerConditions: any; value: any; expression: any; condition: any; field: any }) => {
     if (x?.innerConditions) {
-      if (!x?.value || !x?.expression || !x.value || !x.condition) {
+      if ((!x?.value && x?.value !== 0) || !x?.expression || !x.field || !x.condition) {
         return true; // Found a null or undefined field
       } else {
         return hasNullFields(x.innerConditions); // Recursively check innerConditions array
@@ -328,9 +328,9 @@ const hasNullFields = (obj: any) => {
 
 const hasNullFieldsDefault = (obj: any) => {
 
-  return obj?.some((x: { innerConditions: any; value: any; expression: any; condition: any; }) => {
+  return obj?.some((x: { innerConditions: any; value: any; expression: any; condition: any; field: any}) => {
     // if (x?.innerConditions) {
-      if (!x?.value || !x?.expression || !x.value || !x.condition) {
+      if ((!x?.value && x?.value !== 0) || !x?.expression || !x.field || !x.condition) {
         return true; // Found a null or undefined field
       }
     // }
