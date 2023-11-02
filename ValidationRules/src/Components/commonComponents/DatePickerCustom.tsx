@@ -4,12 +4,13 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import type { DatePickerProps } from "antd";
 import { DatePicker, Space } from "antd";
 import moment from "moment";
+import { dbConstants } from "../../constants/dbConstants";
 
 dayjs.extend(customParseFormat);
 
 const { RangePicker } = DatePicker;
 
-const dateFormat = "YYYY-MM-DD";
+const dateFormat = dbConstants?.common?.dateFormat;
 
 interface DateTimeProps {
   isDisabled: boolean;

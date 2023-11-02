@@ -183,8 +183,35 @@
    width: 10%;
   }
 
+  .validation-wrap .mr-11 {
+    margin-right: 11px;
+   }
+
   .validation-wrap .mr-10 {
     margin-right: 10px;
+  }
+  .validation-wrap .mr-13 {
+    margin-right: 13px;
+  }
+
+  .validation-wrap .mr-34 {
+    margin-right: 34px;
+  } 
+
+  .validation-wrap .mr-36 {
+    margin-right: 36px;
+  } 
+
+  .validation-wrap .mr-38 {
+    margin-right: 38px;
+  }
+
+  .validation-wrap .mr-15 {
+    margin-right: 15px;
+  }
+
+  .validation-wrap .mr-24 {
+    margin-right: 24px;
   }
 
   .validation-wrap {
@@ -393,3 +420,67 @@
     text-align: right;
     padding-bottom: 10px;
   }
+
+  .tabs-configs {
+    text-align: left;
+    padding-bottom: 10px;
+  }
+
+  /* .default-acts {
+    display: flex;
+  } */
+
+  .referneces-acts {
+    text-align: left;
+    display: flex;
+    margin-top: 12px;
+  }
+  .default-options {
+    text-align: left;
+    /* width: 50%; */
+    margin-top: 12px;
+  }
+  .referneces-checkbx {
+  text-align: left;
+  margin-top: 12px;
+  }
+
+  .numberlist {
+    text-align: center;
+    display: inline-flex;
+  }
+
+  .num-input {
+    border: 0.5px solid #0958d9;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    color: #0958d9;
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .num-input-wrap {
+    display: flex;
+    align-items: center;
+ }
+
+ .exp-input-wrap {
+    display: flex;
+    align-items: center;
+    margin-right: 20px
+ }
+
+ .select-ques-one {
+  display: flex;
+  margin-bottom: 15px;
+  margin-right: 20px
+ }
+
+.select-ques-one .ant-select .ant-select-selector  {
+  display: flex;
+ }

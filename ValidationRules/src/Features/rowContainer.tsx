@@ -33,6 +33,7 @@ import ListDropDown from "../Components/commonComponents/ListDropDown";
 import { dbConstants } from "../constants/dbConstants";
 import DatePickerCustom from "../Components/commonComponents/DatePickerCustom";
 import moment from "moment";
+import tabsConfigs from "../configs/tabsConfigs";
 interface NestedRowProps {
   children: React.ReactNode;
 }
@@ -52,7 +53,9 @@ interface TableRowProps {
   setSaveAsIsNested: any;
   imageUrls: any;
   suerveyIsPublished: any;
-  languageConstants: any
+  languageConstants: any;
+  tabType: any;
+  currentQuestionDetails: any
 }
 
 interface Condition {
@@ -80,7 +83,9 @@ const RowContainer: React.FC<TableRowProps> = ({
   setSaveAsIsNested,
   imageUrls,
   suerveyIsPublished,
-  languageConstants
+  languageConstants,
+  tabType,
+  currentQuestionDetails
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
@@ -696,9 +701,6 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   useEffect(() => {
     console.log("listAnsersWithQuestionIds", listAnsersWithQuestionIds);
-    // if (listAnsersWithQuestionIds) {
-    //   setAnswersDropDownData(dropDownData);
-    // }
   }, [listAnsersWithQuestionIds])
 
   useEffect(() => {
@@ -739,16 +741,16 @@ const RowContainer: React.FC<TableRowProps> = ({
                       }
                       disabled={suerveyIsPublished}
                     >
-                      {languageConstants?.addButton}
+                      {"+ " + languageConstants?.ExpressionBuilder_AddButton}
                     </Button>
                     <Button
                       className="btn-default"
                       onClick={() =>
                         _handleAddNestedRow(condition?.level, true, "AND")
                       }
-                      disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
+                      disabled={tabType === dbConstants?.tabTypes?.defaultValueTab ? true : suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
                     >
-                      {languageConstants?.addNestedButton}
+                      {"+ " + languageConstants?.ExpressionBuilder_AddNestedButton}
                     </Button>
                   </div>
                 </div>
@@ -760,7 +762,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     }}
                   >
                     <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.andorLabel} </div>
+                      <div className="condition-label">{languageConstants?.ExpressionBuilder_AndorLabel} </div>
                       <DropDown
                         dropDownData={expressionSampleData}
                         isDisabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
@@ -772,10 +774,10 @@ const RowContainer: React.FC<TableRowProps> = ({
                     </div>
 
                     <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.fieldLabel} </div>
+                      <div className="condition-label">{languageConstants?.ExpressionBuilder_FieldLabel} </div>
                       <FieldInput
                         sampleData={
-                          dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
+                          dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList?.filter((x: { value: any; }) => x?.value !== currentQuestionDetails?.value)
                           
                         }
                         selectedValue={condition?.field}
@@ -787,7 +789,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       />{" "}
                     </div>
                     <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.operatorLabel} </div>
+                      <div className="condition-label">{languageConstants?.ExpressionBuilder_OperatorLabel} </div>
                       {dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.stringQuestion || dropDownQuestionList?.find(
@@ -826,7 +828,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                     </div>
                     
                     <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.valueLabel}  </div>
+                      <div className="condition-label">{languageConstants?.ExpressionBuilder_ValueLabel}  </div>
                     {!isLoad ? <div> 
                       
                       {dropDownQuestionList?.find(
@@ -877,14 +879,8 @@ const RowContainer: React.FC<TableRowProps> = ({
                                     fieldName={"value"}
                                     selectedValue={condition?.value}
                                     listDropDownData={
-                                      // answersDropDownData?.length ? answersDropDownData :
-                                      // listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.value)?.listAnswers?.length ? 
                                       answersDropDownData.concat(listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.field)?.listAnswers)?.filter(x => x)
-                                      // [...answersDropDownData ,...listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.value)?.listAnswers]
-                          // answersDropDownData
                         }
-                        // getDropDownData={getDropDownData(condition?.field)} // Pass the getDropDownData function as a prop
-                        // answerCallback={getDropDownData(condition?.field)}
                         />
                       ) : (
                         <FieldStringInputProps
@@ -927,7 +923,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                             onClick={() => _handleDeleteRow(condition?.level)}
                             height={'15px'}
                             />
-                            <span className="remove-text">{languageConstants?.removeButton} </span>
+                            <span className="remove-text">{languageConstants?.ExpressionBuilder_RemoveButton} </span>
                           </div>
                          
                       }
@@ -1041,9 +1037,9 @@ const RowContainer: React.FC<TableRowProps> = ({
                     <img
                         src={imageUrls?.imageUrl} alt="icon"
                       height={'15px'}
-                      onClick={() => handleSectionRemove(sectionLevel)}
+                      onClick={() => handleSectionRemove(sectionLevel, tabType)}
                         /> 
-                    <span className="remove-text">{languageConstants?.removeButton} </span>
+                    <span className="remove-text">{languageConstants?.ExpressionBuilder_RemoveButton} </span>
                   </div>
                 }
                 

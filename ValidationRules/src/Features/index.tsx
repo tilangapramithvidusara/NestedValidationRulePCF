@@ -21,14 +21,16 @@ import {
   saveRequest,
   loadAllQuestionsInSurvey,
   getPublishedStatus,
+  loadResourceString,
 } from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
 import { normalConverter } from "../Utils/dbFormatToJson";
-import { hasNullFields } from "../Utils/utilsHelper";
+import { hasNullFields, hasNullFieldsDefault } from "../Utils/utilsHelper";
 import { languageConstantsForCountry } from "../constants/languageConstants";
 import Dropdown from "antd/es/dropdown/dropdown";
 import { DownOutlined } from "@ant-design/icons";
 import countryMappedConfigs from "../configs/countryMappedConfigs";
+import tabsConfigs from "../configs/tabsConfigs";
 // import NotificationPopup from "../Components/NotificationPopup";
 
 const ParentComponent = ({
@@ -44,8 +46,9 @@ const ParentComponent = ({
 
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
-  const [isLoadData, setIsLoadData] = useState<boolean>(false);
+  const [defaultSections, setDefaultSections] = useState<any[]>([]);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
+  const [_defaultRows, _setDefaultRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
   const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
   // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
@@ -54,6 +57,10 @@ const ParentComponent = ({
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
+    []
+  );
+
+  const [_defaultValueRule, _setDefaultValueRule] = useState<any[]>(
     []
   );
   const [_minMaxRulePrev, _setMinMaxRulePrev] = useState<any[]>([]);
@@ -70,12 +77,27 @@ const ParentComponent = ({
   });
   const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
   const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
-  const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState<any>('en');
+  const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>();
+  const [minMaxCheckBoxEnabled, setMinMaxCheckboxEnabled] = useState<any>({
+    minCheckbox: false,
+    maxCheckbox: false
+  });
 
+
+//   const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
+//     "label": "TSDTem_C01_S01_date",
+//     "value": "TSDTem_C01_S01_date",
+//     "questionType": "Numeric",
+//     "questionId": "b76bc889-6d66-ee11-9ae7-6045bdd0ef22",
+//     "questionLabel": "date"
+// });
+  const [selectedLanguage, setSelectedLanguage] = useState<any>('en');
+  const [selectedTab, setSelectedTab] = useState<any>('vr');
+  const [localTest, setLocalTest] = useState(false);
   const [languageConstants, setLanguageConstants] = useState<any>(
     languageConstantsForCountry.en
   );
+  const [defaultTabValidationPassed, setDefaultTabValidationPassed] = useState(true);
 
   let addNestedComponent = () => {
     setSections([
@@ -92,66 +114,31 @@ const ParentComponent = ({
   };
 
   let addComponent = () => {
-    setSections([
-      ...sections,
-      {
-        key:
-          sections && sections.length
-            ? Math.max(...sections.map((item) => item.key)) + 1
-            : 1,
-      },
-    ]);
-
-    setIsNested(false);
+      setSections([
+        ...sections,
+        {
+          key:
+            sections && sections.length
+              ? Math.max(...sections.map((item) => item.key)) + 1
+              : 1,
+        },
+      ]);
+      setIsNested(false);
   };
 
-  const loadResourceString = async () => {
+  let addDefaultComponent = () => {
+      setDefaultSections([
+        ...defaultSections,
+        {
+          key:
+          defaultSections && defaultSections.length
+              ? Math.max(...defaultSections.map((item) => item.key)) + 1
+              : 1,
+        },
+      ])
+  };
 
-    const url = await window.parent.Xrm.Utility.getGlobalContext().getClientUrl();
-    const language = await window.parent.Xrm.Utility.getGlobalContext().userSettings.languageId
-    const webResourceUrl = `${url}/WebResources/gyde_localizedstrings.${language}.resx`;
 
-    try {
-      const response = await fetch(`${webResourceUrl}`);
-      const data = await response.text();
-      const filterKeys = [
-          'saveButtonConstants',
-          'questionsLoadingConstants',
-          'addButton',
-          'removeButton',
-          'addNestedButton',
-          'actionsLabelConstants',
-          'minMaxFieldStringConstants', 
-          'minMaxFieldConstants',
-          'minMaxLength',
-          'minLengthStringConstants',
-          'minLengthConstants',
-          'maxLengthConstants',
-          'maxLengthStringConstants',
-          'andorLabel',
-          'fieldLabel',
-          'operatorLabel',
-          'valueLabel'
-        ];
-      filterKeys.map((filterKey: string, index: number) => {
-        const parser = new DOMParser();
-        // Parse the XML string
-        const xmlDoc = parser.parseFromString(data, "text/xml");
-        // Find the specific data element with the given key
-        const dataNode: any = xmlDoc.querySelector(`data[name="${filterKey}"]`);
-        // Extract the value from the data element
-        const value: any = dataNode?.querySelector("value").textContent;
-
-     
-        console.log('data ====> ', index, value); 
-        
-        
-      });
-      // this.setState({ data });
-    } catch (error) {
-      console.error('Error loading data:', error);
-    }
-  }
 
   const loadQuestionHandler = async () => {
     setIsApiDataLoaded(true);
@@ -222,10 +209,11 @@ const ParentComponent = ({
     console.log("currentPossitionDetails 1", currentPossitionDetails);
     console.log("questionList 1", questionList);
 
-    if (questionList && questionList?.length && currentPossitionDetails?.currentPosition === "question") {
+    if (questionList && questionList?.length && currentPossitionDetails?.currentPosition === "question" && !localTest) {
         const currnetQuestionDetails = questionList?.find(ques => ques?.questionId === currentPossitionDetails?.id?.toLowerCase())
         setCurrentQuestionDetails(currnetQuestionDetails)
     }
+    
   }, [questionList, currentPossitionDetails]);
 
   useEffect(() => {
@@ -244,6 +232,19 @@ const ParentComponent = ({
       setIsApiDataLoaded(false);
   }, [_nestedRows]);
 
+
+  useEffect(() => {
+    setDefaultSections(
+      _defaultRows
+        ?.map((item: {}) => Object.keys(item))
+        ?.flat()
+        ?.map((key: any) => ({ key: parseInt(key) }))
+        .sort((a: { key: number }, b: { key: number }) => a.key - b.key)
+    );
+    if (_defaultRows?.length === 0 || !_defaultRows?.length)
+      setIsApiDataLoaded(false);
+  }, [_defaultRows]);
+
   // for retrieve purpose
   useEffect(() => {
     setSections(
@@ -253,6 +254,7 @@ const ParentComponent = ({
         .map((key: any) => ({ key: parseInt(key) }))
     );
     _getCurrentState();
+    messageHandler();
     console.log(
       "imageUrl, imageUrl1, imageUrl2",
       imageUrl,
@@ -583,6 +585,139 @@ const ParentComponent = ({
     }
   }, [_minMaxRulePrev]);
 
+  useEffect(() => {
+    console.log("_defaultValueRule", _defaultValueRule);
+
+    if (_defaultValueRule && _defaultValueRule?.length) {
+      let key = 100;
+      // const __defaultValRule = _defaultValueRule?.defaultValRule;
+      let __defaultValueRule = JSON.parse(JSON.stringify(_defaultValueRule));
+
+      __defaultValueRule?.forEach((defTriggers: any) => {
+        
+          console.log("defTriggers", defTriggers);
+          const triggers = defTriggers?.defaultValRule?.triggers;
+          console.log("defaultData triggers", triggers);
+
+        if (triggers && triggers?.length) {
+          for (const trigger of triggers) {
+            _setDefaultRows((prevData: any) => {
+
+              let defaultString = [trigger?.rule?.rule]
+              console.log("defaultString", defaultString);
+              let defaultAction = trigger?.action?.value;
+              console.log("defaultAction", defaultAction)
+              console.log("defaultAction Type", typeof defaultAction)
+    
+              let actionMap: any;
+              if (!defaultAction && defaultAction !== 0) {
+                actionMap = {
+                  type: "CLE_Q",
+                  value: null
+                }
+              } else if (typeof defaultAction === 'object') {
+                if (defaultAction?.var) {
+                  actionMap = {
+                    type: "VAL_Q",
+                    value: defaultAction?.var
+                  }
+                } else {
+                  actionMap = {
+                    type: "MAT_F",
+                    value: defaultAction
+                  }
+                }
+              } else {
+                actionMap = {
+                  type: "ADD_V",
+                  value: defaultAction
+                }
+              }
+              if (defaultString) {
+                // const visibilityString = dbData?.visibility?.if;
+                const defaultDataArray: any[] = [];
+                let visibilityDta = JSON.parse(JSON.stringify(defaultString));
+                let _refactorDta = JSON.parse(JSON.stringify(defaultString));
+                const isRetrieveAsNormal = visibilityDta?.some(
+                  (x: any) => x?.or?.length || x?.and?.length
+                );
+                const isFirstExpWithEmptyStringKey = visibilityDta?.some(
+                  (x: any) => !Object.keys(x)[0]
+                );
+                const isFirstExpWithoutEmptyStringKey = visibilityDta?.some(
+                  (x: any) => (x[Object.keys(x)[0]] as any[])?.length === 2
+                );
+                const isAllAreNormal = visibilityDta?.every((x: { or: any[] }) => {
+                  const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
+                  return keys?.includes("and") || keys?.includes("or");
+                });
+                const isNestedIfs = visibilityDta?.some((x: {}) => Object.keys(x)[0] === 'if')
+                console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
+                console.log("Fetch Type isFirstExpWithEmptyStringKey", isFirstExpWithEmptyStringKey);
+                console.log("Fetch Type isFirstExpWithoutEmptyStringKey", isFirstExpWithoutEmptyStringKey);
+                console.log("Fetch Type isAllAreNormal", isAllAreNormal);
+                console.log("Fetch Type isNestedIfs", isNestedIfs);
+      
+                if (isNestedIfs) {
+                  _refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
+                } else if (isAllAreNormal) {
+                  _refactorDta = visibilityDta[0]?.or;
+                } else if (isRetrieveAsNormal) {
+                  // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
+                  _refactorDta = visibilityDta;
+                } else if (isFirstExpWithoutEmptyStringKey) {
+                  _refactorDta = [{ or: [defaultString[0]] }];
+                } else if (isFirstExpWithEmptyStringKey) {
+                  // refactorDta = visibilityDta;
+                  _refactorDta = [{ or: Object.values(visibilityDta[0])[0] }];
+                } else {
+                  _refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
+                }
+      
+                console.log(
+                  "Visibility DB Dataaa Converting refactorDtaaaa",
+                  _refactorDta
+                );
+                if (_refactorDta && _refactorDta?.length) {
+                  _refactorDta?.forEach((fieldDta: any): any => {
+                    console.log("Each Section Field Data", fieldDta);
+                    let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
+    
+                    defaultDataArray.push({
+                      [key++]: {
+                        actions: [
+                          actionMap
+                        ],
+                        fields: normalConverter([_fieldDta]),
+                      },
+                    });
+                  });
+      
+                  if (defaultDataArray && defaultDataArray.length) {
+                    // const reversedArray = showUpdatedDataArray.reverse();
+                    console.log(
+                      "defaultDataArray Data Retrieving ",
+                      defaultDataArray
+                    );
+                    console.log("defaultDataArray ", [
+                      ...prevData,
+                      defaultDataArray,
+                    ]);
+                    return [...prevData, ...defaultDataArray];
+                  }
+                }
+              }
+            })
+
+          }
+        }
+
+        // });
+      })
+    
+    }
+  }, [_defaultValueRule]);
+
   const openNotificationWithIcon = (type: any, message: any) => {
     api[type]({
       message: type,
@@ -595,6 +730,7 @@ const ParentComponent = ({
     let minMaxPreviousValues: any;
     let validationRulePreviousValues: any;
     let documentOutputRule: any;
+    let defaultValueRule: any;
     setIsApiDataLoaded(false);
     let logicalName;
     if (currentPossitionDetails?.currentPosition === "chapter") {
@@ -648,6 +784,16 @@ const ParentComponent = ({
         currentPossitionDetails?.id,
         `?$select=${dbConstants.question.gyde_documentOutputRule}`
       );
+
+      let defaultValueLogicalName = dbConstants?.question?.gyde_defaultValueFormula;
+      if (defaultValueLogicalName) {
+        defaultValueRule = await fetchRequest(
+          logicalName,
+          currentPossitionDetails?.id,
+          `?$select=${defaultValueLogicalName}`
+        );
+      }
+      
     }
     if (visibilityRulePreviousValues?.data && Object.keys(visibilityRulePreviousValues?.data).length !== 0) {
       console.log(
@@ -682,6 +828,14 @@ const ParentComponent = ({
       ]);
     }
 
+    if (defaultValueRule?.data && Object.keys(defaultValueRule?.data).length !== 0) {
+      let _defaultValueRule = JSON.parse(JSON.stringify(defaultValueRule));
+      _setDefaultValueRule((prevData: any) => [
+        ...prevData,
+        { defaultValRule: _defaultValueRule?.data },
+      ]);
+    }
+
     //test
     // _setVisibilityRulePrev((prevValue) => [
     //   ...prevValue,
@@ -707,13 +861,17 @@ const ParentComponent = ({
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [[{"type":"MINIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]}]}},{"type":"MAXIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]},4]}}]]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
+    // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } }]}  }] )
+    // _setDefaultValyeRule([ { "id": "trigger_1", "rule": { "type": "QUESTION_RESPONSE", "rule": { "and": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-10-02" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "333" ] } ] } }, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } } ])
+    // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": 55} }]}  }] )
+
   };
   const getCurrentPublishedStatus = async () => {
-    
     const { data = null } = await getPublishedStatus(currentPossitionDetails);
     console.log("Published Status", data);
     if(data?.isPublished) setSuerveyIsPublished(data?.isPublished);
   }
+
   useEffect(() => {
     console.log("currentId ----->", currentPossitionDetails);
 
@@ -722,46 +880,41 @@ const ParentComponent = ({
     if (currentPossitionDetails) {
       getCurrentPublishedStatus();
     }
-
-
   }, [currentPossitionDetails]);
 
-  // useEffect(() => {
-    // console.log("deleteSectionKey", deleteSectionKey);
-    // if (deleteSectionKey) {
-    //   _setNestedRows((prevNestedRows: any) => {
-    //     if (prevNestedRows && prevNestedRows.length === 1) {
-    //       saveVisibilityData({}, {}, {}, {});
-    //     }
-    //     return prevNestedRows.filter(
-    //       (key: any) => parseInt(Object.keys(key)[0]) !== deleteSectionKey
-    //     )
-    //   }
-        
-    //   );
-    //   setSections((prev: any) =>
-    //     prev.filter((prevKeys: any) => prevKeys.key !== deleteSectionKey)
-    //   );
-    // }
-  // }, [deleteSectionKey]);
-
-  const handleSectionRemove = (deleteSectionKey: any) => {
+  const handleSectionRemove = (deleteSectionKey: any, tab: any) => {
     console.log("deleteSectionKey", deleteSectionKey);
-    if (deleteSectionKey) {
-      _setNestedRows((prevNestedRows: any) => {
-        if (prevNestedRows && prevNestedRows.length === 1) {
-          saveVisibilityData({}, {}, {}, {});
+    console.log("deleteSectionKey", tab);
+
+    if (tab === dbConstants?.tabTypes?.validationTab) {
+      if (deleteSectionKey) {
+        _setNestedRows((prevNestedRows: any) => {
+          if (prevNestedRows && prevNestedRows.length === 1) {
+            saveVisibilityData({}, {}, {}, {}, {});
+          }
+          return prevNestedRows.filter(
+            (key: any) => parseInt(Object.keys(key)[0]) !== deleteSectionKey
+          )
         }
-        return prevNestedRows.filter(
-          (key: any) => parseInt(Object.keys(key)[0]) !== deleteSectionKey
-        )
+          
+        );
+        setSections((prev: any) =>
+          prev.filter((prevKeys: any) => prevKeys.key !== deleteSectionKey)
+        );
       }
-        
-      );
-      setSections((prev: any) =>
-        prev.filter((prevKeys: any) => prevKeys.key !== deleteSectionKey)
-      );
+    } else {
+      if (deleteSectionKey) {
+        _setDefaultRows((prevNestedRows: any) => {
+          return prevNestedRows.filter(
+            (key: any) => parseInt(Object.keys(key)[0]) !== deleteSectionKey
+          )
+        });
+        setDefaultSections((prev: any) =>
+          prev.filter((prevKeys: any) => prevKeys.key !== deleteSectionKey)
+        );
+      }
     }
+    
   }
 
   const _getCurrentState = async () => {
@@ -774,7 +927,8 @@ const ParentComponent = ({
     visibilityRule: any,
     validationRule: any,
     outputDocShow: any,
-    minMaxDBFormatArray: any
+    minMaxDBFormatArray: any,
+    defaultValueRuleNormal: any
   ) => {
     let logicalName;
     
@@ -799,7 +953,7 @@ const ParentComponent = ({
 
       await saveRequest(logicalName, currentPossitionDetails?.id, {
         [dbConstants.common.gyde_visibilityrule]:
-        Object.keys(visibilityRule).length === 0 ? null : JSON.stringify(visibilityRule),
+        Object.keys(visibilityRule).length === 0 ? "" : JSON.stringify(visibilityRule),
       });
     } else if (
       currentPossitionDetails?.id &&
@@ -811,25 +965,71 @@ const ParentComponent = ({
      
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.common.gyde_visibilityrule]:
-            Object.keys(visibilityRule).length === 0 ? null : JSON.stringify(visibilityRule),
+            Object.keys(visibilityRule).length === 0 ? "" : JSON.stringify(visibilityRule),
         });
       
      
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.question.gyde_minmaxvalidationrule]:
-          Object.keys(minMaxDBFormatArray).length === 0 ? null : JSON.stringify(minMaxDBFormatArray),
+          Object.keys(minMaxDBFormatArray).length === 0 ? "" : JSON.stringify(minMaxDBFormatArray),
         });
     
     
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.question.gyde_documentOutputRule]:
-          Object.keys(outputDocShow).length === 0 ? null : JSON.stringify(outputDocShow),
+          Object.keys(outputDocShow).length === 0 ? "" : JSON.stringify(outputDocShow),
         });
-     
+      
+      console.log("defaultValueRuleNormal", defaultValueRuleNormal)
+      console.log("currentQuestionDetails?.questionType", currentQuestionDetails?.questionType)
+          await saveRequest(logicalName, currentPossitionDetails?.id, {
+            [dbConstants?.question?.gyde_defaultValueFormula]:
+            Object.keys(defaultValueRuleNormal).length === 0 ? "" : JSON.stringify(defaultValueRuleNormal),
+          });
     }
-    openNotificationWithIcon("success", "Data Saved!");
+    openNotificationWithIcon("success", languageConstants?.ExpressionBuilder_DataSaved);
   };
   
+  const createActionObject = (actionType: any, value: any) => {
+    let actionObject = {};
+    console.log("actionType", actionType);
+    console.log("value", value)
+
+    if (actionType === "CLE_Q") {
+      return {
+        "type":"SET_RESPONSE",
+        "questionId": currentPossitionDetails?.label,
+        "value": null
+     }
+    } else if (actionType === "ADD_V") {
+      return {
+        "type":"SET_RESPONSE",
+        "questionId": currentPossitionDetails?.label,
+        "value": value
+     }
+    } else if (actionType === "VAL_Q") {
+      return {
+        "type":"SET_RESPONSE",
+        "questionId": currentPossitionDetails?.label,
+        "value": {
+          var: value
+        }
+     }
+    } else if (actionType === "MAT_F") {
+      return {
+        "type":"SET_RESPONSE",
+        "questionId": currentPossitionDetails?.label,
+        "value": {
+          [value[1]] : [
+            {
+                "var": value[0]
+            },
+            value[2]
+        ]
+        }
+     }
+    }
+  }
   const handleSaveLogic = () => {
     let minMaxDBFormatArray: any = [];
     let minMaxDBFormatArrayNormal: any = [];
@@ -850,51 +1050,102 @@ const ParentComponent = ({
     let isShowInDocNested: any = [];
     let isMinMaxNested: any = [];
 
+    let defaultValueRule: any = [];
+    let defaultValueRuleNormal: any = [];
+    let defaultTriggers: any;
+
     let isfieldsHasEmptyFields = false;
-    // if (!validation.minMaxValidation) {
-    //   openNotificationWithIcon("error", "MinMax Validation Must be passed!");
-    //   return;
-    // }
+    let isfieldsHasEmptyFieldsDefault = false;
+    let isAddValuefieldsHasEmptyActionsDefault = false;
+    let isReferencesEmpty = false
+    let isAtleastActionSelectedIfTheFieldsAreNotEmpty = false
 
-    // const isAtLeastOneActionNotEmpty = _nestedRows?.every((item: any[]) => {
-    //   const actions = Object.values(item)[0]?.actions;
-    //   return actions?.length > 0 && (actions[0]?.checkBoxValues?.length > 0 || actions[0]?.minMax)
-    //   // return actions && Array.isArray(actions) && actions?.length > 0;
-    // });
-
-    // if (isAtLeastOneActionNotEmpty) {
-    //   openNotificationWithIcon("error", "One Action(s) Has to be selected!");
-    //   return;
-    // }
-
-    for (const obj of _nestedRows) {
-      const keys = Object.keys(obj);
-      if (keys?.length > 0) {
-          const innerObj = obj[keys[0]];
-          const minMax = innerObj?.actions[0]?.minMax;
-          const checkBoxValues = innerObj?.actions[0]?.checkBoxValues;
-
-         
-        // if (minMax === null && !checkBoxValues?.length) {
-        //     openNotificationWithIcon("error", "One Action(s) Has to be selected!");
-        //     return
-        // } 
-        // if (minMax !== null && minMax !== undefined ) {
-        //   if (!minMax?.minValue || !minMax?.maxValue) {
-        //     openNotificationWithIcon("error", "Min Value or Max Value cannot be empty!");
-        //     return
-        //   }
-        // }
-      }
-    }
-    
+    let minMaxExmptyIfTheCheckBoxIsEnabled = false;
     const sortedData = [..._nestedRows].sort((a, b) => {
       const aKey = Object.keys(a)[0];
       const bKey = Object.keys(b)[0];
       return parseInt(aKey) - parseInt(bKey);
     });
 
-    console.log("DDDD", sortedData)
+    console.log("DDDD", sortedData);
+    const sortedDataForDefaultValue = [..._defaultRows].sort((a, b) => {
+      const aKey = Object.keys(a)[0];
+      const bKey = Object.keys(b)[0];
+      return parseInt(aKey) - parseInt(bKey);
+    });
+
+    sortedDataForDefaultValue.forEach((sec: any) => {
+      console.log("Default Section", sec);
+      const key = Object.keys(sec)[0];
+
+
+      const defaultActionSet = sec[key]?.actions[0];
+      console.log("defaultActionSet", defaultActionSet)
+      if (!defaultActionSet) {
+        isReferencesEmpty = true;
+        return;
+      }
+      const typeOfAction = defaultActionSet?.type
+      console.log("typeOfAction", typeOfAction);
+      let prepareForValidation = JSON.parse(JSON.stringify(sec[key].fields));
+      console.log("prepareForValidation", prepareForValidation);
+      prepareForValidation[0].expression = "Emp";
+      const _hasNullFields = hasNullFieldsDefault(prepareForValidation);
+      console.log("_hasNullFields Default Val", _hasNullFields);
+
+      if (_hasNullFields) {
+        console.log("Rej 1")
+        isfieldsHasEmptyFieldsDefault = true
+        return;
+      }
+
+      if (typeOfAction !== "CLE_Q" && !defaultActionSet?.value && defaultActionSet?.value !== 0) {
+        console.log("Rej 2")
+        isfieldsHasEmptyFieldsDefault = true;
+        return;
+      }
+
+      if ((typeOfAction === 'MAT_F' && defaultActionSet?.value?.length !== 3) || !defaultTabValidationPassed) {
+        console.log("Rej 3")
+        isfieldsHasEmptyFieldsDefault = true;
+        return;
+      }
+
+      if (typeOfAction === "ADD_V" && !defaultActionSet?.value && currentQuestionDetails?.questionType === dbConstants?.questionTypes?.numericQuestion && defaultActionSet?.value !== 0) {
+        isAddValuefieldsHasEmptyActionsDefault = true
+        console.log("Rej 4")
+        return;
+      }
+
+      const _defaultValue = convertJSONFormatToDBFormat(sec[key], true);
+      const __defaultValue = JSON.parse(JSON.stringify(_defaultValue));
+      console.log("Pushing Default", __defaultValue);
+      const _rule = __defaultValue['']?.length ? __defaultValue[''][0] : _defaultValue
+
+      const triggerId = defaultValueRuleNormal?.length + 1;
+      const value = defaultActionSet?.value;
+      const actionObj = createActionObject(typeOfAction, value);
+      
+      const obj = {
+        "id":`trigger_${triggerId}`,
+        "rule":{
+           "type":"QUESTION_RESPONSE",
+           "rule": _rule
+        },
+        "action": actionObj
+     }
+      defaultValueRuleNormal.push(obj);
+
+
+      console.log("Pushing defaultValueRuleNormal", defaultValueRuleNormal);
+      
+    });
+
+    console.log("Default normal", defaultValueRuleNormal)
+    if (defaultValueRuleNormal && defaultValueRuleNormal?.length) {
+      defaultTriggers = { triggers: defaultValueRuleNormal }
+    }
+
     sortedData.forEach((sec: any) => {
       console.log("SECCCCCCCC", sec);
       const key = Object.keys(sec)[0];
@@ -902,6 +1153,15 @@ const ParentComponent = ({
       const checkboxValues = sec[key]?.actions[0]?.checkBoxValues;
       const minMaxExists =
         Object.keys(sec[key]?.actions[0]?.minMax || {}).length !== 0;
+      if (minMaxExists) {
+        if (minMaxCheckBoxEnabled?.minCheckbox && (!sec[key]?.actions[0]?.minMax?.minValue || !sec[key]?.actions[0]?.minMax)) {
+          minMaxExmptyIfTheCheckBoxIsEnabled = true
+        }
+        if (minMaxCheckBoxEnabled?.maxCheckbox && (!sec[key]?.actions[0]?.minMax?.maxValue || !sec[key]?.actions[0]?.minMax)) {
+          minMaxExmptyIfTheCheckBoxIsEnabled = true
+        }
+      }
+     
       const isShowExists = checkboxValues?.some(
         (x: any) => Object.keys(x)[0] === "show"
       );
@@ -917,8 +1177,13 @@ const ParentComponent = ({
       console.log("isOutputDocShowExists ----> ", isOutputDocShowExists);
       console.log("isEnableExists ----> ", isEnableExists);
 
+     
       let prepareForValidation = JSON.parse(JSON.stringify(sec[key].fields));
       console.log("prepareForValidation", prepareForValidation);
+      if (!isShowExists && !isOutputDocShowExists && !isEnableExists && !minMaxExists && prepareForValidation?.length) {
+        isAtleastActionSelectedIfTheFieldsAreNotEmpty = true
+        return;
+      }
       prepareForValidation[0].expression = "Emp";
       const _hasNullFields = hasNullFields(prepareForValidation);
       if (_hasNullFields) {
@@ -1030,34 +1295,12 @@ const ParentComponent = ({
               "value": { "if": formattingForMax }
             }
           ])
-          // minMaxDBFormatArray = findAndUpdateLastNestedIf(
-          //   minMaxDBFormatArray,
-          //   {
-          //     if: [
-          //       _minMaxDbFormarFields,
-          //       [
-          //         {
-          //           type: "MINIMUM_LENGTH",
-          //           value: minValue,
-          //           inclusive: true,
-          //         },
-          //         {
-          //           type: "MAXIMUM_LENGTH",
-          //           value: maxValue,
-          //           inclusive: true,
-          //         },
-          //       ],
-          //     ],
-          //   },
-          //   true
-          // );
         }
       }
     });
 
     console.log("Show saving logic visibilityRule", visibilityRule);
     console.log("Show saving logic visibilityRuleNormal", visibilityRuleNormal);
-
     console.log("Show saving logic ValidationRule", validationRule);
     console.log(
       "Show saving logic Validation Rule Normal",
@@ -1161,8 +1404,30 @@ const ParentComponent = ({
     );
     console.log("savedMinMaxRuleFinalFormat", savedMinMaxRuleFinalFormat);
 
+    if (isAtleastActionSelectedIfTheFieldsAreNotEmpty) {
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_AtLeastOneActionNeedToSelect);
+      return;
+    }
+    if (isAddValuefieldsHasEmptyActionsDefault) {
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_AddValErrorMessage);
+      return;
+    }
+    if (isReferencesEmpty) {
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_DefaultValueErrorMessage);
+      return;
+    }
+    if (isfieldsHasEmptyFieldsDefault) {
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_DefaultValueErrorMessageFieldEmpty);
+      return;
+    }
+
     if (isfieldsHasEmptyFields) {
-      openNotificationWithIcon("error", "Fields cannot be empty!");
+      openNotificationWithIcon("error",languageConstants?.ExpressionBuilder_ValidationRuleFieldEmpty);
+      return;
+    }
+
+    if (minMaxExmptyIfTheCheckBoxIsEnabled) {
+      openNotificationWithIcon("error",languageConstants?.ExpressionBuilder_ValidationMustPassed);
       return;
     }
     
@@ -1175,24 +1440,57 @@ const ParentComponent = ({
         savedVisibilityRuleFinalFormat ? savedVisibilityRuleFinalFormat : {},
         savedValidationRuleFinalFormat ? savedValidationRuleFinalFormat : {},
         savedOutputDocShowRuleFinalFormat ? savedOutputDocShowRuleFinalFormat : {},
-        !savedMinMaxRuleFinalFormat?.length ? {} : savedMinMaxRuleFinalFormat
+        !savedMinMaxRuleFinalFormat?.length ? {} : savedMinMaxRuleFinalFormat,
+        defaultTriggers ? defaultTriggers : {}
       );
     } else {
-      openNotificationWithIcon("error", "Validation Must be passed!");
+      openNotificationWithIcon("error", languageConstants?.ExpressionBuilder_ValidationMustPassed);
       return;
     }
   };
 
-  const languageChangeHandler = (e: any) => {
-    console.log("EEEEcdsefef", e)
-    setSelectedLanguage(e?.target?.value)
-    setLanguageConstants(languageConstantsForCountry[e?.target?.value]);
+  const messageHandler = async () => {
+    try {
+      const languageConstantsFromResTable = await loadResourceString();
+      if (languageConstantsFromResTable?.data && languageConstants?.length) {
+        console.log("languageConstantsFromResTable 2", languageConstantsFromResTable);
+        const mergedObject = languageConstantsFromResTable?.data.reduce((result: any, currentObject: any) => {
+          return Object.assign(result, currentObject);
+        }, {});
+        if (Object.keys(mergedObject).length) {
+          const originalConstants = languageConstants[0];
+          const updatedValues = mergedObject[0];
+  
+          for (const key in updatedValues) {
+            if (key in updatedValues && key in originalConstants) {
+              originalConstants[key] = updatedValues[key];
+            }
+          }
+          setLanguageConstants(originalConstants);
+        }
+      }
+    } catch (error) {
+      console.log('error ====>', error);
+    }
   }
+
+  const tabsChangeHandler = (e: any) => {
+    console.log("tabsChangeHandler", e)
+    setSelectedTab(e?.target?.value)
+  }
+  
+  useEffect(() => {
+    console.log("_defaultRows", _defaultRows)
+  }, [_defaultRows]);
+
+  useEffect(() => {
+    console.log("_nestedRows", _nestedRows)
+  }, [_nestedRows]);
 
   return (
     <div>
       {contextHolder}
-      <div className="country-lan">
+      {/* <div className="country-lan">
         <Radio.Group
           options={countryMappedConfigs}
           onChange = { (e) => languageChangeHandler(e)}
@@ -1201,9 +1499,32 @@ const ParentComponent = ({
           buttonStyle="solid"
       />
 
-      </div>
-      {!isApiDataLoaded ? (
-        <div className="validation-wrap">
+      </div> */}
+     
+      {
+        currentPossitionDetails?.currentPosition === 'question' && currentQuestionDetails?.questionType !== "Grid" &&
+        < div className="tabs-configs">
+        <Radio.Group
+              options={tabsConfigs?.map((tab: any) => { 
+                if (tab.value === 'vr') {
+                  return { ...tab, label: languageConstants?.ExpressionBuilder_ValidationRuleTab };
+                } else if (tab.value === 'dv') {
+                  return { ...tab, label: languageConstants?.ExpressionBuilder_DefaultValueTab };
+                }
+              })}
+            onChange = { (e) => tabsChangeHandler(e)}
+            value={selectedTab}
+            optionType="button"
+            buttonStyle="solid"
+        />
+         </div>
+      }
+  
+      <div className="validation-wrap">
+      {
+        selectedTab === 'vr' ? <>
+              {!isApiDataLoaded ? (
+              <div>
           {currentPossitionDetails && (
             <div>
               <div className="nestedBtns">
@@ -1211,10 +1532,10 @@ const ParentComponent = ({
                   className="mr-10 btn-default"
                   onClick={addComponent}
                   disabled={suerveyIsPublished}>
-                  {languageConstants?.addButton}
+                  {"+ " + languageConstants?.ExpressionBuilder_AddButton}
                 </Button>
                 <Button className="btn-default" onClick={addNestedComponent} disabled={suerveyIsPublished}>
-                {languageConstants?.addNestedButton}
+                {"+ " + languageConstants?.ExpressionBuilder_AddNestedButton}
                 </Button>
               </div>
               {sections?.length > 0 &&
@@ -1237,6 +1558,11 @@ const ParentComponent = ({
                       currentQuestionDetails={currentQuestionDetails}
                       handleSectionRemove={handleSectionRemove}
                       languageConstants={languageConstants}
+                      tabType={dbConstants?.tabTypes?.validationTab}
+                      setDefaultTabValidationPassed={setDefaultTabValidationPassed}
+                      // setDefaultActionSetWhenRetriving={setDefaultActionSetWhenRetriving}
+                      // defaultActionSetWhenRetriving={defaultActionSetWhenRetriving}
+                      setMinMaxCheckboxEnabled={setMinMaxCheckboxEnabled}
                     />
                   </div>
                 ))}
@@ -1248,24 +1574,92 @@ const ParentComponent = ({
                     className="btn-primary"
                     disabled={suerveyIsPublished}
                   >
-                    {languageConstants?.saveButtonConstants}
+                    {languageConstants?.ExpressionBuilder_SaveButtonConstants}
                     
                   </Button>
                 </div>
               )}
             </div>
           )}
-        </div>
+       </div>
       ) : (
         <Space size="middle">
           <div>
-            <div>{languageConstants?.questionsLoadingConstants}</div>
+            <div>{languageConstants?.ExpressionBuilder_QuestionsLoadingConstants}</div>
               <div style={{marginTop: '10px'}}>
               <Spin />
             </div>
           </div>
         </Space>
       )}
+          </> : <>
+              
+              {!isApiDataLoaded ? (
+                <div>
+                  {((currentPossitionDetails && currentQuestionDetails) || localTest) && (
+                    <div>
+                      <div className="nestedBtns">
+                        <Button
+                          className="mr-10 btn-default"
+                          onClick={() => addDefaultComponent()}
+                          disabled={suerveyIsPublished}>
+                          {"+ " + languageConstants?.ExpressionBuilder_AddButton}
+                        </Button>
+                      </div>
+                      {/* <div> Default Tab </div> */}
+                      {defaultSections?.length > 0 &&
+                        defaultSections.map((section) => (
+                          <div key={section.key} className="nested-wrap">
+                            <SectionContainer
+                              sectionLevel={section.key}
+                              conditionData={conditionData}
+                              setConditionData={setConditionData}
+                              _setNestedRows={_setDefaultRows}
+                              _nestedRows={_defaultRows}
+                              isNested={isNested}
+                              currentPossitionDetails={currentPossitionDetails}
+                              questionList={questionList}
+                              setValidation={setValidation}
+                              // setDeleteSectionKey={setDeleteSectionKey}
+                              setSaveAsIsNested={setSaveAsIsNested}
+                              imageUrls={{ imageUrl, imageUrl1, imageUrl2 }}
+                              suerveyIsPublished={suerveyIsPublished}
+                              currentQuestionDetails={currentQuestionDetails}
+                              handleSectionRemove={handleSectionRemove}
+                              languageConstants={languageConstants}
+                              tabType={dbConstants?.tabTypes?.defaultValueTab}
+                              setDefaultTabValidationPassed={setDefaultTabValidationPassed}
+                              // setDefaultActionSetWhenRetriving={setDefaultActionSetWhenRetriving}
+                              // defaultActionSetWhenRetriving={defaultActionSetWhenRetriving}
+                              setMinMaxCheckboxEnabled={setMinMaxCheckboxEnabled}
+                            />
+                          </div>
+                        ))}
+                      <div className="text-right">
+                        <Button
+                          onClick={handleSaveLogic}
+                          className="btn-primary"
+                          disabled={suerveyIsPublished}
+                        >
+                          {languageConstants?.ExpressionBuilder_SaveButtonConstants}
+                    
+                        </Button>
+                      </div>
+                    </div>)}</div>) : (
+        <Space size="middle">
+          <div>
+            <div>{languageConstants?.ExpressionBuilder_QuestionsLoadingConstants}</div>
+              <div style={{marginTop: '10px'}}>
+              <Spin />
+            </div>
+          </div>
+        </Space>
+      )
+}
+            </>
+          
+      }
+      </div>
     </div>
   );
 };

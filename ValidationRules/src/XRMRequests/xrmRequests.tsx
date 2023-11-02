@@ -2,6 +2,7 @@ import * as React from "react";
 import operationsSampleData from '../SampleData/sampleInputQuestion';
 import { dbConstants } from "../constants/dbConstants";
 import { LogicNewSample, questionArraySample } from "../SampleData/SampleLogicData";
+import { filterKeys } from "../constants/filterKeys";
 
 declare global {
   interface Window {
@@ -28,7 +29,7 @@ export const loadAllQuestionsInSurvey = async () => {
     return {
       error: true,
       // data: [],
-      data: []
+      data: questionArraySample
     }
   }
 }
@@ -103,6 +104,7 @@ export const saveValidationRules = async(validationRuleData: object) => {
       else if(result?.gyde_visibilityrule) _result = result[dbConstants.common.gyde_visibilityrule];
       // else if(result?.gyde_validationrule?.length) _result = result[dbConstants.common.gyde_validationrule];
       else if (result?.gyde_documentoutputrule) _result = result[dbConstants.question.gyde_documentOutputRule];
+      else if(result?.gyde_questionresponsedefaultrule) _result = result[dbConstants.question.gyde_defaultValueFormula];
       // console.log("RESULTTT", _result)
       // if (_result) {
       //   _result = JSON.parse(_result)
@@ -243,3 +245,40 @@ export const getPublishedStatus = async (currentPositionDetails: any) : Promise<
     return { error: true, data: {} }
   }
 }
+
+export const loadResourceString = async () : Promise<any> => {
+
+  const url = await window.parent.Xrm.Utility.getGlobalContext().getClientUrl();
+  const language = await window.parent.Xrm.Utility.getGlobalContext().userSettings.languageId
+  const webResourceUrl = `${url}/WebResources/gyde_localizedstrings.${language}.resx`;
+  const mapper: any = [];
+
+  try {
+    const response = await fetch(`${webResourceUrl}`);
+    const data = await response.text();
+    console.log("Web Res Dataaa", data);
+    console.log("Filter Keyssss", filterKeys);
+    filterKeys?.map((filterKey: string, index: number) => {
+      const parser = new DOMParser();
+      // Parse the XML string
+      const xmlDoc = parser.parseFromString(data, "text/xml");
+      // Find the specific data element with the given key
+      const dataNode: any = xmlDoc.querySelector(`data[name="${filterKey}"]`);
+      // Extract the value from the data element
+      const value: any = dataNode?.querySelector("value").textContent;
+      console.log('data ====> ', index, value); 
+      if (index && value) {
+        mapper.push({ [filterKey]: value });
+      }
+    });
+    
+    return {
+      error: false, data: mapper
+    }
+  } catch (e) {
+    console.log("Language Translation Error", e);
+    return {
+      error: true, data: {}
+    }
+  }
+  }

@@ -13,7 +13,6 @@ interface DropDownCommonProps {
 const DropDown: React.FC<DropDownCommonProps> = ({ dropDownData, isDisabled, setExpression, changedId, fieldName, selectedValue }) => {
 
   const searchFilterSort = (optionA: any, optionB: any) => {
-    console.log("Drop orppPPPP", optionA, optionB);
     return (optionA?.label ?? '')?.toLowerCase().localeCompare((optionB?.label ?? '')?.toLowerCase());
 }
 
@@ -27,7 +26,7 @@ const searchFilterOption = (input: any, option: any) => {
       <Select
         showSearch
         // style={{ width: '150px' }}
-        style={fieldName === 'expression' ? { width: '100px' } : fieldName === 'condition' ? { width: '150px' } : { width: '150px' }}
+        style={fieldName === 'expression' ? { width: '100px' } : fieldName === 'condition' ? { width: '150px' } : { width: '220px' }}
         placeholder={fieldName === 'expression' ? "": "Value"}
         optionFilterProp="children"
         filterOption={searchFilterOption}

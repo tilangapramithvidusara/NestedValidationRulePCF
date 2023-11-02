@@ -26,7 +26,6 @@ const ListDropDown: React.FC<ListDropDownCommonProps> = ({ dropDownData, isDisab
   }, [listDropDownData]);
 
   const searchFilterSort = (optionA: any, optionB: any) => {
-    console.log("List orppPPPP", optionA, optionB);
     return (optionA?.label ?? '')?.toLowerCase().localeCompare((optionB?.label ?? '')?.toLowerCase());
 }
 
@@ -50,9 +49,9 @@ const searchFilterOption = (input: any, option: any) => {
           options={dropDownValues}
           disabled={isDisabled ? isDisabled : false}
           onChange={(input, option) => setFieldValue({ input: input, changedId, fieldName })}
-        defaultValue={selectedValue}
-        filterOption={searchFilterOption}
-            filterSort={searchFilterSort}
+          defaultValue={selectedValue}
+          filterOption={searchFilterOption}
+          filterSort={searchFilterSort}
         />
       }
     </div>
