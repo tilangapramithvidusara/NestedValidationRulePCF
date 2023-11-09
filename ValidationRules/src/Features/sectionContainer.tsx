@@ -193,7 +193,7 @@ function SectionContainer({
     console.log("Min Max Rendering maxValue ..... ", maxValue?.input);
     console.log("Min Max Rendering Only minValue ..... ", minValue);
 
-    if (minValue?.input || maxValue?.input) {
+    if ((minValue?.input || maxValue?.input)) {
       setMinMaxValue({ minValue: minValue?.input, maxValue: maxValue?.input });
       let releatedFields = _nestedRows.find(
         (x: { [x: string]: any }) => x[sectionLevel]
@@ -228,34 +228,27 @@ function SectionContainer({
   }, [minValue, maxValue]);
 
   useEffect(() => {
+    // if (
+    //   (typeof minMaxValue?.minValue === "number" &&
+    //   typeof minMaxValue?.maxValue === "number" &&
+    //     minMaxValue?.maxValue < minMaxValue?.minValue)
+    // ) {
+    //   setMinMaxValidation(false);
+    // } else {
+    //   setMinMaxValidation(true);
+    // }
     if (
-      typeof minMaxValue?.minValue === "number" &&
-      typeof minMaxValue?.maxValue === "number" &&
-      minMaxValue?.maxValue < minMaxValue?.minValue
+      Number(minMaxValue?.maxValue) < Number(minMaxValue?.minValue)
     ) {
       setMinMaxValidation(false);
     } else {
       setMinMaxValidation(true);
     }
-    // if (!minMaxValidation) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } });
-    // else if (typeof minMaxValue?.minValue === 'number' && typeof minMaxValue?.maxValue === 'number' && minMaxValue?.maxValue < minMaxValue?.minValue) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } });
-    // else { setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } }) }
+
   }, [minMaxValue]);
-
-  // useEffect(() => {
-  //   // if (!maxCheckboxEnabled && !minCheckboxEnabled) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } })
-  //   if (!maxCheckboxEnabled && !minCheckboxEnabled) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } })
-  //   else if(!maxCheckboxEnabled || !minCheckboxEnabled) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } })
-  //   else if(maxCheckboxEnabled && minCheckboxEnabled) setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } })
-  // }, [maxCheckboxEnabled, minCheckboxEnabled])
-
-  // const handleSectionRemove = () => {
-  //     setDeleteSectionKey(sectionLevel)
-  // }
 
   useEffect(() => {
     console.log("Rendering Default Value")
-
     let releatedFields = _nestedRows?.find(
       (x: { [x: string]: any }) => x[sectionLevel]
     );
@@ -299,25 +292,46 @@ function SectionContainer({
         setRadioDefaultValOption(releatedActionsForSefaultValue[0]?.type);
         setCheckedReferences(true);
         if (releatedActionsForSefaultValue[0]?.type === "MAT_F") {
-          console.log("Mathematical Operator");
-          const operator = Object.keys(
+          const operator : any = Object.keys(
             releatedActionsForSefaultValue[0]?.value
           )[0];
-          const values = releatedActionsForSefaultValue[0].value[operator];
-          console.log("Mathematical Operator", values);
-          console.log("Mathematical Operator operator", values);
+          console.log("Mathematical Operator Name", operator);
 
-          const array = [values[0]?.var, operator, values[1]];
-          setDefaultMathematicalOperators(array);
-          setSelectedValues(array);
-          setPickQuestionDefault(values[0]?.var);
-          setPickOperatorDefault(operator);
-          setPickQuestion2Default(values[1]);
-          setCheckedReferencesQuesOrVal(questionList?.filter((ques: any) => ques?.value === values[1])?.length ? true : false)
+          
+          if (operator === "0") {
+            console.log("JJHHFGJDDD");
+            const values = releatedActionsForSefaultValue[0].value;
+            console.log("Mathematical Operatordd ssadwawdaw", values);
+            console.log("Mathematical Operatordd awdawdawdawd", values);
+
+  
+            const array = [values[0], values[1], values[2]];
+            setDefaultMathematicalOperators(array);
+            setSelectedValues(array);
+            setPickQuestionDefault(values[0]);
+            setPickOperatorDefault(values[1]);
+            setPickQuestion2Default(values[2]);
+
+            setCheckedReferencesQuesOrVal(questionList?.filter((ques: any) => ques?.value === values[1])?.length ? true : false)
+          } else {
+            const values = releatedActionsForSefaultValue[0].value[operator];
+            console.log("Mathematical Operator", values);
+            console.log("Mathematical Operator operator", values);
+
+            const array = [values[0]?.var, operator, values[1]];
+            setDefaultMathematicalOperators(array);
+            setSelectedValues(array);
+            setPickQuestionDefault(values[0]?.var);
+            setPickOperatorDefault(operator);
+            setPickQuestion2Default(values[1]);
+            setCheckedReferencesQuesOrVal(questionList?.filter((ques: any) => ques?.value === values[1])?.length ? true : false);
+          }
         } else {
           setAddValue(releatedActionsForSefaultValue[0]?.value);
         }
        
+      } else {
+        setDefaultActionSetWhenRetriving(radioDefaultValOption ? { type: radioDefaultValOption } : { type: "disable" } );
       }
 
       setMinCheckboxEnabled(
@@ -326,7 +340,9 @@ function SectionContainer({
       );
       setToggledEnableMin(
         typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.minValue !== "string"
+          ?.actions[0]?.minMax?.minValue !== "string" ||
+         _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
+          ?.actions[0]?.minMax?.minValue === "0"
       );
       setMaxCheckboxEnabled(
         _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
@@ -334,7 +350,9 @@ function SectionContainer({
       );
       setToggledEnableMax(
         typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.maxValue !== "string"
+          ?.actions[0]?.minMax?.maxValue !== "string" ||
+        _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
+          ?.actions[0]?.minMax?.minValue === "0"
       );
       setMinMaxValue({
         minValue: _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
@@ -574,13 +592,21 @@ function SectionContainer({
           },
         ])
       );
-    } else if (radioDefaultValOption === "MAT_F") {
+    } else if (radioDefaultValOption === "MAT_F" && addValue?.length) {
       console.log("Add Value Questions ");
       _setNestedRows(
         updateAllLevelActionsArray(_nestedRows, sectionLevel, [
           {
             type: "MAT_F",
-            value: addValue,
+            value: addValue
+            // value: {
+            //   [addValue[1]] : [
+            //     {
+            //         "var": addValue[0]
+            //     },
+            //     addValue[2]
+            // ]
+            // },
           },
         ])
       );
@@ -599,9 +625,10 @@ function SectionContainer({
     if (radioDefaultValOption === "MAT_F" && checkedReferences) {
       if (pickOperatorDefault && pickQuestion2Default && pickQuestionDefault) {
         setAddValue([pickQuestionDefault, pickOperatorDefault, pickQuestion2Default]);
+        console.log("Passed Default")
         setDefaultTabValidationPassed(true)
-      }
-      if (!pickOperatorDefault || !pickQuestion2Default || !pickQuestionDefault) {
+      } else {
+        console.log("FAILED Default")
         setDefaultTabValidationPassed(false)
       }
     } else {
@@ -611,9 +638,6 @@ function SectionContainer({
 
   }, [pickOperatorDefault, pickQuestionDefault, pickQuestion2Default]);
 
-  useEffect(() => {
-    console.log("radioDefaultValOption", radioDefaultValOption)
-  }, [radioDefaultValOption])
   return (
     <div>
       {rows &&
@@ -703,7 +727,10 @@ function SectionContainer({
                           typeof _nestedRows?.find(
                             (x: any) => x[sectionLevel]
                           )?.[sectionLevel]?.actions[0]?.minMax?.minValue !==
-                          "string"
+                          "string" || _nestedRows?.find(
+                            (x: any) => x[sectionLevel]
+                          )?.[sectionLevel]?.actions[0]?.minMax?.minValue ===
+                          "0"
                         }
                       />
                     </div>
@@ -785,7 +812,10 @@ function SectionContainer({
                           typeof _nestedRows?.find(
                             (x: any) => x[sectionLevel]
                           )?.[sectionLevel]?.actions[0]?.minMax?.maxValue !==
-                          "string"
+                          "string" || _nestedRows?.find(
+                            (x: any) => x[sectionLevel]
+                          )?.[sectionLevel]?.actions[0]?.minMax?.maxValue ===
+                          "0"
                         }
                       />
                     </div>
@@ -1021,7 +1051,8 @@ function SectionContainer({
                           <>
                             <div className="mr-36"> {" "}
                               {languageConstants?.ExpressionBuilder_SelectAValue + " "} : {" "} </div>
-                            <Input
+                              <Input
+                              type="number"
                               disabled={suerveyIsPublished}
                               placeholder={languageConstants?.ExpressionBuilder_AddValue}
                               style={{ width: "200px" }}
@@ -1046,10 +1077,10 @@ function SectionContainer({
                         style={{ width: "50%" }}
                         onChange={(e: any) => {
                           console.log("EEEEESD", e);
-                          setAddValue(e?.toString()?.replace(/\D/g, ''));
+                          setAddValue(e);
                         }}
                         defaultValue={defaultActionSetWhenRetriving?.value}
-                        value={!addValue ? 0 : addValue}
+                        value={addValue}
                       />
                     ) : currentQuestionDetails?.questionType === "Date" ? (
                       <Space direction="vertical" size={17}>

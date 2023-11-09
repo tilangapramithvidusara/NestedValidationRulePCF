@@ -834,7 +834,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                       {dropDownQuestionList?.find(
                         (x: { value: string }) => x?.value === condition?.field
                       )?.questionType === dbConstants.questionTypes.numericQuestion ? (
-                        <NumberInputField
+                            <NumberInputField
                           selectedValue={condition?.value}
                           handleNumberChange={{}}
                           defaultDisabled={suerveyIsPublished ? suerveyIsPublished : false}
