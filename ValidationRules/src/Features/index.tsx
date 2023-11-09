@@ -14,9 +14,7 @@ import utilHelper from "../utilHelper/utilHelper";
 import { Button, MenuProps, notification, Radio, Select, Space, Spin } from "antd";
 import SectionContainer from "./sectionContainer";
 import {
-  updateDataRequest,
   getCurrentState,
-  getCurrentId,
   fetchRequest,
   saveRequest,
   loadAllQuestionsInSurvey,
@@ -27,20 +25,16 @@ import { dbConstants } from "../constants/dbConstants";
 import { normalConverter } from "../Utils/dbFormatToJson";
 import { hasNullFields, hasNullFieldsDefault } from "../Utils/utilsHelper";
 import { languageConstantsForCountry } from "../constants/languageConstants";
-import Dropdown from "antd/es/dropdown/dropdown";
-import { DownOutlined } from "@ant-design/icons";
-import countryMappedConfigs from "../configs/countryMappedConfigs";
 import tabsConfigs from "../configs/tabsConfigs";
-// import NotificationPopup from "../Components/NotificationPopup";
 
 const ParentComponent = ({
   imageUrl,
   imageUrl1,
   imageUrl2,
 }: {
-  imageUrl: string;
-  imageUrl1: string;
-  imageUrl2: string;
+  imageUrl?: string;
+  imageUrl1?: string;
+  imageUrl2?: string;
 }) => {
   const [conditionData, setConditionData] = useState<any[]>([]);
 
@@ -215,10 +209,6 @@ const ParentComponent = ({
     }
     
   }, [questionList, currentPossitionDetails]);
-
-  useEffect(() => {
-    console.log("questionList", questionList);
-  }, [questionList]);
 
   useEffect(() => {
     setSections(
@@ -858,12 +848,12 @@ const ParentComponent = ({
     //   },
     // ]);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [ [ { "type": "MINIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, 2 ] } }, { "type": "MAXIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, null ] } } ] ]}]);
-    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [[{"type":"MINIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]}]}},{"type":"MAXIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},111]}]},4]}}]]}]);
+    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [[{"type":"MINIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"TDSTem_C01_S01_NO"},3]}]},"0"]}},{"type":"MAXIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"TDSTem_C01_S01_NO"},3]}]},null]}}]]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
     // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } }]}  }] )
     // _setDefaultValyeRule([ { "id": "trigger_1", "rule": { "type": "QUESTION_RESPONSE", "rule": { "and": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-10-02" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "333" ] } ] } }, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } } ])
-    // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_RESPONSE", "questionId": "Q_002", "value": 55} }]}  }] )
+    // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TDSTem_C01_S01_Str"},"89"]}},"action":{"type":"SET_RESPONSE","value":{"/":[{"var":"TDSTem_C01_S01_NO"},"TDSTem_C01_S01_NO"]}}}]}  }] )
 
   };
   const getCurrentPublishedStatus = async () => {
@@ -1100,12 +1090,12 @@ const ParentComponent = ({
       }
 
       if (typeOfAction !== "CLE_Q" && !defaultActionSet?.value && defaultActionSet?.value !== 0) {
-        console.log("Rej 2")
+        console.log("Rej 2", defaultActionSet?.value)
         isfieldsHasEmptyFieldsDefault = true;
         return;
       }
 
-      if ((typeOfAction === 'MAT_F' && defaultActionSet?.value?.length !== 3) || !defaultTabValidationPassed) {
+      if (typeOfAction === 'MAT_F' && !defaultTabValidationPassed) {
         console.log("Rej 3")
         isfieldsHasEmptyFieldsDefault = true;
         return;
@@ -1270,12 +1260,12 @@ const ParentComponent = ({
         console.log("Min Max ", minMax);
 
         if (minMax) {
-          if (minMax.minValue && typeof minMax.minValue === "string" ) {
+          if (minValue && typeof minValue === "string" && minValue !== "0" ) {
             minValue = {
               var: minMax?.minValue,
             };
           }
-          if (minMax.maxValue && typeof minMax.maxValue === "string") {
+          if (maxValue && typeof maxValue === "string" && minValue !== "0" ) {
             maxValue = {
               var: minMax?.maxValue,
             };
