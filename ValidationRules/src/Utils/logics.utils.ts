@@ -283,9 +283,11 @@ function convertMinMaxDBFormatToJSON(obj: { and: any }, level = 1) {
 
 const convertJSONFormatToDBFormat = (
   allSections: any,
-  visibilityRuleOverride: boolean
+  visibilityRuleOverride: boolean,
+  currentQuestionDetails?: any
 ) => {
   let result = [];
+  let isValidation = false;
   const minMax = allSections?.actions[0]?.minMax;
   const arr = allSections.fields;
 
@@ -380,12 +382,14 @@ const convertJSONFormatToDBFormat = (
   }
 
   function buildInnerConditions(innerConditions: any): any {
-    let innerResult : any = [];
+    let innerResult: any = [];
+
     for (const innerCondition of innerConditions)  {
       const condition = buildCondition(innerCondition);
       // console.log("condition", innerCondition)
       const exp = innerCondition?.innerConditions[1]?.expression
       // console.log("condition exp", exp?.innerConditions[1]?.expression)
+      // if(currentQuestionDetails?.questionId === innerCondition?.field) isValidation = true
 
       if (condition) {
         innerResult.push(condition);
@@ -406,6 +410,10 @@ const convertJSONFormatToDBFormat = (
 
   for (const conditionObj of arr) {
     const condition = buildCondition(conditionObj);
+    console.log("currentQuestionDetails?.questionId 123", currentQuestionDetails?.questionId);
+    console.log("conditionObj?.field 123", conditionObj)
+    if(currentQuestionDetails?.value === conditionObj?.field) isValidation = true
+
     if (condition) {
       result.push(condition);
     }
@@ -420,7 +428,7 @@ const convertJSONFormatToDBFormat = (
   }
 
   // return { "and": result };
-  return { [parentExpression]: result };
+  return { exp: { [parentExpression]: result }, validation: isValidation };
 };
 
 // const convertJSONFormatToDBFormat = (

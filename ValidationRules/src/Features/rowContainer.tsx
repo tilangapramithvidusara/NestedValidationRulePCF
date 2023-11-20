@@ -777,8 +777,11 @@ const RowContainer: React.FC<TableRowProps> = ({
                       <div className="condition-label">{languageConstants?.ExpressionBuilder_FieldLabel} </div>
                       <FieldInput
                         sampleData={
-                          dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList?.filter((x: { value: any; }) => x?.value !== currentQuestionDetails?.value)
-                          
+                          tabType ===  dbConstants?.tabTypes?.defaultValueTab ? 
+                          dropDownQuestionList &&
+                          dropDownQuestionList.length &&
+                          dropDownQuestionList?.filter((x: { value: any; }) => x?.value !== currentQuestionDetails?.value)
+                          :  dropDownQuestionList
                         }
                         selectedValue={condition?.field}
                         overrideSearch={false}
