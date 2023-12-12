@@ -19,7 +19,7 @@ import { CheckboxValueType } from "antd/es/checkbox/Group";
 import NumberInputField from "../Components/commonComponents/NumberInputField";
 import sampleInputQuestion from "../SampleData/sampleInputQuestion";
 import { updateAllLevelActionsArray } from "../Utils/utilsHelper";
-import { loadAllQuestionsInSurvey } from "../XRMRequests/xrmRequests";
+import { getListAnswersByQuestionId, loadAllQuestionsInSurvey } from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
 import type { SelectProps } from "antd";
 import type { SizeType } from "antd/es/config-provider/SizeContext";
@@ -70,7 +70,8 @@ interface SectionProps {
   languageConstants: any;
   tabType: any;
   setDefaultTabValidationPassed: any;
-  setMinMaxCheckboxEnabled: any
+  setMinMaxCheckboxEnabled: any,
+  currentListQuestionAnswers?: any
 }
 
 function SectionContainer({
@@ -91,7 +92,8 @@ function SectionContainer({
   languageConstants,
   tabType,
   setDefaultTabValidationPassed,
-  setMinMaxCheckboxEnabled
+  setMinMaxCheckboxEnabled,
+  currentListQuestionAnswers
 }: SectionProps) {
   const [rowData, setRowData] = useState<any>();
   const [toggleEnableMin, setToggledEnableMin] = useState<any | null>(false);
@@ -164,6 +166,11 @@ function SectionContainer({
   useEffect(() => {
     console.log("_nestedRows from Section", _nestedRows);
   }, [_nestedRows]);
+
+  useEffect(() => {
+    console.log("currentListQuestionAnswers from sec", currentListQuestionAnswers)
+  }, [currentListQuestionAnswers]);
+
   useEffect(() => {
     let releatedFields = _nestedRows.find(
       (x: { [x: string]: any }) => x[sectionLevel]
@@ -378,6 +385,8 @@ function SectionContainer({
       setDefaultActionSetWhenRetriving(radioDefaultValOption ? { type: radioDefaultValOption } : { type: "disable" } );
     }
   }, []);
+
+
 
   useEffect(() => {
     setDefaultActions(
@@ -903,9 +912,15 @@ function SectionContainer({
                     <Radio value={"ADD_V"}>
                       {languageConstants?.ExpressionBuilder_AddValOrSetVal}
                     </Radio>
-                    <Radio value={"VAL_Q"}>
-                      {languageConstants?.ExpressionBuilder_ValFromAnotherQues}
-                    </Radio>
+
+                    {(currentQuestionDetails?.questionType !==
+                      dbConstants?.questionTypes?.listQuestion) && (
+                        <Radio value={"VAL_Q"}>
+                          {languageConstants?.ExpressionBuilder_ValFromAnotherQues}
+                      </Radio>
+                      )}
+                    
+                    
                     {(currentQuestionDetails?.questionType ===
                       dbConstants?.questionTypes?.numericQuestion ||
                       currentQuestionDetails?.questionType ===
@@ -1108,6 +1123,19 @@ function SectionContainer({
                           style={{ width: "150px" }}
                         />
                       </Space>
+                    ) : currentQuestionDetails?.questionType === "List" ? (
+                      // <Space direction="vertical" size={50}>
+                         <Select
+                          showSearch
+                          placeholder={languageConstants?.selectaQues}
+                          optionFilterProp="children"
+                          style={{ width: "30%" }}
+                          onChange={(e: any) => setAddValue(e)}
+                          disabled={suerveyIsPublished}
+                          options={currentListQuestionAnswers && currentListQuestionAnswers?.listAnswers?.length && currentListQuestionAnswers?.listAnswers}
+                          value={!addValue ? null : addValue}
+                        />
+                      // </Space>
                     ) : (
                       <Input
                         disabled={suerveyIsPublished}
