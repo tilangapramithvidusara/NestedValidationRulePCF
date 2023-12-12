@@ -1,7 +1,7 @@
 export const languageConstantsForCountry : any = {
     en: {
         ExpressionBuilder_SaveButtonConstants: "Save",
-        ExpressionBuilder_QuestionsLoadingConstants: "Questions Loading...!",
+        ExpressionBuilder_QuestionsLoadingConstants: "Questions Loading...",
         ExpressionBuilder_AddButton: "Add",
         ExpressionBuilder_RemoveButton: "Delete",
         ExpressionBuilder_AddNestedButton: "Add Nested",
@@ -37,13 +37,13 @@ export const languageConstantsForCountry : any = {
         ExpressionBuilder_AddValErrorMessage:	"Add value or set value required numbers.",
         ExpressionBuilder_DefaultValueErrorMessage:	"Please select an action in Default Value tab.",
         ExpressionBuilder_DefaultValueErrorMessageFieldEmpty:	"Fields cannot be empty in Default value tab.",
-        ExpressionBuilder_ValidationRuleFieldEmpty:	"Fields cannot be empty in validarion rule tab.",
-        ExpressionBuilder_DataSaved:	"Data Saved!",
-        ExpressionBuilder_ValidationMustPassed:	"Validation Must be passed!",
+        ExpressionBuilder_ValidationRuleFieldEmpty:	"Fields cannot be empty in validation rule tab.",
+        ExpressionBuilder_DataSaved:	"Data Saved.",
+        ExpressionBuilder_ValidationMustPassed:	"Validation Must be passed.",
         ExpressionBuilder_FristExpCannotChanged: "First Selected Expression cannot be changed.",
-        ExpressionBuilder_SelectQuestions: "Select Questions",
-        ExpressionBuilder_FieldsEmpty: "Fields cannot be empty",
-        ExpressionBuilder_ErrorOccured: "Error Occured!",
+        ExpressionBuilder_SelectQuestions: "Select Questions.",
+        ExpressionBuilder_FieldsEmpty: "Fields cannot be empty.",
+        ExpressionBuilder_ErrorOccured: "Error Occured.",
         ExpressionBuilder_AtLeastOneActionNeedToSelect: "If the fields are not empty, you must select at least one action.",
         ExpressionBuilder_SameQuesRefForCurrentQuestion: "You cannot select the current question in a visibility rule."
 

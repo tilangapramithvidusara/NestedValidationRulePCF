@@ -19,6 +19,7 @@ import {
   Select,
   Space,
   Spin,
+  Modal
 } from "antd";
 import SectionContainer from "./sectionContainer";
 import {
@@ -28,12 +29,16 @@ import {
   loadAllQuestionsInSurvey,
   getPublishedStatus,
   loadResourceString,
+  getListAnswersByQuestionId,
 } from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
 import { normalConverter } from "../Utils/dbFormatToJson";
 import { hasNullFields, hasNullFieldsDefault } from "../Utils/utilsHelper";
 import { languageConstantsForCountry } from "../constants/languageConstants";
 import tabsConfigs from "../configs/tabsConfigs";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+
+const { confirm } = Modal;
 
 const ParentComponent = ({
   imageUrl,
@@ -55,6 +60,7 @@ const ParentComponent = ({
   const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
   // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
   //   currentPosition: "question",
+  //   questionType: "List"
   // });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
@@ -82,11 +88,12 @@ const ParentComponent = ({
     minCheckbox: false,
     maxCheckbox: false,
   });
+  const [currentListQuestionAnswers, setCurrentListQuestionAnswers] = useState();
 
   //   const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
   //     "label": "TSDTem_C01_S01_date",
   //     "value": "TSDTem_C01_S01_date",
-  //     "questionType": "Numeric",
+  //     "questionType": "List",
   //     "questionId": "b76bc889-6d66-ee11-9ae7-6045bdd0ef22",
   //     "questionLabel": "date"
   // });
@@ -229,6 +236,38 @@ const ParentComponent = ({
       setCurrentQuestionDetails(currnetQuestionDetails);
     }
   }, [questionList, currentPossitionDetails]);
+
+  const getCurrentQuestionListAnswers = async () => {
+    const response = await getListAnswersByQuestionId(
+      currentQuestionDetails?.questionId
+    );
+    console.log("JJFJFJFJNJUBJU", response)
+
+    if (response?.data?.entities) {
+      console.log("JJFJFJFJNJUBJU")
+      setCurrentListQuestionAnswers((prev: any) => {
+        return {
+          ...prev,
+          questionId: currentQuestionDetails?.questionId,
+          listAnswers: response?.data.entities.map((x: any) => {
+            return {
+              label: x.gyde_answervalue,
+              value: x.gyde_answervalue,
+            };
+          })
+        }
+      })
+    }
+  }
+  useEffect(() => {
+    if (currentQuestionDetails?.questionId) {
+      getCurrentQuestionListAnswers();
+    }
+  }, [currentQuestionDetails])
+
+  useEffect(() => {
+    console.log("currentListQuestionAnswers -----> ", currentListQuestionAnswers)
+  }, [currentListQuestionAnswers])
 
   useEffect(() => {
     setSections(
@@ -912,7 +951,7 @@ const ParentComponent = ({
     // _setVisibilityRulePrev((prevData: any) => [
     //   ...prevData,
     //   {
-    //     visibility:{ "or": [ { "or": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-23" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "11" ] } ] }, { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "2" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "4" ] } ] } ] }
+    //     visibility: { "if": [ { "or": [ { "==": [ { "var": "TDSsur_C02_S01_NO1" }, 4 ] }, { "==": [ { "var": "TDSsur_C02_S01_NO1" }, 3 ] }, { "and": [ { "==": [ { "var": "TDSsur_C02_S01_NO1" }, 3 ] } ] } ] } ] }
     //   },
     // ]);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [ [ { "type": "MINIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, 2 ] } }, { "type": "MAXIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, null ] } } ] ]}]);
@@ -984,6 +1023,12 @@ const ParentComponent = ({
     minMaxDBFormatArray: any,
     defaultValueRuleNormal: any
   ) => {
+    console.log("validationRule 1", visibilityRule)
+    console.log("validationRule 2", validationRule)
+    console.log("validationRule 3", outputDocShow)
+    console.log("validationRule 4", minMaxDBFormatArray)
+    console.log("validationRule 5", defaultValueRuleNormal)
+
     let logicalName;
 
     if (currentPossitionDetails?.currentPosition === "question") {
@@ -1018,38 +1063,45 @@ const ParentComponent = ({
       console.log("Before Saving minMaxDBFormatArray", minMaxDBFormatArray);
       console.log("Before Saving outputDocShow", outputDocShow);
 
-      await saveRequest(logicalName, currentPossitionDetails?.id, {
-        [dbConstants.common.gyde_visibilityrule]:
-          Object.keys(visibilityRule).length === 0
-            ? ""
-            : JSON.stringify(visibilityRule),
-      });
-
-      await saveRequest(logicalName, currentPossitionDetails?.id, {
-        [dbConstants.question.gyde_minmaxvalidationrule]:
-          Object.keys(minMaxDBFormatArray).length === 0
-            ? ""
-            : JSON.stringify(minMaxDBFormatArray),
-      });
-
-      await saveRequest(logicalName, currentPossitionDetails?.id, {
-        [dbConstants.question.gyde_documentOutputRule]:
-          Object.keys(outputDocShow).length === 0
-            ? ""
-            : JSON.stringify(outputDocShow),
-      });
-
+      if (visibilityRule) {
+        await saveRequest(logicalName, currentPossitionDetails?.id, {
+          [dbConstants.common.gyde_visibilityrule]:
+            Object.keys(visibilityRule).length === 0
+              ? ""
+              : JSON.stringify(visibilityRule),
+        });
+      }
+   
+      if (minMaxDBFormatArray) {
+        await saveRequest(logicalName, currentPossitionDetails?.id, {
+          [dbConstants.question.gyde_minmaxvalidationrule]:
+            Object.keys(minMaxDBFormatArray).length === 0
+              ? ""
+              : JSON.stringify(minMaxDBFormatArray),
+        });
+      }
+      if (outputDocShow) {
+        await saveRequest(logicalName, currentPossitionDetails?.id, {
+          [dbConstants.question.gyde_documentOutputRule]:
+            Object.keys(outputDocShow).length === 0
+              ? ""
+              : JSON.stringify(outputDocShow),
+        });
+      }
       console.log("defaultValueRuleNormal", defaultValueRuleNormal);
       console.log(
         "currentQuestionDetails?.questionType",
         currentQuestionDetails?.questionType
       );
-      await saveRequest(logicalName, currentPossitionDetails?.id, {
-        [dbConstants?.question?.gyde_defaultValueFormula]:
-          Object.keys(defaultValueRuleNormal).length === 0
-            ? ""
-            : JSON.stringify(defaultValueRuleNormal),
-      });
+      if (defaultValueRuleNormal) {
+        await saveRequest(logicalName, currentPossitionDetails?.id, {
+          [dbConstants?.question?.gyde_defaultValueFormula]:
+            Object.keys(defaultValueRuleNormal).length === 0
+              ? ""
+              : JSON.stringify(defaultValueRuleNormal),
+        });
+      }
+      
     }
     openNotificationWithIcon(
       "success",
@@ -1622,6 +1674,30 @@ const ParentComponent = ({
     console.log("_nestedRows", _nestedRows);
   }, [_nestedRows]);
 
+  const clearItems = async (): Promise<void> => {
+    if (selectedTab === "vr") {
+      await saveVisibilityData({}, {}, {}, {}, false);
+      _setNestedRows(null);
+    }
+      
+    if (selectedTab === "dv") {
+      await saveVisibilityData(false, false, false, false, {});
+      _setDefaultRows(null);
+    }
+  }
+  
+  const showPromiseConfirm: any = async () => {
+    confirm({
+      title: 'Do you want to clear the creation rule?',
+      icon: <ExclamationCircleFilled />,
+      content: `When the OK button is clicked, all the rule associated with ${selectedTab === "vr" ? " Validation rule " : " Default rule"}` + " will be deleted.",
+      onOk() {
+        return clearItems();
+      },
+      onCancel() {},
+    });
+  };
+
   return (
     <div>
       {contextHolder}
@@ -1663,6 +1739,12 @@ const ParentComponent = ({
         )}
 
       <div className="validation-wrap">
+      <div style={{textAlign:'right', position:'relative', top: '33px'}}>
+          <Space wrap>
+            <Button onClick={showPromiseConfirm}>Reset</Button>
+             
+          </Space>
+          </div>
         {selectedTab === "vr" ? (
           <>
             {!isApiDataLoaded ? (
@@ -1713,6 +1795,7 @@ const ParentComponent = ({
                             // setDefaultActionSetWhenRetriving={setDefaultActionSetWhenRetriving}
                             // defaultActionSetWhenRetriving={defaultActionSetWhenRetriving}
                             setMinMaxCheckboxEnabled={setMinMaxCheckboxEnabled}
+                        
                           />
                         </div>
                       ))}
@@ -1792,6 +1875,7 @@ const ParentComponent = ({
                             // setDefaultActionSetWhenRetriving={setDefaultActionSetWhenRetriving}
                             // defaultActionSetWhenRetriving={defaultActionSetWhenRetriving}
                             setMinMaxCheckboxEnabled={setMinMaxCheckboxEnabled}
+                            currentListQuestionAnswers={currentListQuestionAnswers}
                           />
                         </div>
                       ))}

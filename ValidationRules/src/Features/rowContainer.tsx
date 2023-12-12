@@ -9,6 +9,7 @@ import NumberInputField from "../Components/commonComponents/NumberInputField";
 import FieldStringInputProps from "../Components/commonComponents/StringInput";
 // import deleteImg from "../assets/delete.png";
 import dayjs from 'dayjs';
+import { hasNullFields, hasNullFieldsDefault } from "../Utils/utilsHelper";
 
 import {
   _updateExpressionByParentId,
@@ -34,6 +35,7 @@ import { dbConstants } from "../constants/dbConstants";
 import DatePickerCustom from "../Components/commonComponents/DatePickerCustom";
 import moment from "moment";
 import tabsConfigs from "../configs/tabsConfigs";
+import { convertJSONFormatToDBFormat, findAndUpdateLastNestedIf } from "../Utils/logics.utils";
 interface NestedRowProps {
   children: React.ReactNode;
 }
@@ -91,6 +93,11 @@ const RowContainer: React.FC<TableRowProps> = ({
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
   const [fieldValue, setFieldValue] = useState<any>();
   const [showActionOutput, setShowActionOutput] = useState<any>();
+
+  const [showVisibilityRule, setShowVisibilityRule] = useState<any>();
+  const [showDocOutputRule, setShowDocOutputRule] = useState<any>();
+  const [showValidationRule, setShowValidationRule] = useState<any>();
+
   const [questionType, setQuestionType] = useState<any>();
   const [isLoad, setIsLoad] = useState<boolean>(false);
   const [dropDownQuestionList, setDropDownQuestionList]  = useState<any>();
@@ -435,12 +442,12 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   useEffect(() => {
     console.log("NESTED", _nestedRows);
-    setShowActionOutput(
-      _nestedRows
-        ?.find((x: any[]) => x[sectionLevel])
-        ?.[sectionLevel]?.actions?.map((obj: {}) => Object.keys(obj)[0])
-        .join(" && ")
-    );
+    // setShowActionOutput(
+    //   _nestedRows
+    //     ?.find((x: any[]) => x[sectionLevel])
+    //     ?.[sectionLevel]?.actions?.map((obj: {}) => Object.keys(obj)[0])
+    //     .join(" && ")
+    // );
 
     const item = _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
       sectionLevel
@@ -468,7 +475,7 @@ const RowContainer: React.FC<TableRowProps> = ({
     if (maxValue) displayArray.push(maxValue);
     if (checkBoxValueString) displayArray.push(checkBoxValueString);
 
-    setShowActionOutput(displayArray.join(" && "));
+    // setShowActionOutput(displayArray.join(" && "));
     displayArray = [];
   }, [_nestedRows]);
 
@@ -606,6 +613,294 @@ const RowContainer: React.FC<TableRowProps> = ({
     }
   }, [collapse]);
 
+  const display = () => {
+    let minMaxDBFormatArray: any = [];
+    let minMaxDBFormatArrayNormal: any = [];
+
+    let visibilityRule: any = [];
+    let visibilityRuleNormal: any = [];
+
+    let outputDocShow: any = [];
+    let outputDocShowNormal: any = [];
+    let showIfCount = 0;
+    let outputDocShowCount = 0;
+
+    let isVisibilityNested: any = [];
+    let isShowInDocNested: any = [];
+    let isMinMaxNested: any = [];
+
+
+    let isActionIsNotAllowedForQuestion : any = [];
+    let isfieldsHasEmptyFields = false;
+    let isAtleastActionSelectedIfTheFieldsAreNotEmpty = false;
+
+    if(tabType === dbConstants?.tabTypes?.defaultValueTab) return;
+    // const sortedData = [..._nestedRows].sort((a, b) => {
+    //   const aKey = Object.keys(a)[0];
+    //   const bKey = Object.keys(b)[0];
+    //   return parseInt(aKey) - parseInt(bKey);
+    // });
+    console.log("sectionLevelsectionLevel", sectionLevel)
+    if (!sectionLevel) return;
+    let releatedFields = _nestedRows?.find((x: any[]) => x && x[sectionLevel]);
+    console.log("releatedFieldsff", releatedFields)
+    if(!releatedFields) return
+    // sortedData.forEach((sec: any) => {
+      // console.log("SECCCCCCCC", sec);
+      // const key = Object.keys(sec)[0];
+
+      const checkboxValues = releatedFields[sectionLevel]?.actions[0]?.checkBoxValues;
+      const minMaxExists =
+        Object.keys(releatedFields[sectionLevel]?.actions[0]?.minMax || {}).length !== 0;
+
+      const isShowExists = checkboxValues?.some(
+        (x: any) => Object.keys(x)[0] === "show"
+      );
+      const isOutputDocShowExists = checkboxValues?.some(
+        (x: any) => Object.keys(x)[0] === "OutPutDoc:Show"
+      );
+      const isEnableExists = checkboxValues?.some(
+        (x: any) => Object.keys(x)[0] === "enable"
+      );
+      console.log("checkboxValues ----> ", checkboxValues);
+      console.log("minMaxExists ----> ", minMaxExists);
+      console.log("isShowExists ----> ", isShowExists);
+      console.log("isOutputDocShowExists ----> ", isOutputDocShowExists);
+      console.log("isEnableExists ----> ", isEnableExists);
+
+      let prepareForValidation = JSON.parse(JSON.stringify(releatedFields[sectionLevel].fields));
+      console.log("prepareForValidation", prepareForValidation);
+      // if (
+      //   !isShowExists &&
+      //   !isOutputDocShowExists &&
+      //   !isEnableExists &&
+      //   !minMaxExists &&
+      //   prepareForValidation?.length
+      // ) {
+      //   isAtleastActionSelectedIfTheFieldsAreNotEmpty = true;
+      //   return;
+      // }
+      prepareForValidation[0].expression = "Emp";
+      const _hasNullFields = hasNullFields(prepareForValidation);
+      if (_hasNullFields) {
+        isfieldsHasEmptyFields = true;
+        return;
+      }
+
+      if (checkboxValues) {
+        console.log(
+          "checkBoxValues when saving ----> ",
+          releatedFields[sectionLevel]?.actions[0]?.checkBoxValues[0]
+        );
+        if (isShowExists) {
+          showIfCount = showIfCount + 1;
+          isVisibilityNested.push(
+            releatedFields[sectionLevel]?.fields?.some(
+              (flds: { hasNested: any }) => flds?.hasNested
+            )
+          );
+          let _visibility: any = convertJSONFormatToDBFormat(releatedFields[sectionLevel], true, currentQuestionDetails);
+          isActionIsNotAllowedForQuestion.push(_visibility?.validation);
+          _visibility = _visibility?.exp;
+          console.log("Validation Return visibility", isActionIsNotAllowedForQuestion);
+          const __visibility = JSON.parse(JSON.stringify(_visibility));
+          console.log("Pushing visibility", __visibility);
+          visibilityRuleNormal.push(
+            __visibility[""]?.length ? __visibility[""][0] : _visibility
+          );
+          visibilityRule = findAndUpdateLastNestedIf(
+            visibilityRule,
+            { if: [_visibility] },
+            false
+          );
+        }
+        if (isOutputDocShowExists) {
+          outputDocShowCount = outputDocShowCount + 1;
+          let _outputDocShow : any = convertJSONFormatToDBFormat(releatedFields[sectionLevel], true);
+          _outputDocShow = _outputDocShow?.exp
+          const __outputDocShow = JSON.parse(JSON.stringify(_outputDocShow));
+
+          isShowInDocNested.push(
+            releatedFields[sectionLevel]?.fields?.some(
+              (flds: { hasNested: any }) => flds?.hasNested
+            )
+          );
+          // outputDocShowNormal.push(_outputDocShow);
+          outputDocShowNormal.push(
+            __outputDocShow[""]?.length
+              ? __outputDocShow[""][0]
+              : _outputDocShow
+          );
+          outputDocShow = findAndUpdateLastNestedIf(
+            outputDocShow,
+            { if: [_outputDocShow] },
+            false
+          );
+        }
+       
+      }
+
+      let savedVisibilityRuleFinalFormat: any = [];
+      let savedValidationRuleFinalFormat: any = [];
+      let savedOutputDocShowRuleFinalFormat: any = [];
+      let savedMinMaxRuleFinalFormat;
+  
+      if (minMaxExists) {
+        console.log("Min Max when saving ----> ", releatedFields[sectionLevel].actions[0]?.minMax);
+        isMinMaxNested.push(
+          releatedFields[sectionLevel]?.fields?.some((flds: { hasNested: any }) => flds?.hasNested)
+        );
+        const _minMaxDbFormarFields: any = convertJSONFormatToDBFormat(
+          releatedFields[sectionLevel],
+          true
+        );
+        const minMax = releatedFields[sectionLevel]?.actions[0]?.minMax;
+        let minValue = minMax?.minValue || null;
+        let maxValue = minMax?.maxValue || null;
+        // if (!minValue || !maxValue) {
+        //   openNotificationWithIcon("error", "Min Max Fields cannot be empty!");
+        //   setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } });
+        //   return;
+        // } else {
+        //   setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } });
+        // }
+        console.log("Min Max ", minMax);
+
+        if (minMax) {
+          if (minValue && typeof minValue === "string" && minValue !== "0") {
+            minValue = {
+              var: minMax?.minValue,
+            };
+          }
+          if (maxValue && typeof maxValue === "string" && minValue !== "0") {
+            maxValue = {
+              var: minMax?.maxValue,
+            };
+          }
+          console.log("_minMaxDbFormarFields", _minMaxDbFormarFields?.exp);
+          const formattingForMin = [];
+          const formattingForMax = [];
+          formattingForMin.push(_minMaxDbFormarFields?.exp, minValue);
+          formattingForMax.push(_minMaxDbFormarFields?.exp, maxValue);
+          minMaxDBFormatArray.push([
+            {
+              type: "MINIMUM_LENGTH",
+              value: { if: formattingForMin },
+            },
+            {
+              type: "MAXIMUM_LENGTH",
+              value: { if: formattingForMax },
+            },
+          ]);
+        }
+      }
+      if (
+        isVisibilityNested.length &&
+        isVisibilityNested.length > 0 &&
+        !isVisibilityNested.some((x: any) => x)
+      ) {
+        if (visibilityRuleNormal.length === 1) {
+          // savedVisibilityRuleFinalFormat = visibilityRuleNormal;
+          // savedVisibilityRuleFinalFormat = {
+          //   if: visibilityRuleNormal
+          // };
+          if (visibilityRuleNormal[0][""] && visibilityRuleNormal[0][""][0]) {
+            savedVisibilityRuleFinalFormat = visibilityRuleNormal[0][""][0];
+          } else {
+            savedVisibilityRuleFinalFormat = visibilityRuleNormal[0];
+          }
+        } else {
+          savedVisibilityRuleFinalFormat = {
+            // if: [
+            //   {
+            or: visibilityRuleNormal,
+            //     },
+            //   ]
+          };
+        }
+      } else {
+        savedVisibilityRuleFinalFormat = visibilityRule[0];
+      }
+      if (
+        isShowInDocNested.length &&
+        isShowInDocNested.length > 0 &&
+        !isShowInDocNested.some((x: any) => x)
+      ) {
+        if (outputDocShowNormal.length === 1) {
+          // savedOutputDocShowRuleFinalFormat = {
+          //   if: outputDocShowNormal
+          // };
+  
+          if (outputDocShowNormal[0][""] && outputDocShowNormal[0][""][0]) {
+            savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0][""][0];
+          } else {
+            savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0];
+          }
+        } else {
+          savedOutputDocShowRuleFinalFormat = {
+            // if: [
+            //   {
+            or: outputDocShowNormal,
+            //     },
+            //   ]
+          };
+        }
+      } else {
+        savedOutputDocShowRuleFinalFormat = outputDocShow[0];
+      }
+      if (
+        isMinMaxNested.length &&
+        isMinMaxNested.length > 0 &&
+        !isMinMaxNested.some((x: any) => x)
+      ) {
+        savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
+      } else {
+        savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
+      }
+  
+      console.log(
+        "savedVisibilityRuleFinalFormat",
+        savedVisibilityRuleFinalFormat
+      );
+      console.log(
+        "savedValidationRuleFinalFormat",
+        savedValidationRuleFinalFormat
+      );
+  
+      console.log(
+        "savedOutputDocShowRuleFinalFormat",
+        savedOutputDocShowRuleFinalFormat
+      );
+      console.log("savedMinMaxRuleFinalFormat", savedMinMaxRuleFinalFormat);
+    let showOutput;
+
+    if (savedVisibilityRuleFinalFormat && Object.keys(savedVisibilityRuleFinalFormat).length !== 0) {
+      setShowVisibilityRule(JSON.stringify(savedVisibilityRuleFinalFormat))
+    } else {
+      setShowVisibilityRule(null)
+    }
+    if (savedMinMaxRuleFinalFormat && Object.keys(savedMinMaxRuleFinalFormat).length !== 0) {
+      showOutput = showOutput + `Visibility Rule : ${JSON.stringify(savedMinMaxRuleFinalFormat)} \n`
+      setShowValidationRule(JSON.stringify(savedMinMaxRuleFinalFormat))
+
+    }else {
+      setShowValidationRule(null)
+    }
+    if (savedOutputDocShowRuleFinalFormat && Object.keys(savedOutputDocShowRuleFinalFormat).length !== 0) {
+      showOutput = showOutput + `Output Doc Show Rule : ${JSON.stringify(savedOutputDocShowRuleFinalFormat)}`
+      setShowDocOutputRule(JSON.stringify(savedOutputDocShowRuleFinalFormat))
+
+    } else {
+      setShowDocOutputRule(null)
+    }
+    // setShowActionOutput(showOutput);
+
+    // });
+  }
+
+  useEffect(() => {
+    display();
+  }, [_nestedRows])
   const _handleDeleteRow = (level: any) => {
     let releatedFields = _nestedRows.find((x: any[]) => x[sectionLevel]);
     if (releatedFields) {
@@ -1008,7 +1303,7 @@ const RowContainer: React.FC<TableRowProps> = ({
           <div className="flex-wrap mb-10">
               <div className="text-left">
                 {" "}
-                {_nestedRows &&
+                {/* {_nestedRows &&
                   _nestedRows?.length &&
                   "if(" +
                     generateOutputString(
@@ -1016,12 +1311,33 @@ const RowContainer: React.FC<TableRowProps> = ({
                         sectionLevel
                       ]?.fields || []
                     ) +
-                ")"}{" "}
+                ")"}{" "} */}
               
-              <div> 
+              {/* <div> 
               {" "}
                 {showActionOutput && "{ " + showActionOutput + " }"}{" "}
-              </div>
+            </div> */}
+
+            
+             
+              {" "}
+              {
+              showVisibilityRule && Object.keys(showVisibilityRule).length !== 0 ?
+                
+              <div style={{backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}> Visibility Rule : {" " + showVisibilityRule} </div>: null
+              }
+           
+              {" "}
+              {
+              showDocOutputRule && Object.keys(showDocOutputRule).length !== 0 ? <div style={{ backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}> Doc Output Rule : {" " + showDocOutputRule} </div>: null
+              }
+
+              
+              {" "}
+              {
+                showValidationRule && Object.keys(showValidationRule).length !== 0 ? <div style={{backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}>  Min/Max Rule : {" " + showValidationRule} </div> : null
+              }            
+
             </div>
             
 
