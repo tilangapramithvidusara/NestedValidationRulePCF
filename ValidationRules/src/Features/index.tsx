@@ -1019,51 +1019,53 @@ const ParentComponent = ({
         );
       }
     }
-    // if (
-    //   visibilityRulePreviousValues?.data &&
-    //   Object.keys(visibilityRulePreviousValues?.data).length !== 0
-    // ) {
-    //   console.log(
-    //     "visibilityRulePreviousValues -----> ",
-    //     visibilityRulePreviousValues
-    //   );
-    //   let _visibilityRulePreviousValues = JSON.parse(
-    //     JSON.stringify(visibilityRulePreviousValues)
-    //   );
-    //   _setVisibilityRulePrev((prevData: any) => [
-    //     ...prevData,
-    //     { visibility: _visibilityRulePreviousValues?.data },
-    //   ]);
-    // }
 
-    // if (
-    //   minMaxPreviousValues?.data &&
-    //   Object.keys(minMaxPreviousValues?.data).length !== 0
-    // ) {
-    //   let _minMaxPreviousValues = JSON.parse(
-    //     JSON.stringify(minMaxPreviousValues)
-    //   );
-    //   _setMinMaxRulePrev((prevData: any) => [
-    //     ...prevData,
-    //     { minMax: _minMaxPreviousValues?.data },
-    //   ]);
-    // }
 
-    // if (validationRulePreviousValues?.data?.length) _setEnabledPrev((prevData: any) => [...prevData, { validation: validationRulePreviousValues?.data }]);
+    if (
+      minMaxPreviousValues?.data &&
+      Object.keys(minMaxPreviousValues?.data).length !== 0
+    ) {
+      let _minMaxPreviousValues = JSON.parse(
+        JSON.stringify(minMaxPreviousValues)
+      );
+      _setMinMaxRulePrev((prevData: any) => [
+        ...prevData,
+        { minMax: _minMaxPreviousValues?.data },
+      ]);
+    }
     
     console.log("FETCHEDD 1", visibilityRulePreviousValues)
     console.log("FETCHEDD 2", documentOutputRule)
     console.log("FETCHEDD Equal", JSON.stringify(documentOutputRule?.data) === JSON.stringify(visibilityRulePreviousValues?.data))
 
     if(documentOutputRule?.data && visibilityRulePreviousValues?.data && JSON.stringify(documentOutputRule?.data) === JSON.stringify(visibilityRulePreviousValues?.data)) {
+      console.log("HGGFFFFFF", documentOutputRule)
       let _visibilityAndDocRuleOutput = JSON.parse(JSON.stringify(documentOutputRule?.data));
-      _visibilityAndDocRuleOutput = JSON.parse(_visibilityAndDocRuleOutput)
+      console.log("HGGFFFFFF _visibilityAndDocRuleOutput", _visibilityAndDocRuleOutput)
+
+      // _visibilityAndDocRuleOutput = JSON.parse(_visibilityAndDocRuleOutput)
       console.log("DFIJddddI", _visibilityAndDocRuleOutput)
       _setVisibilityAndDocOutput((prevData: any) => [
         ...prevData,
         { visibilityAndDocRuleOutput: _visibilityAndDocRuleOutput },
       ]);
     } else {
+      if (
+        visibilityRulePreviousValues?.data &&
+        Object.keys(visibilityRulePreviousValues?.data).length !== 0
+      ) {
+        console.log(
+          "visibilityRulePreviousValues111111 -----> ",
+          visibilityRulePreviousValues
+        );
+        let _visibilityRulePreviousValues = JSON.parse(
+          JSON.stringify(visibilityRulePreviousValues)
+        );
+        _setVisibilityRulePrev((prevData: any) => [
+          ...prevData,
+          { visibility: _visibilityRulePreviousValues?.data },
+        ]);
+      }
       if (
         documentOutputRule?.data &&
         Object.keys(documentOutputRule?.data).length !== 0
@@ -1126,7 +1128,8 @@ const ParentComponent = ({
   useEffect(() => {
     console.log("currentId ----->", currentPossitionDetails);
 
-    getRequestedData();
+    if (currentPossitionDetails) {  getRequestedData();}
+    
     loadQuestionHandler();
     if (currentPossitionDetails) {
       getCurrentPublishedStatus();
