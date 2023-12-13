@@ -60,14 +60,17 @@ const ParentComponent = ({
   const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
   // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
   //   currentPosition: "question",
-  //   questionType: "List"
+  //   questionType: "List",
+  //   id: "ddd"
   // });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
     []
   );
-
+  const [_visibilityAndDocOutput, _setVisibilityAndDocOutput] = useState<any[]>(
+    []
+  );
   const [_defaultValueRule, _setDefaultValueRule] = useState<any[]>([]);
   const [_minMaxRulePrev, _setMinMaxRulePrev] = useState<any[]>([]);
 
@@ -803,6 +806,135 @@ const ParentComponent = ({
     }
   }, [_defaultValueRule]);
 
+
+  useEffect(() => {
+    console.log("_visibilityAndDocOutput", _visibilityAndDocOutput)
+    if (_visibilityAndDocOutput?.length) {
+      let key = 700;
+      _visibilityAndDocOutput.forEach((dbData) => {
+        console.log("Loading Document Output Data", dbData);
+        _setNestedRows((prevData: any) => {
+          let visibilityAndDocRuleOutput = dbData?.visibilityAndDocRuleOutput?.if?.length
+            ? dbData?.visibilityAndDocRuleOutput?.if
+            : [dbData?.visibilityAndDocRuleOutput];
+          console.log("docRuleOutput String", visibilityAndDocRuleOutput);
+          if (visibilityAndDocRuleOutput) {
+            // docRuleOutput = dbData?.docRuleOutput?.if;
+            const showUpdatedDocOutputDataArray: any[] = [];
+            let docOutputDta = visibilityAndDocRuleOutput;
+            // const refactorDta = removeIfKeyAndGetDbProperty(docOutputDta);
+            // let visibilityDta = docOutputDta;
+            console.log("Document Data Converting ---->>>> ", docOutputDta);
+            const isRetrieveAsNormal = visibilityAndDocRuleOutput?.some(
+              (x: any) => x?.or?.length || x?.and?.length
+            );
+            const isFirstExp = visibilityAndDocRuleOutput?.some(
+              (x: any) => !Object.keys(x)[0]
+            );
+            const isAllAreNormal = visibilityAndDocRuleOutput?.every((x: { or: any[] }) => {
+              const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
+              return keys?.includes("and") || keys?.includes("or");
+            });
+            const isNestedIfs = visibilityAndDocRuleOutput?.some(
+              (x: {}) => Object.keys(x)[0] === "if"
+            );
+
+            const isFirstExpWithEmptyStringKey = visibilityAndDocRuleOutput?.some(
+              (x: any) => !Object.keys(x)[0]
+            );
+            const isFirstExpWithoutEmptyStringKey = visibilityAndDocRuleOutput?.some(
+              (x: any) => (x[Object.keys(x)[0]] as any[])?.length === 2
+            );
+
+            console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
+            console.log("Fetch Type isFirstExp", isFirstExp);
+            console.log("Fetch Type isAllAreNormal", isAllAreNormal);
+            console.log("Fetch Type isNestedIfs", isNestedIfs);
+            console.log(
+              "Fetch Type isFirstExpWithEmptyStringKey",
+              isFirstExpWithEmptyStringKey
+            );
+            console.log(
+              "Fetch Type isFirstExpWithoutEmptyStringKey",
+              isFirstExpWithoutEmptyStringKey
+            );
+
+            if (isNestedIfs) {
+              docOutputDta = removeIfKeyAndGetDbProperty(visibilityAndDocRuleOutput);
+            } else if (isAllAreNormal) {
+              docOutputDta = visibilityAndDocRuleOutput[0]?.or;
+            } else if (isRetrieveAsNormal) {
+              // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
+              docOutputDta = visibilityAndDocRuleOutput;
+            } else if (isFirstExpWithoutEmptyStringKey) {
+              docOutputDta = [{ or: [visibilityAndDocRuleOutput[0]] }];
+            } else if (isFirstExpWithEmptyStringKey) {
+              // refactorDta = visibilityDta;
+              docOutputDta = [{ or: Object.values(visibilityAndDocRuleOutput[0])[0] }];
+            } else if (isFirstExp) {
+              // refactorDta = visibilityDta;
+              docOutputDta = [{ or: Object.values(visibilityAndDocRuleOutput[0])[0] }];
+            } else {
+              docOutputDta = removeIfKeyAndGetDbProperty(visibilityAndDocRuleOutput);
+            }
+
+            if (docOutputDta && docOutputDta?.length) {
+              docOutputDta?.forEach((fieldDta: any): any => {
+                console.log("Document Output DB Dataaa Converting", fieldDta);
+                let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
+
+                showUpdatedDocOutputDataArray.push({
+                  [key++]: {
+                    actions: [
+                      {
+                        checkBoxValues: [
+                          {
+                            "OutPutDoc:Show": {
+                              logicalName: "Show in Document",
+                              value: "OutPutDoc:Show",
+                            },
+                          },
+                          {
+                            show: {
+                              logicalName: "Show",
+                              value: "show",
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                    fields: normalConverter([_fieldDta]),
+                  },
+                });
+              });
+              console.log(
+                "showUpdatedDocOutputDataArray DB Data ",
+                showUpdatedDocOutputDataArray
+              );
+              if (
+                showUpdatedDocOutputDataArray &&
+                showUpdatedDocOutputDataArray.length
+              ) {
+                // const reversedArray = showUpdatedDocOutputDataArray.reverse();
+
+                console.log(
+                  "Update Doc DB Data retrieving ",
+                  showUpdatedDocOutputDataArray
+                );
+                console.log("Validation DB Dataaa showUpdatedDataArray ", [
+                  ...prevData,
+                  showUpdatedDocOutputDataArray,
+                ]);
+                return [...prevData, ...showUpdatedDocOutputDataArray];
+              }
+            }
+          }
+        });
+      });
+      setIsApiDataLoaded(false);
+    }
+  }, [_visibilityAndDocOutput])
+
   const openNotificationWithIcon = (type: any, message: any) => {
     api[type]({
       message: type,
@@ -853,22 +985,29 @@ const ParentComponent = ({
         `?$select=${dbConstants.question.gyde_minmaxvalidationrule}`
       );
 
+      // Commented this
       visibilityRulePreviousValues = await fetchRequest(
         logicalName,
         currentPossitionDetails?.id,
         `?$select=${dbConstants.common.gyde_visibilityrule}`
       );
+      // visibilityRulePreviousValues = {data: "{\"and\":[{\"==\":[{\"var\":\"NTemp_C01_s01_grd\"},3]},{\"==\":[{\"var\":\"NTemp_C01_s01_rd\"},\"55\"]}]}"}
+      //
 
       // validationRulePreviousValues = await fetchRequest(
       //   logicalName,
       //   currentPossitionDetails?.id,
       //   `?$select=${dbConstants.common.gyde_validationrule}`
       // );
+
+      //Commented this
       documentOutputRule = await fetchRequest(
         logicalName,
         currentPossitionDetails?.id,
         `?$select=${dbConstants.question.gyde_documentOutputRule}`
       );
+      // documentOutputRule = {data : "{\"and\":[{\"==\":[{\"var\":\"NTemp_C01_s01_grd\"},3]},{\"==\":[{\"var\":\"NTemp_C01_s01_rd\"},\"55\"]}]}"}
+      //
 
       let defaultValueLogicalName =
         dbConstants?.question?.gyde_defaultValueFormula;
@@ -880,58 +1019,69 @@ const ParentComponent = ({
         );
       }
     }
-    if (
-      visibilityRulePreviousValues?.data &&
-      Object.keys(visibilityRulePreviousValues?.data).length !== 0
-    ) {
-      console.log(
-        "visibilityRulePreviousValues -----> ",
-        visibilityRulePreviousValues
-      );
-      let _visibilityRulePreviousValues = JSON.parse(
-        JSON.stringify(visibilityRulePreviousValues)
-      );
-      _setVisibilityRulePrev((prevData: any) => [
-        ...prevData,
-        { visibility: _visibilityRulePreviousValues?.data },
-      ]);
-    }
+    // if (
+    //   visibilityRulePreviousValues?.data &&
+    //   Object.keys(visibilityRulePreviousValues?.data).length !== 0
+    // ) {
+    //   console.log(
+    //     "visibilityRulePreviousValues -----> ",
+    //     visibilityRulePreviousValues
+    //   );
+    //   let _visibilityRulePreviousValues = JSON.parse(
+    //     JSON.stringify(visibilityRulePreviousValues)
+    //   );
+    //   _setVisibilityRulePrev((prevData: any) => [
+    //     ...prevData,
+    //     { visibility: _visibilityRulePreviousValues?.data },
+    //   ]);
+    // }
 
-    if (
-      minMaxPreviousValues?.data &&
-      Object.keys(minMaxPreviousValues?.data).length !== 0
-    ) {
-      let _minMaxPreviousValues = JSON.parse(
-        JSON.stringify(minMaxPreviousValues)
-      );
-      _setMinMaxRulePrev((prevData: any) => [
-        ...prevData,
-        { minMax: _minMaxPreviousValues?.data },
-      ]);
-    }
+    // if (
+    //   minMaxPreviousValues?.data &&
+    //   Object.keys(minMaxPreviousValues?.data).length !== 0
+    // ) {
+    //   let _minMaxPreviousValues = JSON.parse(
+    //     JSON.stringify(minMaxPreviousValues)
+    //   );
+    //   _setMinMaxRulePrev((prevData: any) => [
+    //     ...prevData,
+    //     { minMax: _minMaxPreviousValues?.data },
+    //   ]);
+    // }
 
     // if (validationRulePreviousValues?.data?.length) _setEnabledPrev((prevData: any) => [...prevData, { validation: validationRulePreviousValues?.data }]);
-    if (
-      documentOutputRule?.data &&
-      Object.keys(documentOutputRule?.data).length !== 0
-    ) {
-      let _documentOutputRule = JSON.parse(JSON.stringify(documentOutputRule));
-      _setDocumentOutputRulePrev((prevData: any) => [
+    if(documentOutputRule?.data === visibilityRulePreviousValues?.data) {
+      let _visibilityAndDocRuleOutput = JSON.parse(JSON.stringify(documentOutputRule?.data));
+      _visibilityAndDocRuleOutput = JSON.parse(_visibilityAndDocRuleOutput)
+      console.log("DFIJddddI", _visibilityAndDocRuleOutput)
+      _setVisibilityAndDocOutput((prevData: any) => [
         ...prevData,
-        { docRuleOutput: _documentOutputRule?.data },
+        { visibilityAndDocRuleOutput: _visibilityAndDocRuleOutput },
       ]);
+    } else {
+      if (
+        documentOutputRule?.data &&
+        Object.keys(documentOutputRule?.data).length !== 0
+      ) {
+        let _documentOutputRule = JSON.parse(JSON.stringify(documentOutputRule));
+        _setDocumentOutputRulePrev((prevData: any) => [
+          ...prevData,
+          { docRuleOutput: _documentOutputRule?.data },
+        ]);
+      }
+  
+      if (
+        defaultValueRule?.data &&
+        Object.keys(defaultValueRule?.data).length !== 0
+      ) {
+        let _defaultValueRule = JSON.parse(JSON.stringify(defaultValueRule));
+        _setDefaultValueRule((prevData: any) => [
+          ...prevData,
+          { defaultValRule: _defaultValueRule?.data },
+        ]);
+      }
     }
 
-    if (
-      defaultValueRule?.data &&
-      Object.keys(defaultValueRule?.data).length !== 0
-    ) {
-      let _defaultValueRule = JSON.parse(JSON.stringify(defaultValueRule));
-      _setDefaultValueRule((prevData: any) => [
-        ...prevData,
-        { defaultValRule: _defaultValueRule?.data },
-      ]);
-    }
 
     //test
     // _setVisibilityRulePrev((prevValue) => [
