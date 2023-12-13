@@ -1050,7 +1050,8 @@ const ParentComponent = ({
     // }
 
     // if (validationRulePreviousValues?.data?.length) _setEnabledPrev((prevData: any) => [...prevData, { validation: validationRulePreviousValues?.data }]);
-    if(documentOutputRule?.data === visibilityRulePreviousValues?.data) {
+    
+    if(documentOutputRule?.data && visibilityRulePreviousValues?.data && JSON.stringify(documentOutputRule?.data) === JSON.stringify(visibilityRulePreviousValues?.data)) {
       let _visibilityAndDocRuleOutput = JSON.parse(JSON.stringify(documentOutputRule?.data));
       _visibilityAndDocRuleOutput = JSON.parse(_visibilityAndDocRuleOutput)
       console.log("DFIJddddI", _visibilityAndDocRuleOutput)
