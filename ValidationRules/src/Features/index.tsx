@@ -813,6 +813,7 @@ const ParentComponent = ({
       let key = 700;
       _visibilityAndDocOutput.forEach((dbData) => {
         console.log("Loading Document Output Data", dbData);
+        if(dbData && dbData?.visibilityAndDocRuleOutput && Object.keys(dbData?.visibilityAndDocRuleOutput).length === 0) return;
         _setNestedRows((prevData: any) => {
           let visibilityAndDocRuleOutput = dbData?.visibilityAndDocRuleOutput?.if?.length
             ? dbData?.visibilityAndDocRuleOutput?.if
