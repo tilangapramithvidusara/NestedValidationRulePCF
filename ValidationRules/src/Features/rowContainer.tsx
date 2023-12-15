@@ -670,6 +670,7 @@ const RowContainer: React.FC<TableRowProps> = ({
 
       let prepareForValidation = JSON.parse(JSON.stringify(releatedFields[sectionLevel].fields));
       console.log("prepareForValidation", prepareForValidation);
+      if(!prepareForValidation?.length ) return
       // if (
       //   !isShowExists &&
       //   !isOutputDocShowExists &&

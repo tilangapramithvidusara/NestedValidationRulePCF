@@ -314,6 +314,7 @@ const ParentComponent = ({
     );
   }, []);
 
+  // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
     console.log("_visibilityRulePrev", _visibilityRulePrev);
     if (_visibilityRulePrev?.length) {
@@ -424,6 +425,7 @@ const ParentComponent = ({
     }
   }, [_visibilityRulePrev]);
 
+    // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
     if (_documentOutputRulePrev?.length) {
       let key = 1;
@@ -545,6 +547,7 @@ const ParentComponent = ({
     }
   }, [_documentOutputRulePrev]);
 
+  // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
     if (_minMaxRulePrev?.length) {
       let key = 15;
@@ -662,6 +665,7 @@ const ParentComponent = ({
     }
   }, [_minMaxRulePrev]);
 
+  // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
     console.log("_defaultValueRule", _defaultValueRule);
 
@@ -806,7 +810,7 @@ const ParentComponent = ({
     }
   }, [_defaultValueRule]);
 
-
+  // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
     console.log("_visibilityAndDocOutput", _visibilityAndDocOutput)
     if (_visibilityAndDocOutput?.length) {
@@ -1034,11 +1038,6 @@ const ParentComponent = ({
         { minMax: _minMaxPreviousValues?.data },
       ]);
     }
-    
-    console.log("FETCHEDD 1", visibilityRulePreviousValues)
-    console.log("FETCHEDD 2", documentOutputRule)
-    console.log("FETCHEDD Equal", JSON.stringify(documentOutputRule?.data) === JSON.stringify(visibilityRulePreviousValues?.data))
-
     if(documentOutputRule?.data && visibilityRulePreviousValues?.data && JSON.stringify(documentOutputRule?.data) === JSON.stringify(visibilityRulePreviousValues?.data)) {
       console.log("HGGFFFFFF", documentOutputRule)
       let _visibilityAndDocRuleOutput = JSON.parse(JSON.stringify(documentOutputRule?.data));
