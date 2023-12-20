@@ -37,6 +37,7 @@ import { hasNullFields, hasNullFieldsDefault } from "../Utils/utilsHelper";
 import { languageConstantsForCountry } from "../constants/languageConstants";
 import tabsConfigs from "../configs/tabsConfigs";
 import { ExclamationCircleFilled } from "@ant-design/icons";
+import operationalSampleData from "../SampleData/operationalSampleData";
 
 const { confirm } = Modal;
 
@@ -580,9 +581,11 @@ const ParentComponent = ({
               const isRetrieveAsNormal = _minMaxArrayStr?.some(
                 (x: any) => x?.or?.length || x?.and?.length
               );
-              const isFirstExp = _minMaxArrayStr?.some(
-                (x: any) => !Object.keys(x)[0]
-              );
+              // const isFirstExp = _minMaxArrayStr?.some(
+              //   (x: any) => !Object.keys(x)[0]
+              // );
+              const isFirstExp = operationalSampleData[0]?.options?.some((x: any) => x?.value === Object.keys(refactoredMinMax)[0])
+              
               const isAllAreNormal = _minMaxArrayStr?.every(
                 (x: { or: any[] }) => {
                   const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
@@ -608,7 +611,9 @@ const ParentComponent = ({
                 _minMaxArray = _minMaxArrayStr;
               } else if (isFirstExp) {
                 // refactorDta = visibilityDta;
-                _minMaxArray = [{ or: Object.values(_minMaxArrayStr[0])[0] }];
+                // _minMaxArray = [{ or: Object.values(_minMaxArrayStr[0])[0] }];
+                _minMaxArray = [{ or: [refactoredMinMax] }];
+                
               } else {
                 _minMaxArray = removeIfKeyAndGetDbProperty(_minMaxArrayStr);
               }
@@ -1049,7 +1054,8 @@ const ParentComponent = ({
         ...prevData,
         { visibilityAndDocRuleOutput: _visibilityAndDocRuleOutput },
       ]);
-    } else {
+    } 
+    else {
       if (
         visibilityRulePreviousValues?.data &&
         Object.keys(visibilityRulePreviousValues?.data).length !== 0
@@ -1076,20 +1082,20 @@ const ParentComponent = ({
           { docRuleOutput: _documentOutputRule?.data },
         ]);
       }
-  
-      if (
-        defaultValueRule?.data &&
-        Object.keys(defaultValueRule?.data).length !== 0
-      ) {
-        let _defaultValueRule = JSON.parse(JSON.stringify(defaultValueRule));
-        _setDefaultValueRule((prevData: any) => [
-          ...prevData,
-          { defaultValRule: _defaultValueRule?.data },
-        ]);
-      }
+
     }
 
-
+  
+    if (
+      defaultValueRule?.data &&
+      Object.keys(defaultValueRule?.data).length !== 0
+    ) {
+      let _defaultValueRule = JSON.parse(JSON.stringify(defaultValueRule));
+      _setDefaultValueRule((prevData: any) => [
+        ...prevData,
+        { defaultValRule: _defaultValueRule?.data },
+      ]);
+    }
     //test
     // _setVisibilityRulePrev((prevValue) => [
     //   ...prevValue,
@@ -1597,8 +1603,12 @@ const ParentComponent = ({
           console.log("_minMaxDbFormarFields", _minMaxDbFormarFields?.exp);
           const formattingForMin = [];
           const formattingForMax = [];
-          formattingForMin.push(_minMaxDbFormarFields?.exp, minValue);
-          formattingForMax.push(_minMaxDbFormarFields?.exp, maxValue);
+          // visibilityRuleNormal.push(
+          //   _minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp
+          // );
+
+          formattingForMin.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, minValue);
+          formattingForMax.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, maxValue);
           minMaxDBFormatArray.push([
             {
               type: "MINIMUM_LENGTH",

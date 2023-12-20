@@ -781,8 +781,8 @@ const RowContainer: React.FC<TableRowProps> = ({
           console.log("_minMaxDbFormarFields", _minMaxDbFormarFields?.exp);
           const formattingForMin = [];
           const formattingForMax = [];
-          formattingForMin.push(_minMaxDbFormarFields?.exp, minValue);
-          formattingForMax.push(_minMaxDbFormarFields?.exp, maxValue);
+          formattingForMin.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, minValue);
+          formattingForMax.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, maxValue);
           minMaxDBFormatArray.push([
             {
               type: "MINIMUM_LENGTH",
@@ -1320,25 +1320,43 @@ const RowContainer: React.FC<TableRowProps> = ({
             </div> */}
 
             
-             
-              {" "}
-              {
-              showVisibilityRule && Object.keys(showVisibilityRule).length !== 0 ?
-                
-              <div style={{backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}> Visibility Rule : {" " + showVisibilityRule} </div>: null
-              }
-           
-              {" "}
-              {
-              showDocOutputRule && Object.keys(showDocOutputRule).length !== 0 ? <div style={{ backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}> Doc Output Rule : {" " + showDocOutputRule} </div>: null
-              }
+             {
+              tabType === dbConstants?.tabTypes?.validationTab ? 
+              <>
+              <div>
+                {" "}
+                {
+                showVisibilityRule && Object.keys(showVisibilityRule).length !== 0 ?
+                  
+                <div style={{backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}> Visibility Rule : {" " + showVisibilityRule} </div>: null
+                }
 
+                {" "}
+                {
+                showDocOutputRule && Object.keys(showDocOutputRule).length !== 0 ? <div style={{ backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}> Doc Output Rule : {" " + showDocOutputRule} </div>: null
+                }
+
+
+                {" "}
+                {
+                  showValidationRule && Object.keys(showValidationRule).length !== 0 ? <div style={{backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}>  Min/Max Rule : {" " + showValidationRule} </div> : null
+                }          
+                </div>
+              </> : 
               
-              {" "}
-              {
-                showValidationRule && Object.keys(showValidationRule).length !== 0 ? <div style={{backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}>  Min/Max Rule : {" " + showValidationRule} </div> : null
-              }            
-
+              <>
+              {_nestedRows &&
+                  _nestedRows?.length &&
+                  "if(" +
+                    generateOutputString(
+                      _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
+                        sectionLevel
+                      ]?.fields || []
+                    ) +
+                ")"}{" "}
+              </>
+             }
+             
             </div>
             
 
