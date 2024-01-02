@@ -73,9 +73,9 @@ const ParentComponent = ({
     []
   );
   const [_defaultValueRule, _setDefaultValueRule] = useState<any[]>([]);
-  const [_minMaxRulePrev, _setMinMaxRulePrev] = useState<any[]>([]);
+  const [_minMaxRulePrev, _setMinMaxRulePrev] = useState<any>([]);
 
-  const [_minMaxPrev, _setMinMaxPrev] = useState<any[]>([]);
+  const [_minMaxPrev, _setMinMaxPrev] = useState<any>([]);
   const [_validationRulePrev, _setValidationRulePrev] = useState<any[]>([]);
   const [isApiDataLoaded, setIsApiDataLoaded] = useState<boolean>(false);
   const [api, contextHolder]: any = notification.useNotification();
@@ -550,23 +550,30 @@ const ParentComponent = ({
 
   // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
+    console.log("_minMaxRulePrev", _minMaxRulePrev)
+    
     if (_minMaxRulePrev?.length) {
       let key = 15;
-      _minMaxRulePrev.forEach((dbData) => {
+      
+      _minMaxRulePrev?.forEach((dbData: any) => {
         console.log("Loading _minMaxRulePrev", dbData);
         _setNestedRows((prevData: any) => {
           const minMax = dbData?.minMax;
           const minMaxOutputDataArray: any[] = [];
           let minMaxDta = minMax;
           if (minMaxDta?.length) {
-            minMaxDta.forEach((fieldMinMax: any) => {
-              console.log("fieldMinMax", fieldMinMax);
+            // minMaxDta.forEach((fieldMinMax: any) => {
+              console.log("fieldMinMax", minMaxDta);
+              const minObj = minMaxDta?.find((minMax: any) => minMax?.type === "MINIMUM_LENGTH" || minMax?.type === "MINIMUM")
+              const maxObj = minMaxDta?.find((minMax: any) => minMax?.type === "MAXIMUM_LENGTH" || minMax?.type === "MAXIMUM")
+              // console.log("minObjminObj", minObj);
+              console.log("maxObjmaxObj", maxObj);
 
               let _refactorDtaMin = removeMinMaxIfKeyAndGetDbProperty([
-                fieldMinMax[0]?.value,
+                minObj?.value,
               ]);
               let _refactorDtaMax = removeMinMaxIfKeyAndGetDbProperty([
-                fieldMinMax[1]?.value,
+                maxObj?.value,
               ]);
               console.log("_refactorDtaMin", _refactorDtaMin);
               console.log("_refactorDtaMax", _refactorDtaMax);
@@ -644,7 +651,7 @@ const ParentComponent = ({
                   });
                 });
               }
-            });
+            // });
             if (minMaxOutputDataArray && minMaxOutputDataArray.length) {
               console.log(
                 "Validation DB Dataaa showUpdatedDataArray ",
@@ -1118,7 +1125,7 @@ const ParentComponent = ({
     //   },
     // ]);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [ [ { "type": "MINIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, 2 ] } }, { "type": "MAXIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, null ] } } ] ]}]);
-    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [[{"type":"MINIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"TDSTem_C01_S01_NO"},3]}]},"0"]}},{"type":"MAXIMUM_LENGTH","value":{"if":[{"":[{"==":[{"var":"TDSTem_C01_S01_NO"},3]}]},null]}}]]}]);
+    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"type":"MINIMUM","value":{"if":[{"or":[{"==":[{"var":"TDSwi_C01_S01_str"},"12"]},{"==":[{"var":"TDSwi_C01_S01_str"},"byr"]}]},2]}},{"type":"MAXIMUM","value":{"if":[{"or":[{"==":[{"var":"TDSwi_C01_S01_str"},"12"]},{"==":[{"var":"TDSwi_C01_S01_str"},"byr"]}]},5]}}]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
     // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_QUESTION_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } }]}  }] )
@@ -1609,16 +1616,16 @@ const ParentComponent = ({
 
           formattingForMin.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, minValue);
           formattingForMax.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, maxValue);
-          minMaxDBFormatArray.push([
+          minMaxDBFormatArray.push(
             {
-              type: "MINIMUM_LENGTH",
+              type: typeof minValue === "string"  ? "MINIMUM_LENGTH" : "MINIMUM",
               value: { if: formattingForMin },
             },
             {
-              type: "MAXIMUM_LENGTH",
+              type: typeof minValue === "string"  ? "MAXIMUM_LENGTH" : "MAXIMUM",
               value: { if: formattingForMax },
             },
-          ]);
+          );
         }
       }
     });
