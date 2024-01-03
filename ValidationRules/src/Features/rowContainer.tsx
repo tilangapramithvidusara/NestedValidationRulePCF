@@ -768,16 +768,16 @@ const RowContainer: React.FC<TableRowProps> = ({
             : _minMaxDbFormarFields?.exp,
           maxValue
         );
-        minMaxDBFormatArray.push([
+        minMaxDBFormatArray.push(
           {
-            type: "MINIMUM_LENGTH",
+            type: typeof minMax?.minValue === "string" ? "MINIMUM_LENGTH" : "MINIMUM",
             value: { if: formattingForMin },
           },
           {
-            type: "MAXIMUM_LENGTH",
+            type: typeof minMax?.maxValue === "string" ? "MAXIMUM_LENGTH" : "MAXIMUM",
             value: { if: formattingForMax },
-          },
-        ]);
+          }
+        );
       }
     }
     if (
