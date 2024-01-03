@@ -19,7 +19,10 @@ import { CheckboxValueType } from "antd/es/checkbox/Group";
 import NumberInputField from "../Components/commonComponents/NumberInputField";
 import sampleInputQuestion from "../SampleData/sampleInputQuestion";
 import { updateAllLevelActionsArray } from "../Utils/utilsHelper";
-import { getListAnswersByQuestionId, loadAllQuestionsInSurvey } from "../XRMRequests/xrmRequests";
+import {
+  getListAnswersByQuestionId,
+  loadAllQuestionsInSurvey,
+} from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
 import type { SelectProps } from "antd";
 import type { SizeType } from "antd/es/config-provider/SizeContext";
@@ -70,8 +73,8 @@ interface SectionProps {
   languageConstants: any;
   tabType: any;
   setDefaultTabValidationPassed: any;
-  setMinMaxCheckboxEnabled: any,
-  currentListQuestionAnswers?: any
+  setMinMaxCheckboxEnabled: any;
+  currentListQuestionAnswers?: any;
 }
 
 function SectionContainer({
@@ -93,7 +96,7 @@ function SectionContainer({
   tabType,
   setDefaultTabValidationPassed,
   setMinMaxCheckboxEnabled,
-  currentListQuestionAnswers
+  currentListQuestionAnswers,
 }: SectionProps) {
   const [rowData, setRowData] = useState<any>();
   const [toggleEnableMin, setToggledEnableMin] = useState<any | null>(false);
@@ -160,27 +163,12 @@ function SectionContainer({
   };
 
   useEffect(() => {
-  console.log("defaultActionSetWhenRetriving", defaultActionSetWhenRetriving)
-  }, [defaultActionSetWhenRetriving])
-
-  useEffect(() => {
-    console.log("_nestedRows from Section", _nestedRows);
-  }, [_nestedRows]);
-
-  useEffect(() => {
-    console.log("currentListQuestionAnswers from sec", currentListQuestionAnswers)
-  }, [currentListQuestionAnswers]);
-
-  useEffect(() => {
     let releatedFields = _nestedRows.find(
       (x: { [x: string]: any }) => x[sectionLevel]
     );
     if (releatedFields) {
       let releatedSection = releatedFields[sectionLevel];
       let releatedActions = releatedFields[sectionLevel]?.actions;
-      console.log("ACTSSSSS releatedFields", releatedActions);
-      // if (actions && actions.length)
-      // if (actions && actions.length && releatedSection?.fields?.length) {
       _setNestedRows(
         updateAllLevelActionsArray(_nestedRows, sectionLevel, [
           {
@@ -195,12 +183,7 @@ function SectionContainer({
   }, [actions]);
 
   useEffect(() => {
-    console.log("Min Max Rendering ..... ", minMaxValue);
-    console.log("Min Max Rendering minValue ..... ", minValue?.input);
-    console.log("Min Max Rendering maxValue ..... ", maxValue?.input);
-    console.log("Min Max Rendering Only minValue ..... ", minValue);
-
-    if ((minValue?.input || maxValue?.input)) {
+    if (minValue?.input || maxValue?.input) {
       setMinMaxValue({ minValue: minValue?.input, maxValue: maxValue?.input });
       let releatedFields = _nestedRows.find(
         (x: { [x: string]: any }) => x[sectionLevel]
@@ -235,27 +218,14 @@ function SectionContainer({
   }, [minValue, maxValue]);
 
   useEffect(() => {
-    // if (
-    //   (typeof minMaxValue?.minValue === "number" &&
-    //   typeof minMaxValue?.maxValue === "number" &&
-    //     minMaxValue?.maxValue < minMaxValue?.minValue)
-    // ) {
-    //   setMinMaxValidation(false);
-    // } else {
-    //   setMinMaxValidation(true);
-    // }
-    if (
-      Number(minMaxValue?.maxValue) < Number(minMaxValue?.minValue)
-    ) {
+    if (Number(minMaxValue?.maxValue) < Number(minMaxValue?.minValue)) {
       setMinMaxValidation(false);
     } else {
       setMinMaxValidation(true);
     }
-
   }, [minMaxValue]);
 
   useEffect(() => {
-    console.log("Rendering Default Value")
     let releatedFields = _nestedRows?.find(
       (x: { [x: string]: any }) => x[sectionLevel]
     );
@@ -280,38 +250,22 @@ function SectionContainer({
 
       let releatedActionsForSefaultValue =
         releatedFields[sectionLevel]?.actions;
-      console.log(
-        "_defaultRowsdddddd releatedActionsForSefaultValue",
-        releatedActionsForSefaultValue
-      );
       if (
         releatedActionsForSefaultValue &&
         releatedActionsForSefaultValue?.length &&
         releatedActionsForSefaultValue[0]?.type
       ) {
-        console.log(
-          "_defaultRowsdddddd releatedActions 1111",
-          releatedActionsForSefaultValue[0]
-        );
-
         setDefaultActionSetWhenRetriving(releatedActionsForSefaultValue[0]);
         // setRadioDefaultValOption(defaultActionSetWhenRetriving?.type)
         setRadioDefaultValOption(releatedActionsForSefaultValue[0]?.type);
         setCheckedReferences(true);
         if (releatedActionsForSefaultValue[0]?.type === "MAT_F") {
-          const operator : any = Object.keys(
+          const operator: any = Object.keys(
             releatedActionsForSefaultValue[0]?.value
           )[0];
-          console.log("Mathematical Operator Name", operator);
 
-          
           if (operator === "0") {
-            console.log("JJHHFGJDDD");
             const values = releatedActionsForSefaultValue[0].value;
-            console.log("Mathematical Operatordd ssadwawdaw", values);
-            console.log("Mathematical Operatordd awdawdawdawd", values);
-
-  
             const array = [values[0], values[1], values[2]];
             setDefaultMathematicalOperators(array);
             setSelectedValues(array);
@@ -319,11 +273,14 @@ function SectionContainer({
             setPickOperatorDefault(values[1]);
             setPickQuestion2Default(values[2]);
 
-            setCheckedReferencesQuesOrVal(questionList?.filter((ques: any) => ques?.value === values[1])?.length ? true : false)
+            setCheckedReferencesQuesOrVal(
+              questionList?.filter((ques: any) => ques?.value === values[1])
+                ?.length
+                ? true
+                : false
+            );
           } else {
             const values = releatedActionsForSefaultValue[0].value[operator];
-            console.log("Mathematical Operator", values);
-            console.log("Mathematical Operator operator", values);
 
             const array = [values[0]?.var, operator, values[1]];
             setDefaultMathematicalOperators(array);
@@ -331,14 +288,22 @@ function SectionContainer({
             setPickQuestionDefault(values[0]?.var);
             setPickOperatorDefault(operator);
             setPickQuestion2Default(values[1]);
-            setCheckedReferencesQuesOrVal(questionList?.filter((ques: any) => ques?.value === values[1])?.length ? true : false);
+            setCheckedReferencesQuesOrVal(
+              questionList?.filter((ques: any) => ques?.value === values[1])
+                ?.length
+                ? true
+                : false
+            );
           }
         } else {
           setAddValue(releatedActionsForSefaultValue[0]?.value);
         }
-       
       } else {
-        setDefaultActionSetWhenRetriving(radioDefaultValOption ? { type: radioDefaultValOption } : { type: "disable" } );
+        setDefaultActionSetWhenRetriving(
+          radioDefaultValOption
+            ? { type: radioDefaultValOption }
+            : { type: "disable" }
+        );
       }
 
       setMinCheckboxEnabled(
@@ -348,8 +313,8 @@ function SectionContainer({
       setToggledEnableMin(
         typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
           ?.actions[0]?.minMax?.minValue !== "string" ||
-         _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.minValue === "0"
+          _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
+            ?.actions[0]?.minMax?.minValue === "0"
       );
       setMaxCheckboxEnabled(
         _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
@@ -358,8 +323,8 @@ function SectionContainer({
       setToggledEnableMax(
         typeof _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
           ?.actions[0]?.minMax?.maxValue !== "string" ||
-        _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.minValue === "0"
+          _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
+            ?.actions[0]?.minMax?.minValue === "0"
       );
       setMinMaxValue({
         minValue: _nestedRows?.find((x: any) => x[sectionLevel])?.[sectionLevel]
@@ -382,11 +347,13 @@ function SectionContainer({
     } else {
       setToggledEnableMin(true);
       setToggledEnableMax(true);
-      setDefaultActionSetWhenRetriving(radioDefaultValOption ? { type: radioDefaultValOption } : { type: "disable" } );
+      setDefaultActionSetWhenRetriving(
+        radioDefaultValOption
+          ? { type: radioDefaultValOption }
+          : { type: "disable" }
+      );
     }
   }, []);
-
-
 
   useEffect(() => {
     setDefaultActions(
@@ -415,22 +382,6 @@ function SectionContainer({
     console.log("currentQuestionDetails ", currentQuestionDetails);
   }, [currentQuestionDetails]);
 
-  // useEffect(() => {
-  //   setMinValue({ input: "", changedId: "", fieldName: "minValue" })
-  // }, [toggleEnableMin])
-
-  // useEffect(() => {
-  //   setMaxValue({ input: "", changedId: "", fieldName: "maxValue" })
-  // }, [toggleEnableMax])
-
-  // useEffect(() => {
-  //   if(!minCheckboxEnabled) setMinValue({ input: null, changedId: "", fieldName: "minValue" })
-  // }, [minCheckboxEnabled])
-
-  // useEffect(() => {
-  //   if(!maxCheckboxEnabled) setMaxValue({ input: null, changedId: "", fieldName: "maxValue" })
-  // }, [maxCheckboxEnabled])
-
   const handleMinMaxWhenToggleChanged = (minValue: any, maxValue: any) => {
     setMinMaxValue((prev: any) => ({ ...prev, minValue, maxValue }));
     let releatedFields = _nestedRows.find(
@@ -441,7 +392,6 @@ function SectionContainer({
         (obj: { checkBoxValues: any }) => obj.checkBoxValues
       );
       const minMaxDisplay = { minValue, maxValue };
-      console.log("MINMAX", minMaxDisplay);
       _setNestedRows(
         updateAllLevelActionsArray(_nestedRows, sectionLevel, [
           {
@@ -454,7 +404,6 @@ function SectionContainer({
   };
 
   const toggleEnableOnClickMin = () => {
-    console.log("DFFOnCLICK");
     setToggledEnableMin(!toggleEnableMin);
     setMinValue({ input: "", changedId: "", fieldName: "minValue" });
     handleMinMaxWhenToggleChanged(null, null);
@@ -503,7 +452,6 @@ function SectionContainer({
   };
 
   const onChangeRefrences = (e: any) => {
-    console.log("References cliecked", e);
     setCheckedReferences(e);
     if (!e) {
       setRadioDefaultValOption(null);
@@ -513,18 +461,14 @@ function SectionContainer({
     setPickOperatorDefault(null);
     setPickQuestionDefault(null);
     setPickQuestion2Default(null);
-    setDefaultActionSetWhenRetriving(e ? { type: radioDefaultValOption } : { type: "disable" });
+    setDefaultActionSetWhenRetriving(
+      e ? { type: radioDefaultValOption } : { type: "disable" }
+    );
   };
 
   const onChangeRefrencesPickValOrQues = (e: any) => {
-    console.log("References cliecked", e);
     setCheckedReferencesQuesOrVal(e);
     setPickQuestion2Default(null);
-    // if (!e) {
-    //   setRadioDefaultValOption(null);
-    //   _setNestedRows(updateAllLevelActionsArray(_nestedRows, sectionLevel, []));
-    // }
-    // setSelectedValues([]);
   };
 
   for (let i = 10; i < 36; i++) {
@@ -534,39 +478,33 @@ function SectionContainer({
     });
   }
 
-  useEffect(() => {
-    console.log("options", options);
-  }, [options]);
-
   const onReferencesActionChanged = (e: any) => {
-    console.log("onReferencesActionChanged", e);
     setRadioDefaultValOption(e?.target?.value);
-    setDefaultActionSetWhenRetriving({type: e?.target?.value});
+    setDefaultActionSetWhenRetriving({ type: e?.target?.value });
     setSelectedValues([]);
 
     setPickOperatorDefault(null);
     setPickQuestionDefault(null);
     setPickQuestion2Default(null);
-    if (currentQuestionDetails?.questionType === dbConstants?.questionTypes?.dateTimeQuestion && e?.target?.value === "ADD_V") {
+    if (
+      currentQuestionDetails?.questionType ===
+        dbConstants?.questionTypes?.dateTimeQuestion &&
+      e?.target?.value === "ADD_V"
+    ) {
       console.log("Changingggg");
       setAddValue(moment().format(dbConstants?.common?.dateFormat));
-    } else if (currentQuestionDetails?.questionType === dbConstants?.questionTypes?.numericQuestion && e?.target?.value === "ADD_V") {
+    } else if (
+      currentQuestionDetails?.questionType ===
+        dbConstants?.questionTypes?.numericQuestion &&
+      e?.target?.value === "ADD_V"
+    ) {
       setAddValue(0);
     } else {
       setAddValue(null);
     }
   };
 
-  const onDefaultNumberClick = (e: any) => {
-    console.log("EEDDDDDD", e?.target?.innerText);
-  };
-
   const handleMathematicalOperator = (e: any) => {
-    console.log("EEEEddddssd", e);
-    // if (!suerveyIsPublished) {
-    //   setAddValue(e);
-    //   setSelectedValues(e);
-    // }
     setPickOperatorDefault(e);
   };
 
@@ -607,15 +545,7 @@ function SectionContainer({
         updateAllLevelActionsArray(_nestedRows, sectionLevel, [
           {
             type: "MAT_F",
-            value: addValue
-            // value: {
-            //   [addValue[1]] : [
-            //     {
-            //         "var": addValue[0]
-            //     },
-            //     addValue[2]
-            // ]
-            // },
+            value: addValue,
           },
         ])
       );
@@ -623,28 +553,20 @@ function SectionContainer({
   }, [radioDefaultValOption, addValue]);
 
   useEffect(() => {
-    console.log("addValueaddValue", addValue);
-  }, [addValue]);
-
-  useEffect(() => {
-    console.log("DFJFJJFJFJDDDD", pickOperatorDefault);
-    console.log("DFJFJJFJFJDDDD", pickQuestionDefault)
-    console.log("DFJFJJFJFJDDDD", pickQuestion2Default)
-
     if (radioDefaultValOption === "MAT_F" && checkedReferences) {
       if (pickOperatorDefault && pickQuestion2Default && pickQuestionDefault) {
-        setAddValue([pickQuestionDefault, pickOperatorDefault, pickQuestion2Default]);
-        console.log("Passed Default")
-        setDefaultTabValidationPassed(true)
+        setAddValue([
+          pickQuestionDefault,
+          pickOperatorDefault,
+          pickQuestion2Default,
+        ]);
+        setDefaultTabValidationPassed(true);
       } else {
-        console.log("FAILED Default")
-        setDefaultTabValidationPassed(false)
+        setDefaultTabValidationPassed(false);
       }
     } else {
-      setDefaultTabValidationPassed(true)
+      setDefaultTabValidationPassed(true);
     }
-   
-
   }, [pickOperatorDefault, pickQuestionDefault, pickQuestion2Default]);
 
   return (
@@ -724,7 +646,9 @@ function SectionContainer({
                     <div style={{ marginRight: "10px" }}>
                       <Switch
                         className="custom-toggle"
-                        checkedChildren={languageConstants?.ExpressionBuilder_ValueLabel}
+                        checkedChildren={
+                          languageConstants?.ExpressionBuilder_ValueLabel
+                        }
                         unCheckedChildren="Question"
                         onChange={() => toggleEnableOnClickMin()}
                         disabled={
@@ -736,18 +660,22 @@ function SectionContainer({
                           typeof _nestedRows?.find(
                             (x: any) => x[sectionLevel]
                           )?.[sectionLevel]?.actions[0]?.minMax?.minValue !==
-                          "string" || _nestedRows?.find(
-                            (x: any) => x[sectionLevel]
-                          )?.[sectionLevel]?.actions[0]?.minMax?.minValue ===
-                          "0"
+                            "string" ||
+                          _nestedRows?.find((x: any) => x[sectionLevel])?.[
+                            sectionLevel
+                          ]?.actions[0]?.minMax?.minValue === "0"
                         }
                       />
                     </div>
 
                     <div className="minmaxText">
                       {currentQuestionDetails?.questionType === "String"
-                        ? `${languageConstants?.ExpressionBuilder_MinLengthStringConstants + ":"}`
-                        : `${languageConstants?.ExpressionBuilder_MinLengthConstants}` + ":"}
+                        ? `${
+                            languageConstants?.ExpressionBuilder_MinLengthStringConstants +
+                            ":"
+                          }`
+                        : `${languageConstants?.ExpressionBuilder_MinLengthConstants}` +
+                          ":"}
                     </div>
                     {toggleEnableMin ? (
                       <NumberInputField
@@ -809,7 +737,9 @@ function SectionContainer({
                     <div style={{ marginRight: "10px" }}>
                       <Switch
                         className="custom-toggle"
-                        checkedChildren={languageConstants?.ExpressionBuilder_ValueLabel}
+                        checkedChildren={
+                          languageConstants?.ExpressionBuilder_ValueLabel
+                        }
                         unCheckedChildren="Question"
                         onChange={() => toggleEnableOnClickMax()}
                         disabled={
@@ -821,10 +751,10 @@ function SectionContainer({
                           typeof _nestedRows?.find(
                             (x: any) => x[sectionLevel]
                           )?.[sectionLevel]?.actions[0]?.minMax?.maxValue !==
-                          "string" || _nestedRows?.find(
-                            (x: any) => x[sectionLevel]
-                          )?.[sectionLevel]?.actions[0]?.minMax?.maxValue ===
-                          "0"
+                            "string" ||
+                          _nestedRows?.find((x: any) => x[sectionLevel])?.[
+                            sectionLevel
+                          ]?.actions[0]?.minMax?.maxValue === "0"
                         }
                       />
                     </div>
@@ -832,7 +762,8 @@ function SectionContainer({
                     <div className="minmaxText">
                       {currentQuestionDetails?.questionType === "String"
                         ? `${languageConstants?.ExpressionBuilder_MaxLengthStringConstants}`
-                        : `${languageConstants?.ExpressionBuilder_MaxLengthConstants}` + " :"}
+                        : `${languageConstants?.ExpressionBuilder_MaxLengthConstants}` +
+                          " :"}
                     </div>
                     {toggleEnableMax ? (
                       <NumberInputField
@@ -883,324 +814,364 @@ function SectionContainer({
         </div>
       ) : (
         <div className="default-acts">
-            {defaultActionSetWhenRetriving && (
-              <>
-                <div className="referneces-acts">
-                  <div className="mr-10">
-                    {languageConstants?.ExpressionBuilder_AddQuesRef + " :"}
-                  </div>
-                  <div>
-                    <Switch
-                      defaultChecked={
-                        defaultActionSetWhenRetriving?.type === "disable" ? false : true
-                      }
-                      onChange={onChangeRefrences}
-                      disabled={suerveyIsPublished}
-                    />
-                  </div>
+          {defaultActionSetWhenRetriving && (
+            <>
+              <div className="referneces-acts">
+                <div className="mr-10">
+                  {languageConstants?.ExpressionBuilder_AddQuesRef + " :"}
                 </div>
-                <div className="referneces-checkbx">
-                  <Radio.Group
-                    onChange={onReferencesActionChanged}
-                    value={checkedReferences ? radioDefaultValOption : null}
-                    disabled={
-                      suerveyIsPublished ? suerveyIsPublished : !checkedReferences
+                <div>
+                  <Switch
+                    defaultChecked={
+                      defaultActionSetWhenRetriving?.type === "disable"
+                        ? false
+                        : true
                     }
-                    defaultValue={defaultActionSetWhenRetriving?.type}
-                  >
-                    <Radio value={"CLE_Q"}>{languageConstants?.ExpressionBuilder_ClrQues}</Radio>
-                    <Radio value={"ADD_V"}>
-                      {languageConstants?.ExpressionBuilder_AddValOrSetVal}
-                    </Radio>
-
-                    {(currentQuestionDetails?.questionType !==
-                      dbConstants?.questionTypes?.listQuestion) && (
-                        <Radio value={"VAL_Q"}>
-                          {languageConstants?.ExpressionBuilder_ValFromAnotherQues}
-                      </Radio>
-                      )}
-                    
-                    
-                    {(currentQuestionDetails?.questionType ===
-                      dbConstants?.questionTypes?.numericQuestion ||
-                      currentQuestionDetails?.questionType ===
-                      dbConstants?.questionTypes?.stringQuestion) && (
-                        <Radio value={"MAT_F"}>
-                          {languageConstants?.ExpressionBuilder_MatheFormula}
-                        </Radio>
-                      )}
-                  </Radio.Group>
+                    onChange={onChangeRefrences}
+                    disabled={suerveyIsPublished}
+                  />
                 </div>
-                <div className="default-options">
-                  {radioDefaultValOption === "MAT_F" ? (
-                    <div>
-                      <div className="select-ques-one">
-                        <div className="mr-11">
-                          {" "}
-                          {languageConstants?.ExpressionBuilder_SelectaQuestion + " "} : {" "}
+              </div>
+              <div className="referneces-checkbx">
+                <Radio.Group
+                  onChange={onReferencesActionChanged}
+                  value={checkedReferences ? radioDefaultValOption : null}
+                  disabled={
+                    suerveyIsPublished ? suerveyIsPublished : !checkedReferences
+                  }
+                  defaultValue={defaultActionSetWhenRetriving?.type}
+                >
+                  <Radio value={"CLE_Q"}>
+                    {languageConstants?.ExpressionBuilder_ClrQues}
+                  </Radio>
+                  <Radio value={"ADD_V"}>
+                    {languageConstants?.ExpressionBuilder_AddValOrSetVal}
+                  </Radio>
+
+                  {currentQuestionDetails?.questionType !==
+                    dbConstants?.questionTypes?.listQuestion && (
+                    <Radio value={"VAL_Q"}>
+                      {languageConstants?.ExpressionBuilder_ValFromAnotherQues}
+                    </Radio>
+                  )}
+
+                  {(currentQuestionDetails?.questionType ===
+                    dbConstants?.questionTypes?.numericQuestion ||
+                    currentQuestionDetails?.questionType ===
+                      dbConstants?.questionTypes?.stringQuestion) && (
+                    <Radio value={"MAT_F"}>
+                      {languageConstants?.ExpressionBuilder_MatheFormula}
+                    </Radio>
+                  )}
+                </Radio.Group>
+              </div>
+              <div className="default-options">
+                {radioDefaultValOption === "MAT_F" ? (
+                  <div>
+                    <div className="select-ques-one">
+                      <div className="mr-11">
+                        {" "}
+                        {languageConstants?.ExpressionBuilder_SelectaQuestion +
+                          " "}{" "}
+                        :{" "}
+                      </div>
+                      <div>
+                        <Select
+                          allowClear
+                          style={{ width: "200px" }}
+                          placeholder={
+                            languageConstants?.ExpressionBuilder_SelectQuestions
+                          }
+                          // value={selectedValues}
+                          // onChange={handleSelectChange}
+                          onChange={(e) => setPickQuestionDefault(e)}
+                          disabled={suerveyIsPublished}
+                          defaultValue={pickQuestionDefault}
+                          options={questionList?.filter(
+                            (x: any) =>
+                              x["questionType"] ===
+                              dbConstants?.questionTypes?.numericQuestion
+                          )}
+                        >
+                          {/* {selectedValues.map((value: any) => (
+                            <Option key={value} value={value}>
+                              {value}
+                            </Option>
+                          ))} */}
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="select-ques-one">
+                      <div className="mr-11">
+                        {" "}
+                        {languageConstants?.ExpressionBuilder_SelectaOperator +
+                          " "}{" "}
+                        :{" "}
+                      </div>
+                      <div>
+                        <Select
+                          allowClear
+                          style={{ width: "100px" }}
+                          placeholder={
+                            languageConstants?.ExpressionBuilder_PickaOperator
+                          }
+                          value={pickOperatorDefault}
+                          onChange={(e) => setPickOperatorDefault(e)}
+                          disabled={suerveyIsPublished}
+                          defaultValue={pickOperatorDefault}
+                          options={mathOperators}
+                        >
+                          {/* {selectedValues.map((value: any) => (
+                            <Option key={value} value={value}>
+                              {value}
+                            </Option>
+                          ))} */}
+                        </Select>
+                      </div>
+
+                      <div className="numberlist">
+                        <div className="exp-input-wrap">
+                          <div
+                            className="num-input"
+                            onClick={() => handleMathematicalOperator("+")}
+                          >
+                            +
+                          </div>
+                          <div
+                            className="num-input"
+                            onClick={() => handleMathematicalOperator("-")}
+                          >
+                            -
+                          </div>
+                          <div
+                            className="num-input"
+                            onClick={() => handleMathematicalOperator("*")}
+                          >
+                            *
+                          </div>
+                          <div
+                            className="num-input"
+                            onClick={() => handleMathematicalOperator("/")}
+                          >
+                            /
+                          </div>
                         </div>
-                        <div>
+                      </div>
+                    </div>
+
+                    <div className="select-ques-one">
+                      <div className="mr-10">
+                        {" "}
+                        {languageConstants?.ExpressionBuilder_PickaValueorQuestion +
+                          " "}{" "}
+                        :{" "}
+                      </div>
+
+                      <Switch
+                        defaultChecked={
+                          questionList?.filter(
+                            (ques: any) => ques?.value === pickQuestion2Default
+                          )?.length
+                            ? true
+                            : false
+                        }
+                        onChange={onChangeRefrencesPickValOrQues}
+                        disabled={suerveyIsPublished}
+                      />
+                    </div>
+                    <div className="select-ques-one">
+                      {checkedReferencesQuesOrVal ? (
+                        <>
+                          <div className="mr-15">
+                            {" "}
+                            {languageConstants?.ExpressionBuilder_SelectaQuestion +
+                              " "}{" "}
+                            :{" "}
+                          </div>
+
                           <Select
                             allowClear
-                            style={{ width: '200px' }}
-                            placeholder={languageConstants?.ExpressionBuilder_SelectQuestions}
-                            // value={selectedValues}
+                            style={{ width: "200px" }}
+                            placeholder={
+                              languageConstants?.ExpressionBuilder_SelectaQuestion
+                            }
+                            // value={pickOperatorDefault}
+                            onChange={(e) => setPickQuestion2Default(e)}
                             // onChange={handleSelectChange}
-                            onChange={(e) => setPickQuestionDefault(e)}
                             disabled={suerveyIsPublished}
-                            defaultValue={pickQuestionDefault}
+                            defaultValue={pickQuestion2Default}
                             options={questionList?.filter(
                               (x: any) =>
                                 x["questionType"] ===
                                 dbConstants?.questionTypes?.numericQuestion
                             )}
                           >
-                            {/* {selectedValues.map((value: any) => (
-                            <Option key={value} value={value}>
-                              {value}
-                            </Option>
-                          ))} */}
+                            {selectedValues.map((value: any) => (
+                              <Option key={value} value={value}>
+                                {value}
+                              </Option>
+                            ))}
                           </Select>
-                        </div>
-                      </div>
-
-                      <div className="select-ques-one">
-                        <div className="mr-11">
-                          {" "}
-                          {languageConstants?.ExpressionBuilder_SelectaOperator + " "} : {" "}
-                        </div>
-                        <div>
-                          <Select
-                            allowClear
-                            style={{ width: '100px' }}
-                            placeholder={languageConstants?.ExpressionBuilder_PickaOperator}
-                            value={pickOperatorDefault}
-                            onChange={(e) => setPickOperatorDefault(e)}
-                            disabled={suerveyIsPublished}
-                            defaultValue={pickOperatorDefault}
-                            options={mathOperators}
-                          >
-                            {/* {selectedValues.map((value: any) => (
-                            <Option key={value} value={value}>
-                              {value}
-                            </Option>
-                          ))} */}
-                          </Select>
-                        </div>
-                        
-                        <div className="numberlist">
-                          <div className="exp-input-wrap">
-                            <div
-                              className="num-input"
-                              onClick={() => handleMathematicalOperator("+")}
-                            >
-                              +
-                            </div>
-                            <div
-                              className="num-input"
-                              onClick={() => handleMathematicalOperator("-")}
-                            >
-                              -
-                            </div>
-                            <div
-                              className="num-input"
-                              onClick={() => handleMathematicalOperator("*")}
-                            >
-                              *
-                            </div>
-                            <div
-                              className="num-input"
-                              onClick={() => handleMathematicalOperator("/")}
-                            >
-                              /
-                            </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="mr-36">
+                            {" "}
+                            {languageConstants?.ExpressionBuilder_SelectAValue +
+                              " "}{" "}
+                            :{" "}
                           </div>
-                        </div>
-                      </div>
-
-                      <div className="select-ques-one">
-                        <div className="mr-10">
-                          {" "}
-                          {languageConstants?.ExpressionBuilder_PickaValueorQuestion + " "} : {" "}
-                        </div>
-                        
-
-                        <Switch
-                          defaultChecked={
-                            questionList?.filter((ques: any) => ques?.value === pickQuestion2Default)?.length ? true : false
-                          }
-                          onChange={onChangeRefrencesPickValOrQues}
-                          disabled={suerveyIsPublished}
-                        />
-                      </div>
-                      <div className="select-ques-one">
-                        {checkedReferencesQuesOrVal ? (
-                          <>
-                            <div className="mr-15"> {" "}
-                              {languageConstants?.ExpressionBuilder_SelectaQuestion + " "} : {" "}  </div>
-                       
-                            <Select
-                              allowClear
-                              style={{ width: "200px" }}
-                              placeholder={languageConstants?.ExpressionBuilder_SelectaQuestion}
-                              // value={pickOperatorDefault}
-                              onChange={(e) => setPickQuestion2Default(e)}
-                              // onChange={handleSelectChange}
-                              disabled={suerveyIsPublished}
-                              defaultValue={pickQuestion2Default}
-                              options={questionList?.filter(
-                                (x: any) =>
-                                  x["questionType"] ===
-                                  dbConstants?.questionTypes?.numericQuestion
-                              )}
-                            >
-                              {selectedValues.map((value: any) => (
-                                <Option key={value} value={value}>
-                                  {value}
-                                </Option>
-                              ))}
-                            </Select>
-                          </>
-                           
-                        ) : (
-                          <>
-                            <div className="mr-36"> {" "}
-                              {languageConstants?.ExpressionBuilder_SelectAValue + " "} : {" "} </div>
-                              <Input
-                              type="number"
-                              disabled={suerveyIsPublished}
-                              placeholder={languageConstants?.ExpressionBuilder_AddValue}
-                              style={{ width: "200px" }}
-                              onChange={(e) => setPickQuestion2Default(e?.target?.value)}
-                              // onChange={(e: any) => {
-                              //   console.log("EEEEESD", e);
-                              //   setAddValue(e);
-                              // }}
-                              defaultValue={pickQuestion2Default}
-                            />
-                          </>
-                        )}
-                      </div>
+                          <Input
+                            type="number"
+                            disabled={suerveyIsPublished}
+                            placeholder={
+                              languageConstants?.ExpressionBuilder_AddValue
+                            }
+                            style={{ width: "200px" }}
+                            onChange={(e) =>
+                              setPickQuestion2Default(e?.target?.value)
+                            }
+                            // onChange={(e: any) => {
+                            //   console.log("EEEEESD", e);
+                            //   setAddValue(e);
+                            // }}
+                            defaultValue={pickQuestion2Default}
+                          />
+                        </>
+                      )}
                     </div>
-                  ) : radioDefaultValOption === "ADD_V" ? (
-                    currentQuestionDetails?.questionType ===
-                      dbConstants?.questionTypes?.numericQuestion ? (
-                      <InputNumber
-                        type="number"
-                        placeholder={languageConstants?.ExpressionBuilder_AddValue}
+                  </div>
+                ) : radioDefaultValOption === "ADD_V" ? (
+                  currentQuestionDetails?.questionType ===
+                  dbConstants?.questionTypes?.numericQuestion ? (
+                    <InputNumber
+                      type="number"
+                      placeholder={
+                        languageConstants?.ExpressionBuilder_AddValue
+                      }
+                      disabled={suerveyIsPublished}
+                      style={{ width: "50%" }}
+                      onChange={(e: any) => {
+                        console.log("EEEEESD", e);
+                        setAddValue(e);
+                      }}
+                      defaultValue={defaultActionSetWhenRetriving?.value}
+                      value={addValue}
+                    />
+                  ) : currentQuestionDetails?.questionType === "Date" ? (
+                    <Space direction="vertical" size={17}>
+                      <DatePicker
                         disabled={suerveyIsPublished}
-                        style={{ width: "50%" }}
-                        onChange={(e: any) => {
-                          console.log("EEEEESD", e);
-                          setAddValue(e);
-                        }}
-                        defaultValue={defaultActionSetWhenRetriving?.value}
-                        value={addValue}
-                      />
-                    ) : currentQuestionDetails?.questionType === "Date" ? (
-                      <Space direction="vertical" size={17}>
-                        <DatePicker
-                          disabled={suerveyIsPublished}
-                          defaultValue={
-                            defaultActionSetWhenRetriving?.value &&
-                              moment(
-                                defaultActionSetWhenRetriving?.value,
-                                dbConstants?.common?.dateFormat
-                              ).isValid()
-                              ? dayjs(
+                        defaultValue={
+                          defaultActionSetWhenRetriving?.value &&
+                          moment(
+                            defaultActionSetWhenRetriving?.value,
+                            dbConstants?.common?.dateFormat
+                          ).isValid()
+                            ? dayjs(
                                 moment(
                                   defaultActionSetWhenRetriving?.value,
                                   dbConstants?.common?.dateFormat
                                 ).format(dbConstants?.common?.dateFormat)
                               )
-                              : dayjs(
+                            : dayjs(
                                 moment().format(dbConstants?.common?.dateFormat)
                               )
-                          }
-                          format={dbConstants?.common?.dateFormat}
-                          // disabled={isDisabled}
-                          onChange={(input, option) => setAddValue(input)}
-                          style={{ width: "150px" }}
-                        />
-                      </Space>
-                    ) : currentQuestionDetails?.questionType === "List" ? (
-                      // <Space direction="vertical" size={50}>
-                         <Select
-                          showSearch
-                          placeholder={languageConstants?.selectaQues}
-                          optionFilterProp="children"
-                          style={{ width: "30%" }}
-                          onChange={(e: any) => setAddValue(e)}
-                          disabled={suerveyIsPublished}
-                          options={currentListQuestionAnswers && currentListQuestionAnswers?.listAnswers?.length && currentListQuestionAnswers?.listAnswers}
-                          value={!addValue ? null : addValue}
-                        />
-                      // </Space>
-                    ) : (
-                      <Input
-                        disabled={suerveyIsPublished}
-                        placeholder={languageConstants?.addValue}
-                        style={{ width: "50%" }}
-                        onChange={(e: any) => {
-                          console.log("EEEEESD", e);
-                          setAddValue(e?.target?.value);
-                        }}
-                        defaultValue={
-                          defaultActionSetWhenRetriving?.type === "ADD_V"
-                            ? defaultActionSetWhenRetriving?.value
-                            : null
                         }
-                        value={addValue}
+                        format={dbConstants?.common?.dateFormat}
+                        // disabled={isDisabled}
+                        onChange={(input, option) => setAddValue(input)}
+                        style={{ width: "150px" }}
                       />
-                    )
-                  ) : radioDefaultValOption === "VAL_Q" ? (
-                    <div>
-                      <div>
-                        <Select
-                          showSearch
-                          placeholder={languageConstants?.selectaQues}
-                          optionFilterProp="children"
-                          // onChange={onChange}
-                          // onSearch={onSearch}
-                          // filterOption={filterOption}
-                          // defaultValue={
-                          //   defaultActionSetWhenRetriving?.type === "VAL_Q"
-                          //     ? defaultActionSetWhenRetriving?.value
-                          //     : null
-                          // }
-                          style={{ width: "50%" }}
-                          onChange={(e: any) => setAddValue(e)}
-                          disabled={suerveyIsPublished}
-                          options={
-                            currentQuestionDetails?.questionType === "Numeric"
-                              ? questionList?.filter(
-                                (x: any) =>
-                                  x["questionType"] ===
-                                  dbConstants?.questionTypes?.numericQuestion &&
-                                  x["questionType"] !==
-                                  dbConstants?.questionTypes?.gridQuestion
-                              )
-                              : currentQuestionDetails?.questionType === "Date" ? questionList?.filter(
-                                (x: any) =>
-                                  x["questionType"] ===
-                                  dbConstants?.questionTypes?.dateTimeQuestion && x["questionType"] !==
-                                  dbConstants?.questionTypes?.gridQuestion
-                              ) : questionList?.filter(
-                                (x: any) =>
-                                  x["questionType"] !==
-                                  dbConstants?.questionTypes?.gridQuestion
-                              )
-                          }
-                          value={!addValue ? null : addValue}
-                        />
-                      </div>
-                    </div>
+                    </Space>
+                  ) : currentQuestionDetails?.questionType === "List" ? (
+                    // <Space direction="vertical" size={50}>
+                    <Select
+                      showSearch
+                      placeholder={languageConstants?.selectaQues}
+                      optionFilterProp="children"
+                      style={{ width: "30%" }}
+                      onChange={(e: any) => setAddValue(e)}
+                      disabled={suerveyIsPublished}
+                      options={
+                        currentListQuestionAnswers &&
+                        currentListQuestionAnswers?.listAnswers?.length &&
+                        currentListQuestionAnswers?.listAnswers
+                      }
+                      value={!addValue ? null : addValue}
+                    />
                   ) : (
-                    <div></div>
-                  )}
-                </div>
-              </>
-            )}
+                    // </Space>
+                    <Input
+                      disabled={suerveyIsPublished}
+                      placeholder={languageConstants?.addValue}
+                      style={{ width: "50%" }}
+                      onChange={(e: any) => {
+                        console.log("EEEEESD", e);
+                        setAddValue(e?.target?.value);
+                      }}
+                      defaultValue={
+                        defaultActionSetWhenRetriving?.type === "ADD_V"
+                          ? defaultActionSetWhenRetriving?.value
+                          : null
+                      }
+                      value={addValue}
+                    />
+                  )
+                ) : radioDefaultValOption === "VAL_Q" ? (
+                  <div>
+                    <div>
+                      <Select
+                        showSearch
+                        placeholder={languageConstants?.selectaQues}
+                        optionFilterProp="children"
+                        // onChange={onChange}
+                        // onSearch={onSearch}
+                        // filterOption={filterOption}
+                        // defaultValue={
+                        //   defaultActionSetWhenRetriving?.type === "VAL_Q"
+                        //     ? defaultActionSetWhenRetriving?.value
+                        //     : null
+                        // }
+                        style={{ width: "50%" }}
+                        onChange={(e: any) => setAddValue(e)}
+                        disabled={suerveyIsPublished}
+                        options={
+                          currentQuestionDetails?.questionType === "Numeric"
+                            ? questionList?.filter(
+                                (x: any) =>
+                                  x["questionType"] ===
+                                    dbConstants?.questionTypes
+                                      ?.numericQuestion &&
+                                  x["questionType"] !==
+                                    dbConstants?.questionTypes?.gridQuestion
+                              )
+                            : currentQuestionDetails?.questionType === "Date"
+                            ? questionList?.filter(
+                                (x: any) =>
+                                  x["questionType"] ===
+                                    dbConstants?.questionTypes
+                                      ?.dateTimeQuestion &&
+                                  x["questionType"] !==
+                                    dbConstants?.questionTypes?.gridQuestion
+                              )
+                            : questionList?.filter(
+                                (x: any) =>
+                                  x["questionType"] !==
+                                  dbConstants?.questionTypes?.gridQuestion
+                              )
+                        }
+                        value={!addValue ? null : addValue}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

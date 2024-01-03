@@ -19,7 +19,7 @@ import {
   Select,
   Space,
   Spin,
-  Modal
+  Modal,
 } from "antd";
 import SectionContainer from "./sectionContainer";
 import {
@@ -92,7 +92,8 @@ const ParentComponent = ({
     minCheckbox: false,
     maxCheckbox: false,
   });
-  const [currentListQuestionAnswers, setCurrentListQuestionAnswers] = useState();
+  const [currentListQuestionAnswers, setCurrentListQuestionAnswers] =
+    useState();
 
   //   const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
   //     "label": "TSDTem_C01_S01_date",
@@ -161,15 +162,7 @@ const ParentComponent = ({
     ) {
       const formattedQuestionList = questionListArray
         .map((quesNme: any) => {
-          if (
-            quesNme
-            // quesNme[
-            //   "gyde_answertype@OData.Community.Display.V1.FormattedValue"
-            // ] !== "Grid" &&
-            // quesNme[
-            //   "gyde_answertype@OData.Community.Display.V1.FormattedValue"
-            // ] !== "Header"
-          )
+          if (quesNme)
             return {
               label: quesNme.gyde_name,
               value: quesNme.gyde_name,
@@ -245,10 +238,10 @@ const ParentComponent = ({
     const response = await getListAnswersByQuestionId(
       currentQuestionDetails?.questionId
     );
-    console.log("JJFJFJFJNJUBJU", response)
+    console.log("JJFJFJFJNJUBJU", response);
 
     if (response?.data?.entities) {
-      console.log("JJFJFJFJNJUBJU")
+      console.log("JJFJFJFJNJUBJU");
       setCurrentListQuestionAnswers((prev: any) => {
         return {
           ...prev,
@@ -258,20 +251,23 @@ const ParentComponent = ({
               label: x.gyde_answervalue,
               value: x.gyde_answervalue,
             };
-          })
-        }
-      })
+          }),
+        };
+      });
     }
-  }
+  };
   useEffect(() => {
     if (currentQuestionDetails?.questionId) {
       getCurrentQuestionListAnswers();
     }
-  }, [currentQuestionDetails])
+  }, [currentQuestionDetails]);
 
   useEffect(() => {
-    console.log("currentListQuestionAnswers -----> ", currentListQuestionAnswers)
-  }, [currentListQuestionAnswers])
+    console.log(
+      "currentListQuestionAnswers -----> ",
+      currentListQuestionAnswers
+    );
+  }, [currentListQuestionAnswers]);
 
   useEffect(() => {
     setSections(
@@ -426,7 +422,7 @@ const ParentComponent = ({
     }
   }, [_visibilityRulePrev]);
 
-    // This useEffect is responsible for Convert DB Format to our JSON format
+  // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
     if (_documentOutputRulePrev?.length) {
       let key = 1;
@@ -550,11 +546,11 @@ const ParentComponent = ({
 
   // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
-    console.log("_minMaxRulePrev", _minMaxRulePrev)
-    
+    console.log("_minMaxRulePrev", _minMaxRulePrev);
+
     if (_minMaxRulePrev?.length) {
       let key = 15;
-      
+
       _minMaxRulePrev?.forEach((dbData: any) => {
         console.log("Loading _minMaxRulePrev", dbData);
         _setNestedRows((prevData: any) => {
@@ -563,94 +559,101 @@ const ParentComponent = ({
           let minMaxDta = minMax;
           if (minMaxDta?.length) {
             // minMaxDta.forEach((fieldMinMax: any) => {
-              console.log("fieldMinMax", minMaxDta);
-              const minObj = minMaxDta?.find((minMax: any) => minMax?.type === "MINIMUM_LENGTH" || minMax?.type === "MINIMUM")
-              const maxObj = minMaxDta?.find((minMax: any) => minMax?.type === "MAXIMUM_LENGTH" || minMax?.type === "MAXIMUM")
-              // console.log("minObjminObj", minObj);
-              console.log("maxObjmaxObj", maxObj);
+            console.log("fieldMinMax", minMaxDta);
+            const minObj = minMaxDta?.find(
+              (minMax: any) =>
+                minMax?.type === "MINIMUM_LENGTH" || minMax?.type === "MINIMUM"
+            );
+            const maxObj = minMaxDta?.find(
+              (minMax: any) =>
+                minMax?.type === "MAXIMUM_LENGTH" || minMax?.type === "MAXIMUM"
+            );
+            // console.log("minObjminObj", minObj);
+            console.log("maxObjmaxObj", maxObj);
 
-              let _refactorDtaMin = removeMinMaxIfKeyAndGetDbProperty([
-                minObj?.value,
-              ]);
-              let _refactorDtaMax = removeMinMaxIfKeyAndGetDbProperty([
-                maxObj?.value,
-              ]);
-              console.log("_refactorDtaMin", _refactorDtaMin);
-              console.log("_refactorDtaMax", _refactorDtaMax);
-              const refactoredMinMax =
-                _refactorDtaMin[0]?.ifConditions ||
-                _refactorDtaMax[0]?.ifConditions;
-              console.log("refactorDta Min Maxxx", refactoredMinMax);
-              let _minMaxArrayStr = refactoredMinMax?.length
-                ? refactoredMinMax
-                : [refactoredMinMax];
+            let _refactorDtaMin = removeMinMaxIfKeyAndGetDbProperty([
+              minObj?.value,
+            ]);
+            let _refactorDtaMax = removeMinMaxIfKeyAndGetDbProperty([
+              maxObj?.value,
+            ]);
+            console.log("_refactorDtaMin", _refactorDtaMin);
+            console.log("_refactorDtaMax", _refactorDtaMax);
+            const refactoredMinMax =
+              _refactorDtaMin[0]?.ifConditions ||
+              _refactorDtaMax[0]?.ifConditions;
+            console.log("refactorDta Min Maxxx", refactoredMinMax);
+            let _minMaxArrayStr = refactoredMinMax?.length
+              ? refactoredMinMax
+              : [refactoredMinMax];
 
-              const isRetrieveAsNormal = _minMaxArrayStr?.some(
-                (x: any) => x?.or?.length || x?.and?.length
-              );
-              // const isFirstExp = _minMaxArrayStr?.some(
-              //   (x: any) => !Object.keys(x)[0]
-              // );
-              const isFirstExp = operationalSampleData[0]?.options?.some((x: any) => x?.value === Object.keys(refactoredMinMax)[0])
-              
-              const isAllAreNormal = _minMaxArrayStr?.every(
-                (x: { or: any[] }) => {
-                  const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
-                  return keys?.includes("and") || keys?.includes("or");
-                }
-              );
-              const isNestedIfs = _minMaxArrayStr?.some(
-                (x: {}) => Object.keys(x)[0] === "if"
-              );
+            const isRetrieveAsNormal = _minMaxArrayStr?.some(
+              (x: any) => x?.or?.length || x?.and?.length
+            );
+            // const isFirstExp = _minMaxArrayStr?.some(
+            //   (x: any) => !Object.keys(x)[0]
+            // );
+            const isFirstExp = operationalSampleData[0]?.options?.some(
+              (x: any) => x?.value === Object.keys(refactoredMinMax)[0]
+            );
 
-              console.log("isRetrieveAsNormal Min Max", isRetrieveAsNormal);
-              console.log("isFirstExp Min Max", isFirstExp);
-              console.log("isAllAreNormal Min Max", isAllAreNormal);
-              console.log("isNestedIfs Min Max", isNestedIfs);
-
-              let _minMaxArray;
-              if (isNestedIfs) {
-                _minMaxArray = removeIfKeyAndGetDbProperty(_minMaxArrayStr);
-              } else if (isAllAreNormal) {
-                _minMaxArray = _minMaxArrayStr[0]?.or;
-              } else if (isRetrieveAsNormal) {
-                // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
-                _minMaxArray = _minMaxArrayStr;
-              } else if (isFirstExp) {
-                // refactorDta = visibilityDta;
-                // _minMaxArray = [{ or: Object.values(_minMaxArrayStr[0])[0] }];
-                _minMaxArray = [{ or: [refactoredMinMax] }];
-                
-              } else {
-                _minMaxArray = removeIfKeyAndGetDbProperty(_minMaxArrayStr);
+            const isAllAreNormal = _minMaxArrayStr?.every(
+              (x: { or: any[] }) => {
+                const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
+                return keys?.includes("and") || keys?.includes("or");
               }
+            );
+            const isNestedIfs = _minMaxArrayStr?.some(
+              (x: {}) => Object.keys(x)[0] === "if"
+            );
 
-              console.log("visibilityStringvisibilityString", _minMaxArray);
-              if (_minMaxArray && _minMaxArray?.length) {
-                _minMaxArray?.forEach((fieldDta: any): any => {
-                  console.log("Each Section Field Data", fieldDta);
-                  let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
+            console.log("isRetrieveAsNormal Min Max", isRetrieveAsNormal);
+            console.log("isFirstExp Min Max", isFirstExp);
+            console.log("isAllAreNormal Min Max", isAllAreNormal);
+            console.log("isNestedIfs Min Max", isNestedIfs);
 
-                  minMaxOutputDataArray.push({
-                    [key++]: {
-                      actions: [
-                        {
-                          minMax: {
-                            logicalName: "minMax",
-                            minValue: _refactorDtaMin[0]?.minMax?.var
-                              ? _refactorDtaMin[0]?.minMax?.var
-                              : _refactorDtaMin[0]?.minMax,
-                            maxValue: _refactorDtaMax[0]?.minMax?.var
-                              ? _refactorDtaMax[0]?.minMax?.var
-                              : _refactorDtaMax[0]?.minMax,
-                          },
+            let _minMaxArray;
+            if (isNestedIfs) {
+              _minMaxArray = removeIfKeyAndGetDbProperty(_minMaxArrayStr);
+            } else if (isAllAreNormal) {
+              _minMaxArray = _minMaxArrayStr[0]?.or;
+            } else if (isRetrieveAsNormal) {
+              // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
+              _minMaxArray = _minMaxArrayStr;
+            } else if (isFirstExp) {
+              // refactorDta = visibilityDta;
+              // _minMaxArray = [{ or: Object.values(_minMaxArrayStr[0])[0] }];
+              _minMaxArray = [{ or: [refactoredMinMax] }];
+            } else {
+              _minMaxArray = removeIfKeyAndGetDbProperty(_minMaxArrayStr);
+            }
+
+            console.log("visibilityStringvisibilityString", _minMaxArray);
+            if (_minMaxArray && _minMaxArray?.length) {
+              _minMaxArray?.forEach((fieldDta: any): any => {
+                console.log("Each Section Field Data", fieldDta);
+                let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
+
+                minMaxOutputDataArray.push({
+                  [key++]: {
+                    actions: [
+                      {
+                        minMax: {
+                          logicalName: "minMax",
+                          minValue: _refactorDtaMin[0]?.minMax?.var
+                            ? _refactorDtaMin[0]?.minMax?.var
+                            : _refactorDtaMin[0]?.minMax,
+                          maxValue: _refactorDtaMax[0]?.minMax?.var
+                            ? _refactorDtaMax[0]?.minMax?.var
+                            : _refactorDtaMax[0]?.minMax,
                         },
-                      ],
-                      fields: normalConverter([_fieldDta]),
-                    },
-                  });
+                      },
+                    ],
+                    fields: normalConverter([_fieldDta]),
+                  },
                 });
-              }
+              });
+            }
             // });
             if (minMaxOutputDataArray && minMaxOutputDataArray.length) {
               console.log(
@@ -688,10 +691,9 @@ const ParentComponent = ({
 
       __defaultValueRule?.forEach((defTriggers: any) => {
         console.log("defTriggers", defTriggers);
-        const triggers =
-          defTriggers?.defaultValRule?.triggers ?
-          defTriggers?.defaultValRule?.triggers :
-          defTriggers?.defaultValRule;
+        const triggers = defTriggers?.defaultValRule?.triggers
+          ? defTriggers?.defaultValRule?.triggers
+          : defTriggers?.defaultValRule;
         // const triggers = defTriggers?.defaultValRule;
         console.log("defaultData triggers", triggers);
 
@@ -824,14 +826,20 @@ const ParentComponent = ({
 
   // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
-    console.log("_visibilityAndDocOutput", _visibilityAndDocOutput)
+    console.log("_visibilityAndDocOutput", _visibilityAndDocOutput);
     if (_visibilityAndDocOutput?.length) {
       let key = 700;
       _visibilityAndDocOutput.forEach((dbData) => {
         console.log("Loading Document Output Data", dbData);
-        if(dbData && dbData?.visibilityAndDocRuleOutput && Object.keys(dbData?.visibilityAndDocRuleOutput).length === 0) return;
+        if (
+          dbData &&
+          dbData?.visibilityAndDocRuleOutput &&
+          Object.keys(dbData?.visibilityAndDocRuleOutput).length === 0
+        )
+          return;
         _setNestedRows((prevData: any) => {
-          let visibilityAndDocRuleOutput = dbData?.visibilityAndDocRuleOutput?.if?.length
+          let visibilityAndDocRuleOutput = dbData?.visibilityAndDocRuleOutput
+            ?.if?.length
             ? dbData?.visibilityAndDocRuleOutput?.if
             : [dbData?.visibilityAndDocRuleOutput];
           console.log("docRuleOutput String", visibilityAndDocRuleOutput);
@@ -848,20 +856,22 @@ const ParentComponent = ({
             const isFirstExp = visibilityAndDocRuleOutput?.some(
               (x: any) => !Object.keys(x)[0]
             );
-            const isAllAreNormal = visibilityAndDocRuleOutput?.every((x: { or: any[] }) => {
-              const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
-              return keys?.includes("and") || keys?.includes("or");
-            });
+            const isAllAreNormal = visibilityAndDocRuleOutput?.every(
+              (x: { or: any[] }) => {
+                const keys = x?.or?.map((x: {}) => Object.keys(x)[0]);
+                return keys?.includes("and") || keys?.includes("or");
+              }
+            );
             const isNestedIfs = visibilityAndDocRuleOutput?.some(
               (x: {}) => Object.keys(x)[0] === "if"
             );
 
-            const isFirstExpWithEmptyStringKey = visibilityAndDocRuleOutput?.some(
-              (x: any) => !Object.keys(x)[0]
-            );
-            const isFirstExpWithoutEmptyStringKey = visibilityAndDocRuleOutput?.some(
-              (x: any) => (x[Object.keys(x)[0]] as any[])?.length === 2
-            );
+            const isFirstExpWithEmptyStringKey =
+              visibilityAndDocRuleOutput?.some((x: any) => !Object.keys(x)[0]);
+            const isFirstExpWithoutEmptyStringKey =
+              visibilityAndDocRuleOutput?.some(
+                (x: any) => (x[Object.keys(x)[0]] as any[])?.length === 2
+              );
 
             console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
             console.log("Fetch Type isFirstExp", isFirstExp);
@@ -877,7 +887,9 @@ const ParentComponent = ({
             );
 
             if (isNestedIfs) {
-              docOutputDta = removeIfKeyAndGetDbProperty(visibilityAndDocRuleOutput);
+              docOutputDta = removeIfKeyAndGetDbProperty(
+                visibilityAndDocRuleOutput
+              );
             } else if (isAllAreNormal) {
               docOutputDta = visibilityAndDocRuleOutput[0]?.or;
             } else if (isRetrieveAsNormal) {
@@ -887,12 +899,18 @@ const ParentComponent = ({
               docOutputDta = [{ or: [visibilityAndDocRuleOutput[0]] }];
             } else if (isFirstExpWithEmptyStringKey) {
               // refactorDta = visibilityDta;
-              docOutputDta = [{ or: Object.values(visibilityAndDocRuleOutput[0])[0] }];
+              docOutputDta = [
+                { or: Object.values(visibilityAndDocRuleOutput[0])[0] },
+              ];
             } else if (isFirstExp) {
               // refactorDta = visibilityDta;
-              docOutputDta = [{ or: Object.values(visibilityAndDocRuleOutput[0])[0] }];
+              docOutputDta = [
+                { or: Object.values(visibilityAndDocRuleOutput[0])[0] },
+              ];
             } else {
-              docOutputDta = removeIfKeyAndGetDbProperty(visibilityAndDocRuleOutput);
+              docOutputDta = removeIfKeyAndGetDbProperty(
+                visibilityAndDocRuleOutput
+              );
             }
 
             if (docOutputDta && docOutputDta?.length) {
@@ -950,7 +968,7 @@ const ParentComponent = ({
       });
       setIsApiDataLoaded(false);
     }
-  }, [_visibilityAndDocOutput])
+  }, [_visibilityAndDocOutput]);
 
   const openNotificationWithIcon = (type: any, message: any) => {
     api[type]({
@@ -986,11 +1004,6 @@ const ParentComponent = ({
         currentPossitionDetails?.id,
         `?$select=${dbConstants.common.gyde_visibilityrule}`
       );
-      // validationRulePreviousValues = await fetchRequest(
-      //   logicalName,
-      //   currentPossitionDetails?.id,
-      //   `?$select=${dbConstants.common.gyde_validationrule}`
-      // );
     } else if (
       logicalName &&
       currentPossitionDetails?.id &&
@@ -1001,30 +1014,16 @@ const ParentComponent = ({
         currentPossitionDetails?.id,
         `?$select=${dbConstants.question.gyde_minmaxvalidationrule}`
       );
-
-      // Commented this
       visibilityRulePreviousValues = await fetchRequest(
         logicalName,
         currentPossitionDetails?.id,
         `?$select=${dbConstants.common.gyde_visibilityrule}`
       );
-      // visibilityRulePreviousValues = {data: "{\"and\":[{\"==\":[{\"var\":\"NTemp_C01_s01_grd\"},3]},{\"==\":[{\"var\":\"NTemp_C01_s01_rd\"},\"55\"]}]}"}
-      //
-
-      // validationRulePreviousValues = await fetchRequest(
-      //   logicalName,
-      //   currentPossitionDetails?.id,
-      //   `?$select=${dbConstants.common.gyde_validationrule}`
-      // );
-
-      //Commented this
       documentOutputRule = await fetchRequest(
         logicalName,
         currentPossitionDetails?.id,
         `?$select=${dbConstants.question.gyde_documentOutputRule}`
       );
-      // documentOutputRule = {data : "{\"and\":[{\"==\":[{\"var\":\"NTemp_C01_s01_grd\"},3]},{\"==\":[{\"var\":\"NTemp_C01_s01_rd\"},\"55\"]}]}"}
-      //
 
       let defaultValueLogicalName =
         dbConstants?.question?.gyde_defaultValueFormula;
@@ -1036,7 +1035,6 @@ const ParentComponent = ({
         );
       }
     }
-
 
     if (
       minMaxPreviousValues?.data &&
@@ -1050,19 +1048,22 @@ const ParentComponent = ({
         { minMax: _minMaxPreviousValues?.data },
       ]);
     }
-    if(documentOutputRule?.data && visibilityRulePreviousValues?.data && JSON.stringify(documentOutputRule?.data) === JSON.stringify(visibilityRulePreviousValues?.data)) {
-      console.log("HGGFFFFFF", documentOutputRule)
-      let _visibilityAndDocRuleOutput = JSON.parse(JSON.stringify(documentOutputRule?.data));
-      console.log("HGGFFFFFF _visibilityAndDocRuleOutput", _visibilityAndDocRuleOutput)
+    if (
+      documentOutputRule?.data &&
+      visibilityRulePreviousValues?.data &&
+      JSON.stringify(documentOutputRule?.data) ===
+        JSON.stringify(visibilityRulePreviousValues?.data)
+    ) {
+      let _visibilityAndDocRuleOutput = JSON.parse(
+        JSON.stringify(documentOutputRule?.data)
+      );
 
       // _visibilityAndDocRuleOutput = JSON.parse(_visibilityAndDocRuleOutput)
-      console.log("DFIJddddI", _visibilityAndDocRuleOutput)
       _setVisibilityAndDocOutput((prevData: any) => [
         ...prevData,
         { visibilityAndDocRuleOutput: _visibilityAndDocRuleOutput },
       ]);
-    } 
-    else {
+    } else {
       if (
         visibilityRulePreviousValues?.data &&
         Object.keys(visibilityRulePreviousValues?.data).length !== 0
@@ -1083,16 +1084,16 @@ const ParentComponent = ({
         documentOutputRule?.data &&
         Object.keys(documentOutputRule?.data).length !== 0
       ) {
-        let _documentOutputRule = JSON.parse(JSON.stringify(documentOutputRule));
+        let _documentOutputRule = JSON.parse(
+          JSON.stringify(documentOutputRule)
+        );
         _setDocumentOutputRulePrev((prevData: any) => [
           ...prevData,
           { docRuleOutput: _documentOutputRule?.data },
         ]);
       }
-
     }
 
-  
     if (
       defaultValueRule?.data &&
       Object.keys(defaultValueRule?.data).length !== 0
@@ -1141,8 +1142,10 @@ const ParentComponent = ({
   useEffect(() => {
     console.log("currentId ----->", currentPossitionDetails);
 
-    if (currentPossitionDetails) {  getRequestedData();}
-    
+    if (currentPossitionDetails) {
+      getRequestedData();
+    }
+
     loadQuestionHandler();
     if (currentPossitionDetails) {
       getCurrentPublishedStatus();
@@ -1194,11 +1197,11 @@ const ParentComponent = ({
     minMaxDBFormatArray: any,
     defaultValueRuleNormal: any
   ) => {
-    console.log("validationRule 1", visibilityRule)
-    console.log("validationRule 2", validationRule)
-    console.log("validationRule 3", outputDocShow)
-    console.log("validationRule 4", minMaxDBFormatArray)
-    console.log("validationRule 5", defaultValueRuleNormal)
+    console.log("validationRule 1", visibilityRule);
+    console.log("validationRule 2", validationRule);
+    console.log("validationRule 3", outputDocShow);
+    console.log("validationRule 4", minMaxDBFormatArray);
+    console.log("validationRule 5", defaultValueRuleNormal);
 
     let logicalName;
 
@@ -1242,7 +1245,7 @@ const ParentComponent = ({
               : JSON.stringify(visibilityRule),
         });
       }
-   
+
       if (minMaxDBFormatArray) {
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.question.gyde_minmaxvalidationrule]:
@@ -1272,7 +1275,6 @@ const ParentComponent = ({
               : JSON.stringify(defaultValueRuleNormal),
         });
       }
-      
     }
     openNotificationWithIcon(
       "success",
@@ -1350,7 +1352,7 @@ const ParentComponent = ({
     let isReferencesEmpty = false;
     let isAtleastActionSelectedIfTheFieldsAreNotEmpty = false;
 
-    let isActionIsNotAllowedForQuestion : any = [];
+    let isActionIsNotAllowedForQuestion: any = [];
 
     let minMaxExmptyIfTheCheckBoxIsEnabled = false;
     const sortedData = [..._nestedRows].sort((a, b) => {
@@ -1359,7 +1361,6 @@ const ParentComponent = ({
       return parseInt(aKey) - parseInt(bKey);
     });
 
-    console.log("DDDD", sortedData);
     const sortedDataForDefaultValue = [..._defaultRows].sort((a, b) => {
       const aKey = Object.keys(a)[0];
       const bKey = Object.keys(b)[0];
@@ -1418,8 +1419,8 @@ const ParentComponent = ({
         return;
       }
 
-      let _defaultValue : any = convertJSONFormatToDBFormat(sec[key], true);
-      _defaultValue = _defaultValue?.exp
+      let _defaultValue: any = convertJSONFormatToDBFormat(sec[key], true);
+      _defaultValue = _defaultValue?.exp;
       const __defaultValue = JSON.parse(JSON.stringify(_defaultValue));
       console.log("Pushing Default", __defaultValue);
       const _rule = __defaultValue[""]?.length
@@ -1442,12 +1443,9 @@ const ParentComponent = ({
 
       console.log("Pushing defaultValueRuleNormal", defaultValueRuleNormal);
     });
-
-    console.log("Default normal", defaultValueRuleNormal);
     if (defaultValueRuleNormal && defaultValueRuleNormal?.length) {
       // defaultTriggers = { triggers: defaultValueRuleNormal };
       defaultTriggers = defaultValueRuleNormal;
-
     }
 
     sortedData.forEach((sec: any) => {
@@ -1483,14 +1481,8 @@ const ParentComponent = ({
       const isEnableExists = checkboxValues?.some(
         (x: any) => Object.keys(x)[0] === "enable"
       );
-      console.log("checkboxValues ----> ", checkboxValues);
-      console.log("minMaxExists ----> ", minMaxExists);
-      console.log("isShowExists ----> ", isShowExists);
-      console.log("isOutputDocShowExists ----> ", isOutputDocShowExists);
-      console.log("isEnableExists ----> ", isEnableExists);
 
       let prepareForValidation = JSON.parse(JSON.stringify(sec[key].fields));
-      console.log("prepareForValidation", prepareForValidation);
       if (
         !isShowExists &&
         !isOutputDocShowExists &&
@@ -1509,10 +1501,6 @@ const ParentComponent = ({
       }
 
       if (checkboxValues) {
-        console.log(
-          "checkBoxValues when saving ----> ",
-          sec[key]?.actions[0]?.checkBoxValues[0]
-        );
         if (isShowExists) {
           showIfCount = showIfCount + 1;
           isVisibilityNested.push(
@@ -1520,10 +1508,17 @@ const ParentComponent = ({
               (flds: { hasNested: any }) => flds?.hasNested
             )
           );
-          let _visibility: any = convertJSONFormatToDBFormat(sec[key], true, currentQuestionDetails);
+          let _visibility: any = convertJSONFormatToDBFormat(
+            sec[key],
+            true,
+            currentQuestionDetails
+          );
           isActionIsNotAllowedForQuestion.push(_visibility?.validation);
           _visibility = _visibility?.exp;
-          console.log("Validation Return visibility", isActionIsNotAllowedForQuestion);
+          console.log(
+            "Validation Return visibility",
+            isActionIsNotAllowedForQuestion
+          );
           const __visibility = JSON.parse(JSON.stringify(_visibility));
           console.log("Pushing visibility", __visibility);
           visibilityRuleNormal.push(
@@ -1537,8 +1532,8 @@ const ParentComponent = ({
         }
         if (isOutputDocShowExists) {
           outputDocShowCount = outputDocShowCount + 1;
-          let _outputDocShow : any = convertJSONFormatToDBFormat(sec[key], true);
-          _outputDocShow = _outputDocShow?.exp
+          let _outputDocShow: any = convertJSONFormatToDBFormat(sec[key], true);
+          _outputDocShow = _outputDocShow?.exp;
           const __outputDocShow = JSON.parse(JSON.stringify(_outputDocShow));
 
           isShowInDocNested.push(
@@ -1558,21 +1553,6 @@ const ParentComponent = ({
             false
           );
         }
-        // if (isEnableExists) {
-        //   console.log(
-        //     "enable saving logic",
-        //     convertJSONFormatToDBFormat(sec[key], true)
-        //   );
-        //   validationRule = findAndUpdateLastNestedIf(
-        //     validationRule,
-        //     { if: [convertJSONFormatToDBFormat(sec[key], true)] },
-        //     false
-        //   );
-        //   validationRuleNormal.push(
-        //     convertJSONFormatToDBFormat(sec[key], true)
-        //   );
-        //   // validationRule.push(convertJSONFormatToDBFormat(sec[key], true))
-        // }
       }
 
       if (minMaxExists) {
@@ -1587,15 +1567,7 @@ const ParentComponent = ({
         const minMax = sec[key]?.actions[0]?.minMax;
         let minValue = minMax?.minValue || null;
         let maxValue = minMax?.maxValue || null;
-        // if (!minValue || !maxValue) {
-        //   openNotificationWithIcon("error", "Min Max Fields cannot be empty!");
-        //   setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } });
-        //   return;
-        // } else {
-        //   setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } });
-        // }
         console.log("Min Max ", minMax);
-
         if (minMax) {
           if (minValue && typeof minValue === "string" && minValue !== "0") {
             minValue = {
@@ -1614,37 +1586,31 @@ const ParentComponent = ({
           //   _minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp
           // );
 
-          formattingForMin.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, minValue);
-          formattingForMax.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, maxValue);
+          formattingForMin.push(
+            _minMaxDbFormarFields?.exp[""]?.length
+              ? _minMaxDbFormarFields?.exp[""][0]
+              : _minMaxDbFormarFields?.exp,
+            minValue
+          );
+          formattingForMax.push(
+            _minMaxDbFormarFields?.exp[""]?.length
+              ? _minMaxDbFormarFields?.exp[""][0]
+              : _minMaxDbFormarFields?.exp,
+            maxValue
+          );
           minMaxDBFormatArray.push(
             {
-              type: typeof minValue === "string"  ? "MINIMUM_LENGTH" : "MINIMUM",
+              type: typeof minValue === "string" ? "MINIMUM_LENGTH" : "MINIMUM",
               value: { if: formattingForMin },
             },
             {
-              type: typeof minValue === "string"  ? "MAXIMUM_LENGTH" : "MAXIMUM",
+              type: typeof minValue === "string" ? "MAXIMUM_LENGTH" : "MAXIMUM",
               value: { if: formattingForMax },
-            },
+            }
           );
         }
       }
     });
-
-    console.log("Show saving logic visibilityRule", visibilityRule);
-    console.log("Show saving logic visibilityRuleNormal", visibilityRuleNormal);
-    console.log("Show saving logic ValidationRule", validationRule);
-    console.log(
-      "Show saving logic Validation Rule Normal",
-      validationRuleNormal
-    );
-
-    console.log("Show saving logic OutputDoc Show", outputDocShow);
-    console.log(
-      "Show saving logic Output Doc Show Normal",
-      outputDocShowNormal
-    );
-
-    console.log("Show saving logic Min Max Rule", minMaxDBFormatArray);
 
     let savedVisibilityRuleFinalFormat: any = [];
     let savedValidationRuleFinalFormat: any = [];
@@ -1657,10 +1623,6 @@ const ParentComponent = ({
       !isVisibilityNested.some((x: any) => x)
     ) {
       if (visibilityRuleNormal.length === 1) {
-        // savedVisibilityRuleFinalFormat = visibilityRuleNormal;
-        // savedVisibilityRuleFinalFormat = {
-        //   if: visibilityRuleNormal
-        // };
         if (visibilityRuleNormal[0][""] && visibilityRuleNormal[0][""][0]) {
           savedVisibilityRuleFinalFormat = visibilityRuleNormal[0][""][0];
         } else {
@@ -1668,11 +1630,7 @@ const ParentComponent = ({
         }
       } else {
         savedVisibilityRuleFinalFormat = {
-          // if: [
-          //   {
           or: visibilityRuleNormal,
-          //     },
-          //   ]
         };
       }
     } else {
@@ -1810,10 +1768,6 @@ const ParentComponent = ({
     try {
       const languageConstantsFromResTable = await loadResourceString();
       if (languageConstantsFromResTable?.data && languageConstants?.length) {
-        console.log(
-          "languageConstantsFromResTable 2",
-          languageConstantsFromResTable
-        );
         const mergedObject = languageConstantsFromResTable?.data.reduce(
           (result: any, currentObject: any) => {
             return Object.assign(result, currentObject);
@@ -1837,10 +1791,6 @@ const ParentComponent = ({
     }
   };
 
-  // const tabsChangeHandler = (e: any) => {
-  //   setSelectedTab(e?.target?.value);
-  // };
-
   useEffect(() => {
     console.log("_defaultRows", _defaultRows);
   }, [_defaultRows]);
@@ -1854,18 +1804,21 @@ const ParentComponent = ({
       await saveVisibilityData({}, {}, {}, {}, false);
       _setNestedRows(null);
     }
-      
+
     if (selectedTab === "dv") {
       await saveVisibilityData(false, false, false, false, {});
       _setDefaultRows(null);
     }
-  }
-  
+  };
+
   const showPromiseConfirm: any = async () => {
     confirm({
-      title: 'Do you want to clear the creation rule?',
+      title: "Do you want to clear the creation rule?",
       icon: <ExclamationCircleFilled />,
-      content: `When the OK button is clicked, all the rule associated with ${selectedTab === "vr" ? " Validation rule " : " Default rule"}` + " will be deleted.",
+      content:
+        `When the OK button is clicked, all the rule associated with ${
+          selectedTab === "vr" ? " Validation rule " : " Default rule"
+        }` + " will be deleted.",
       onOk() {
         return clearItems();
       },
@@ -1914,12 +1867,11 @@ const ParentComponent = ({
         )}
 
       <div className="validation-wrap">
-      <div style={{textAlign:'right', position:'relative', top: '33px'}}>
+        <div style={{ textAlign: "right", position: "relative", top: "33px" }}>
           <Space wrap>
             <Button onClick={showPromiseConfirm}>Reset</Button>
-             
           </Space>
-          </div>
+        </div>
         {selectedTab === "vr" ? (
           <>
             {!isApiDataLoaded ? (
@@ -1970,23 +1922,35 @@ const ParentComponent = ({
                             // setDefaultActionSetWhenRetriving={setDefaultActionSetWhenRetriving}
                             // defaultActionSetWhenRetriving={defaultActionSetWhenRetriving}
                             setMinMaxCheckboxEnabled={setMinMaxCheckboxEnabled}
-                        
                           />
                         </div>
                       ))}
 
                     {_nestedRows?.length > 0 && (
-                      <div className="text-right">
-                        <Button
-                          onClick={handleSaveLogic}
-                          className="btn-primary"
-                          disabled={suerveyIsPublished}
-                        >
-                          {
-                            languageConstants?.ExpressionBuilder_SaveButtonConstants
-                          }
-                        </Button>
-                      </div>
+                      <>
+                        <div className="text-right">
+                          <Button
+                            onClick={handleSaveLogic}
+                            className="btn-primary"
+                            disabled={suerveyIsPublished}
+                          >
+                            {
+                              languageConstants?.ExpressionBuilder_SaveButtonConstants
+                            }
+                          </Button>
+                        </div>
+                        <div className="text-right">
+                          <Button
+                            onClick={handleSaveLogic}
+                            className="btn-primary"
+                            disabled={suerveyIsPublished}
+                          >
+                            {
+                              languageConstants?.ExpressionBuilder_SaveButtonConstants
+                            }
+                          </Button>
+                        </div>
+                      </>
                     )}
                   </div>
                 )}
@@ -2050,7 +2014,9 @@ const ParentComponent = ({
                             // setDefaultActionSetWhenRetriving={setDefaultActionSetWhenRetriving}
                             // defaultActionSetWhenRetriving={defaultActionSetWhenRetriving}
                             setMinMaxCheckboxEnabled={setMinMaxCheckboxEnabled}
-                            currentListQuestionAnswers={currentListQuestionAnswers}
+                            currentListQuestionAnswers={
+                              currentListQuestionAnswers
+                            }
                           />
                         </div>
                       ))}

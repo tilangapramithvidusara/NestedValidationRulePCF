@@ -8,7 +8,7 @@ import { sampleInputQuestion } from "../SampleData/sampleInputQuestion";
 import NumberInputField from "../Components/commonComponents/NumberInputField";
 import FieldStringInputProps from "../Components/commonComponents/StringInput";
 // import deleteImg from "../assets/delete.png";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import { hasNullFields, hasNullFieldsDefault } from "../Utils/utilsHelper";
 
 import {
@@ -35,7 +35,10 @@ import { dbConstants } from "../constants/dbConstants";
 import DatePickerCustom from "../Components/commonComponents/DatePickerCustom";
 import moment from "moment";
 import tabsConfigs from "../configs/tabsConfigs";
-import { convertJSONFormatToDBFormat, findAndUpdateLastNestedIf } from "../Utils/logics.utils";
+import {
+  convertJSONFormatToDBFormat,
+  findAndUpdateLastNestedIf,
+} from "../Utils/logics.utils";
 interface NestedRowProps {
   children: React.ReactNode;
 }
@@ -57,7 +60,7 @@ interface TableRowProps {
   suerveyIsPublished: any;
   languageConstants: any;
   tabType: any;
-  currentQuestionDetails: any
+  currentQuestionDetails: any;
 }
 
 interface Condition {
@@ -87,7 +90,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   suerveyIsPublished,
   languageConstants,
   tabType,
-  currentQuestionDetails
+  currentQuestionDetails,
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
@@ -100,14 +103,15 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   const [questionType, setQuestionType] = useState<any>();
   const [isLoad, setIsLoad] = useState<boolean>(false);
-  const [dropDownQuestionList, setDropDownQuestionList]  = useState<any>();
+  const [dropDownQuestionList, setDropDownQuestionList] = useState<any>();
 
   const [answersDropDownData, setAnswersDropDownData] = useState<any[]>([]);
   const [api, contextHolder]: any = notification.useNotification();
-  const [listAnsersWithQuestionIds, setListAnsersWithQuestionIds] = useState<any>();
-  const [listQuestionLoading, setListQuestionLoading]  = useState<any>(false);
+  const [listAnsersWithQuestionIds, setListAnsersWithQuestionIds] =
+    useState<any>();
+  const [listQuestionLoading, setListQuestionLoading] = useState<any>(false);
 
-  const [listQuestionIds, setListQuestionIds]  = useState<any>();
+  const [listQuestionIds, setListQuestionIds] = useState<any>();
 
   const findConditionByLevel = (
     level: any,
@@ -146,7 +150,6 @@ const RowContainer: React.FC<TableRowProps> = ({
       );
       newKey = highestLevel + 100;
     }
-    console.log("New Key", newKey);
     return newKey;
   };
 
@@ -155,8 +158,7 @@ const RowContainer: React.FC<TableRowProps> = ({
     hasNested: boolean,
     expression: string = ""
   ) => {
-    console.log(" Nested Clicked Level ", level);
-    setSaveAsIsNested(true)
+    setSaveAsIsNested(true);
     let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
     if (releatedFields) {
       const nearestNestedIdParentId = getNestedParentLevel(
@@ -198,8 +200,6 @@ const RowContainer: React.FC<TableRowProps> = ({
           updateByParentId(releatedFields[sectionLevel].fields, level, newRow)
         )
       );
-
-      console.log("NESTED", _nestedRows);
     }
   };
 
@@ -212,7 +212,6 @@ const RowContainer: React.FC<TableRowProps> = ({
     );
 
     if (existingLevel1Index !== -1) {
-      console.log("FIELDDDSADD", fieldValue)
       _setNestedRows((prevData: any) => {
         const newData = [...prevData];
         newData[existingLevel1Index] = {
@@ -222,9 +221,10 @@ const RowContainer: React.FC<TableRowProps> = ({
               fieldValue?.changedId,
               {
                 fieldName: fieldValue?.fieldName,
-                fieldValue: typeof fieldValue?.input === "string"
-                ? fieldValue?.input.trim()
-                : fieldValue?.input,
+                fieldValue:
+                  typeof fieldValue?.input === "string"
+                    ? fieldValue?.input.trim()
+                    : fieldValue?.input,
                 questionType: fieldValue?.questionType,
               }
             ),
@@ -237,7 +237,7 @@ const RowContainer: React.FC<TableRowProps> = ({
         return newData;
       });
     }
-  }
+  };
 
   const openNotificationWithIcon = (type: any, message: any) => {
     api[type]({
@@ -249,12 +249,14 @@ const RowContainer: React.FC<TableRowProps> = ({
   useEffect(() => {
     console.log("fieldValue", fieldValue);
     if (fieldValue) {
-      fieldValueSetToNestedRows(fieldValue)
+      fieldValueSetToNestedRows(fieldValue);
     }
     // Added validation, If the same level expression Changed other child has to be changed
-    if (fieldValue?.fieldName === 'expression') {
+    if (fieldValue?.fieldName === "expression") {
       console.log("fieldValue Exp", fieldValue);
-      let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields;
+      let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
+        sectionLevel
+      ]?.fields;
       if (releatedFields) {
         let _collapseList = getAllChildrenIDs(
           findGroupId(
@@ -263,20 +265,21 @@ const RowContainer: React.FC<TableRowProps> = ({
             fieldValue.changedId
           )
         );
-        console.log("Expressions numbers", [..._collapseList, fieldValue.changedId]);
+        console.log("Expressions numbers", [
+          ..._collapseList,
+          fieldValue.changedId,
+        ]);
         _collapseList = [..._collapseList, fieldValue.changedId];
-            const nearestIdParentObject = getNearestParentByItems(
-            releatedFields,
-            fieldValue.changedId
-          );
-          console.log(
-            "nearestIdParentObject",
-            nearestIdParentObject
-          );
+        const nearestIdParentObject = getNearestParentByItems(
+          releatedFields,
+          fieldValue.changedId
+        );
+        console.log("nearestIdParentObject", nearestIdParentObject);
 
         // Changed expression to the nearest parent expression
         if (nearestIdParentObject) {
-          const sameLevelInnerConditions = nearestIdParentObject?.innerConditions;
+          const sameLevelInnerConditions =
+            nearestIdParentObject?.innerConditions;
           console.log("sameLevelInnerConditions", sameLevelInnerConditions);
           let sameLevelIds = sameLevelInnerConditions.map((x: any) => x?.level);
           console.log("sameLevelIds", sameLevelIds);
@@ -287,30 +290,43 @@ const RowContainer: React.FC<TableRowProps> = ({
             sameLevelIds,
             fieldValue.input
           );
-          _setNestedRows(updateAllLevelArray(_nestedRows, sectionLevel, fields));
+          _setNestedRows(
+            updateAllLevelArray(_nestedRows, sectionLevel, fields)
+          );
         } else {
-          const parentExpressions = releatedFields?.map((lvl: any) => lvl?.expression);
+          const parentExpressions = releatedFields?.map(
+            (lvl: any) => lvl?.expression
+          );
           let parentIds = releatedFields?.map((lvl: any) => lvl?.level);
-          
+
           if (releatedFields?.length > 1) {
-            const firstExp = releatedFields[1]?.expression
+            const firstExp = releatedFields[1]?.expression;
             const initialEmptyFieldId = releatedFields[0]?.level;
-            parentIds = parentIds?.filter((item: any) => item !== initialEmptyFieldId)
-            console.log("parentExpressions", parentExpressions)
-            console.log("parentExpressions firstExp", firstExp)
-            console.log("parentExpressions firstExp", firstExp !== fieldValue.input)
+            parentIds = parentIds?.filter(
+              (item: any) => item !== initialEmptyFieldId
+            );
+            console.log("parentExpressions", parentExpressions);
+            console.log("parentExpressions firstExp", firstExp);
+            console.log(
+              "parentExpressions firstExp",
+              firstExp !== fieldValue.input
+            );
 
             if (firstExp !== fieldValue.input && parentIds.length) {
-              openNotificationWithIcon("error", "First Selected Expression cannot be changed!");
-            const fields = _updateExpressionByParentId(
-              _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-                ?.fields,
-              parentIds,
-              firstExp
-            );
-            _setNestedRows(updateAllLevelArray(_nestedRows, sectionLevel, fields));
+              openNotificationWithIcon(
+                "error",
+                "First Selected Expression cannot be changed!"
+              );
+              const fields = _updateExpressionByParentId(
+                _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
+                  ?.fields,
+                parentIds,
+                firstExp
+              );
+              _setNestedRows(
+                updateAllLevelArray(_nestedRows, sectionLevel, fields)
+              );
             }
-            
           }
         }
       }
@@ -322,10 +338,10 @@ const RowContainer: React.FC<TableRowProps> = ({
       const resss: any = fetchFieldData(fieldValue?.input);
 
       // When the field value get change need to empty value field
-      let _fieldValue : any = fieldValue;
-      _fieldValue.input = " "
-      _fieldValue.fieldName = 'value'
-      fieldValueSetToNestedRows(_fieldValue)
+      let _fieldValue: any = fieldValue;
+      _fieldValue.input = " ";
+      _fieldValue.fieldName = "value";
+      fieldValueSetToNestedRows(_fieldValue);
     }
   }, [fieldValue]);
 
@@ -441,19 +457,9 @@ const RowContainer: React.FC<TableRowProps> = ({
   };
 
   useEffect(() => {
-    console.log("NESTED", _nestedRows);
-    // setShowActionOutput(
-    //   _nestedRows
-    //     ?.find((x: any[]) => x[sectionLevel])
-    //     ?.[sectionLevel]?.actions?.map((obj: {}) => Object.keys(obj)[0])
-    //     .join(" && ")
-    // );
-
     const item = _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
       sectionLevel
     ]?.actions[0];
-    console.log("checkBoxValueString item", item);
-
     const checkBoxValueString: string =
       item?.checkBoxValues
         ?.map(
@@ -480,7 +486,6 @@ const RowContainer: React.FC<TableRowProps> = ({
   }, [_nestedRows]);
 
   useEffect(() => {
-    console.log("sectionLevelsectionLevel", sectionLevel);
     _setNestedRows(
       updateAllLevelArray(_nestedRows, sectionLevel, [
         {
@@ -575,12 +580,14 @@ const RowContainer: React.FC<TableRowProps> = ({
   const fetchFieldData = async (questionId: any) => {
     try {
       // Make a request to the backend to fetch the data
-      
+
       const questionDetails = dropDownQuestionList?.find(
         (x: any) => x.value === questionId
       );
       console.log("questionDetails", questionDetails);
-      if (questionDetails?.questionType === dbConstants.questionTypes.listQuestion ) {
+      if (
+        questionDetails?.questionType === dbConstants.questionTypes.listQuestion
+      ) {
         setIsLoad(true);
         const response = await getListAnswersByQuestionId(
           questionDetails?.questionId
@@ -599,8 +606,6 @@ const RowContainer: React.FC<TableRowProps> = ({
         }
         setIsLoad(false);
       }
-     
-      
     } catch (error) {
       console.error("Error fetching data:", error);
       // setSelectedFieldData([]); // Reset the data to an empty array in case of an error
@@ -629,279 +634,257 @@ const RowContainer: React.FC<TableRowProps> = ({
     let isShowInDocNested: any = [];
     let isMinMaxNested: any = [];
 
-
-    let isActionIsNotAllowedForQuestion : any = [];
+    let isActionIsNotAllowedForQuestion: any = [];
     let isfieldsHasEmptyFields = false;
     let isAtleastActionSelectedIfTheFieldsAreNotEmpty = false;
 
-    if(tabType === dbConstants?.tabTypes?.defaultValueTab) return;
-    // const sortedData = [..._nestedRows].sort((a, b) => {
-    //   const aKey = Object.keys(a)[0];
-    //   const bKey = Object.keys(b)[0];
-    //   return parseInt(aKey) - parseInt(bKey);
-    // });
-    console.log("sectionLevelsectionLevel", sectionLevel)
+    if (tabType === dbConstants?.tabTypes?.defaultValueTab) return;
     if (!sectionLevel) return;
     let releatedFields = _nestedRows?.find((x: any[]) => x && x[sectionLevel]);
-    console.log("releatedFieldsff", releatedFields)
-    if(!releatedFields) return
-    // sortedData.forEach((sec: any) => {
-      // console.log("SECCCCCCCC", sec);
-      // const key = Object.keys(sec)[0];
+    if (!releatedFields) return;
+    const checkboxValues =
+      releatedFields[sectionLevel]?.actions[0]?.checkBoxValues;
+    const minMaxExists =
+      Object.keys(releatedFields[sectionLevel]?.actions[0]?.minMax || {})
+        .length !== 0;
 
-      const checkboxValues = releatedFields[sectionLevel]?.actions[0]?.checkBoxValues;
-      const minMaxExists =
-        Object.keys(releatedFields[sectionLevel]?.actions[0]?.minMax || {}).length !== 0;
+    const isShowExists = checkboxValues?.some(
+      (x: any) => Object.keys(x)[0] === "show"
+    );
+    const isOutputDocShowExists = checkboxValues?.some(
+      (x: any) => Object.keys(x)[0] === "OutPutDoc:Show"
+    );
+    const isEnableExists = checkboxValues?.some(
+      (x: any) => Object.keys(x)[0] === "enable"
+    );
+    let prepareForValidation = JSON.parse(
+      JSON.stringify(releatedFields[sectionLevel].fields)
+    );
+    if (!prepareForValidation?.length) return;
+    prepareForValidation[0].expression = "Emp";
+    const _hasNullFields = hasNullFields(prepareForValidation);
+    if (_hasNullFields) {
+      isfieldsHasEmptyFields = true;
+      return;
+    }
 
-      const isShowExists = checkboxValues?.some(
-        (x: any) => Object.keys(x)[0] === "show"
-      );
-      const isOutputDocShowExists = checkboxValues?.some(
-        (x: any) => Object.keys(x)[0] === "OutPutDoc:Show"
-      );
-      const isEnableExists = checkboxValues?.some(
-        (x: any) => Object.keys(x)[0] === "enable"
-      );
-      console.log("checkboxValues ----> ", checkboxValues);
-      console.log("minMaxExists ----> ", minMaxExists);
-      console.log("isShowExists ----> ", isShowExists);
-      console.log("isOutputDocShowExists ----> ", isOutputDocShowExists);
-      console.log("isEnableExists ----> ", isEnableExists);
-
-      let prepareForValidation = JSON.parse(JSON.stringify(releatedFields[sectionLevel].fields));
-      console.log("prepareForValidation", prepareForValidation);
-      if(!prepareForValidation?.length ) return
-      // if (
-      //   !isShowExists &&
-      //   !isOutputDocShowExists &&
-      //   !isEnableExists &&
-      //   !minMaxExists &&
-      //   prepareForValidation?.length
-      // ) {
-      //   isAtleastActionSelectedIfTheFieldsAreNotEmpty = true;
-      //   return;
-      // }
-      prepareForValidation[0].expression = "Emp";
-      const _hasNullFields = hasNullFields(prepareForValidation);
-      if (_hasNullFields) {
-        isfieldsHasEmptyFields = true;
-        return;
-      }
-
-      if (checkboxValues) {
-        console.log(
-          "checkBoxValues when saving ----> ",
-          releatedFields[sectionLevel]?.actions[0]?.checkBoxValues[0]
+    if (checkboxValues) {
+      if (isShowExists) {
+        showIfCount = showIfCount + 1;
+        isVisibilityNested.push(
+          releatedFields[sectionLevel]?.fields?.some(
+            (flds: { hasNested: any }) => flds?.hasNested
+          )
         );
-        if (isShowExists) {
-          showIfCount = showIfCount + 1;
-          isVisibilityNested.push(
-            releatedFields[sectionLevel]?.fields?.some(
-              (flds: { hasNested: any }) => flds?.hasNested
-            )
-          );
-          let _visibility: any = convertJSONFormatToDBFormat(releatedFields[sectionLevel], true, currentQuestionDetails);
-          isActionIsNotAllowedForQuestion.push(_visibility?.validation);
-          _visibility = _visibility?.exp;
-          console.log("Validation Return visibility", isActionIsNotAllowedForQuestion);
-          const __visibility = JSON.parse(JSON.stringify(_visibility));
-          console.log("Pushing visibility", __visibility);
-          visibilityRuleNormal.push(
-            __visibility[""]?.length ? __visibility[""][0] : _visibility
-          );
-          visibilityRule = findAndUpdateLastNestedIf(
-            visibilityRule,
-            { if: [_visibility] },
-            false
-          );
-        }
-        if (isOutputDocShowExists) {
-          outputDocShowCount = outputDocShowCount + 1;
-          let _outputDocShow : any = convertJSONFormatToDBFormat(releatedFields[sectionLevel], true);
-          _outputDocShow = _outputDocShow?.exp
-          const __outputDocShow = JSON.parse(JSON.stringify(_outputDocShow));
-
-          isShowInDocNested.push(
-            releatedFields[sectionLevel]?.fields?.some(
-              (flds: { hasNested: any }) => flds?.hasNested
-            )
-          );
-          // outputDocShowNormal.push(_outputDocShow);
-          outputDocShowNormal.push(
-            __outputDocShow[""]?.length
-              ? __outputDocShow[""][0]
-              : _outputDocShow
-          );
-          outputDocShow = findAndUpdateLastNestedIf(
-            outputDocShow,
-            { if: [_outputDocShow] },
-            false
-          );
-        }
-       
-      }
-
-      let savedVisibilityRuleFinalFormat: any = [];
-      let savedValidationRuleFinalFormat: any = [];
-      let savedOutputDocShowRuleFinalFormat: any = [];
-      let savedMinMaxRuleFinalFormat;
-  
-      if (minMaxExists) {
-        console.log("Min Max when saving ----> ", releatedFields[sectionLevel].actions[0]?.minMax);
-        isMinMaxNested.push(
-          releatedFields[sectionLevel]?.fields?.some((flds: { hasNested: any }) => flds?.hasNested)
+        let _visibility: any = convertJSONFormatToDBFormat(
+          releatedFields[sectionLevel],
+          true,
+          currentQuestionDetails
         );
-        const _minMaxDbFormarFields: any = convertJSONFormatToDBFormat(
+        isActionIsNotAllowedForQuestion.push(_visibility?.validation);
+        _visibility = _visibility?.exp;
+        const __visibility = JSON.parse(JSON.stringify(_visibility));
+        visibilityRuleNormal.push(
+          __visibility[""]?.length ? __visibility[""][0] : _visibility
+        );
+        visibilityRule = findAndUpdateLastNestedIf(
+          visibilityRule,
+          { if: [_visibility] },
+          false
+        );
+      }
+      if (isOutputDocShowExists) {
+        outputDocShowCount = outputDocShowCount + 1;
+        let _outputDocShow: any = convertJSONFormatToDBFormat(
           releatedFields[sectionLevel],
           true
         );
-        const minMax = releatedFields[sectionLevel]?.actions[0]?.minMax;
-        let minValue = minMax?.minValue || null;
-        let maxValue = minMax?.maxValue || null;
-        // if (!minValue || !maxValue) {
-        //   openNotificationWithIcon("error", "Min Max Fields cannot be empty!");
-        //   setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: false } });
-        //   return;
-        // } else {
-        //   setValidation((prev: any) => { return { ...prev, ["minMaxValidation"]: true } });
-        // }
-        console.log("Min Max ", minMax);
+        _outputDocShow = _outputDocShow?.exp;
+        const __outputDocShow = JSON.parse(JSON.stringify(_outputDocShow));
 
-        if (minMax) {
-          if (minValue && typeof minValue === "string" && minValue !== "0") {
-            minValue = {
-              var: minMax?.minValue,
-            };
-          }
-          if (maxValue && typeof maxValue === "string" && minValue !== "0") {
-            maxValue = {
-              var: minMax?.maxValue,
-            };
-          }
-          console.log("_minMaxDbFormarFields", _minMaxDbFormarFields?.exp);
-          const formattingForMin = [];
-          const formattingForMax = [];
-          formattingForMin.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, minValue);
-          formattingForMax.push(_minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp, maxValue);
-          minMaxDBFormatArray.push([
-            {
-              type: "MINIMUM_LENGTH",
-              value: { if: formattingForMin },
-            },
-            {
-              type: "MAXIMUM_LENGTH",
-              value: { if: formattingForMax },
-            },
-          ]);
-        }
+        isShowInDocNested.push(
+          releatedFields[sectionLevel]?.fields?.some(
+            (flds: { hasNested: any }) => flds?.hasNested
+          )
+        );
+        // outputDocShowNormal.push(_outputDocShow);
+        outputDocShowNormal.push(
+          __outputDocShow[""]?.length ? __outputDocShow[""][0] : _outputDocShow
+        );
+        outputDocShow = findAndUpdateLastNestedIf(
+          outputDocShow,
+          { if: [_outputDocShow] },
+          false
+        );
       }
-      if (
-        isVisibilityNested.length &&
-        isVisibilityNested.length > 0 &&
-        !isVisibilityNested.some((x: any) => x)
-      ) {
-        if (visibilityRuleNormal.length === 1) {
-          // savedVisibilityRuleFinalFormat = visibilityRuleNormal;
-          // savedVisibilityRuleFinalFormat = {
-          //   if: visibilityRuleNormal
-          // };
-          if (visibilityRuleNormal[0][""] && visibilityRuleNormal[0][""][0]) {
-            savedVisibilityRuleFinalFormat = visibilityRuleNormal[0][""][0];
-          } else {
-            savedVisibilityRuleFinalFormat = visibilityRuleNormal[0];
-          }
-        } else {
-          savedVisibilityRuleFinalFormat = {
-            // if: [
-            //   {
-            or: visibilityRuleNormal,
-            //     },
-            //   ]
+    }
+
+    let savedVisibilityRuleFinalFormat: any = [];
+    let savedValidationRuleFinalFormat: any = [];
+    let savedOutputDocShowRuleFinalFormat: any = [];
+    let savedMinMaxRuleFinalFormat;
+
+    if (minMaxExists) {
+      console.log(
+        "Min Max when saving ----> ",
+        releatedFields[sectionLevel].actions[0]?.minMax
+      );
+      isMinMaxNested.push(
+        releatedFields[sectionLevel]?.fields?.some(
+          (flds: { hasNested: any }) => flds?.hasNested
+        )
+      );
+      const _minMaxDbFormarFields: any = convertJSONFormatToDBFormat(
+        releatedFields[sectionLevel],
+        true
+      );
+      const minMax = releatedFields[sectionLevel]?.actions[0]?.minMax;
+      let minValue = minMax?.minValue || null;
+      let maxValue = minMax?.maxValue || null;
+      console.log("Min Max ", minMax);
+
+      if (minMax) {
+        if (minValue && typeof minValue === "string" && minValue !== "0") {
+          minValue = {
+            var: minMax?.minValue,
           };
         }
-      } else {
-        savedVisibilityRuleFinalFormat = visibilityRule[0];
-      }
-      if (
-        isShowInDocNested.length &&
-        isShowInDocNested.length > 0 &&
-        !isShowInDocNested.some((x: any) => x)
-      ) {
-        if (outputDocShowNormal.length === 1) {
-          // savedOutputDocShowRuleFinalFormat = {
-          //   if: outputDocShowNormal
-          // };
-  
-          if (outputDocShowNormal[0][""] && outputDocShowNormal[0][""][0]) {
-            savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0][""][0];
-          } else {
-            savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0];
-          }
-        } else {
-          savedOutputDocShowRuleFinalFormat = {
-            // if: [
-            //   {
-            or: outputDocShowNormal,
-            //     },
-            //   ]
+        if (maxValue && typeof maxValue === "string" && minValue !== "0") {
+          maxValue = {
+            var: minMax?.maxValue,
           };
         }
-      } else {
-        savedOutputDocShowRuleFinalFormat = outputDocShow[0];
+        console.log("_minMaxDbFormarFields", _minMaxDbFormarFields?.exp);
+        const formattingForMin = [];
+        const formattingForMax = [];
+        formattingForMin.push(
+          _minMaxDbFormarFields?.exp[""]?.length
+            ? _minMaxDbFormarFields?.exp[""][0]
+            : _minMaxDbFormarFields?.exp,
+          minValue
+        );
+        formattingForMax.push(
+          _minMaxDbFormarFields?.exp[""]?.length
+            ? _minMaxDbFormarFields?.exp[""][0]
+            : _minMaxDbFormarFields?.exp,
+          maxValue
+        );
+        minMaxDBFormatArray.push([
+          {
+            type: "MINIMUM_LENGTH",
+            value: { if: formattingForMin },
+          },
+          {
+            type: "MAXIMUM_LENGTH",
+            value: { if: formattingForMax },
+          },
+        ]);
       }
-      if (
-        isMinMaxNested.length &&
-        isMinMaxNested.length > 0 &&
-        !isMinMaxNested.some((x: any) => x)
-      ) {
-        savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
+    }
+    if (
+      isVisibilityNested.length &&
+      isVisibilityNested.length > 0 &&
+      !isVisibilityNested.some((x: any) => x)
+    ) {
+      if (visibilityRuleNormal.length === 1) {
+        if (visibilityRuleNormal[0][""] && visibilityRuleNormal[0][""][0]) {
+          savedVisibilityRuleFinalFormat = visibilityRuleNormal[0][""][0];
+        } else {
+          savedVisibilityRuleFinalFormat = visibilityRuleNormal[0];
+        }
       } else {
-        savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
+        savedVisibilityRuleFinalFormat = {
+          or: visibilityRuleNormal,
+        };
       }
-  
-      console.log(
-        "savedVisibilityRuleFinalFormat",
-        savedVisibilityRuleFinalFormat
-      );
-      console.log(
-        "savedValidationRuleFinalFormat",
-        savedValidationRuleFinalFormat
-      );
-  
-      console.log(
-        "savedOutputDocShowRuleFinalFormat",
-        savedOutputDocShowRuleFinalFormat
-      );
-      console.log("savedMinMaxRuleFinalFormat", savedMinMaxRuleFinalFormat);
+    } else {
+      savedVisibilityRuleFinalFormat = visibilityRule[0];
+    }
+    if (
+      isShowInDocNested.length &&
+      isShowInDocNested.length > 0 &&
+      !isShowInDocNested.some((x: any) => x)
+    ) {
+      if (outputDocShowNormal.length === 1) {
+        if (outputDocShowNormal[0][""] && outputDocShowNormal[0][""][0]) {
+          savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0][""][0];
+        } else {
+          savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0];
+        }
+      } else {
+        savedOutputDocShowRuleFinalFormat = {
+          or: outputDocShowNormal,
+        };
+      }
+    } else {
+      savedOutputDocShowRuleFinalFormat = outputDocShow[0];
+    }
+    if (
+      isMinMaxNested.length &&
+      isMinMaxNested.length > 0 &&
+      !isMinMaxNested.some((x: any) => x)
+    ) {
+      savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
+    } else {
+      savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
+    }
+
+    console.log(
+      "savedVisibilityRuleFinalFormat",
+      savedVisibilityRuleFinalFormat
+    );
+    console.log(
+      "savedValidationRuleFinalFormat",
+      savedValidationRuleFinalFormat
+    );
+
+    console.log(
+      "savedOutputDocShowRuleFinalFormat",
+      savedOutputDocShowRuleFinalFormat
+    );
+    console.log("savedMinMaxRuleFinalFormat", savedMinMaxRuleFinalFormat);
     let showOutput;
 
-    if (savedVisibilityRuleFinalFormat && Object.keys(savedVisibilityRuleFinalFormat).length !== 0) {
-      setShowVisibilityRule(JSON.stringify(savedVisibilityRuleFinalFormat))
+    if (
+      savedVisibilityRuleFinalFormat &&
+      Object.keys(savedVisibilityRuleFinalFormat).length !== 0
+    ) {
+      setShowVisibilityRule(JSON.stringify(savedVisibilityRuleFinalFormat));
     } else {
-      setShowVisibilityRule(null)
+      setShowVisibilityRule(null);
     }
-    if (savedMinMaxRuleFinalFormat && Object.keys(savedMinMaxRuleFinalFormat).length !== 0) {
-      showOutput = showOutput + `Visibility Rule : ${JSON.stringify(savedMinMaxRuleFinalFormat)} \n`
-      setShowValidationRule(JSON.stringify(savedMinMaxRuleFinalFormat))
-
-    }else {
-      setShowValidationRule(null)
-    }
-    if (savedOutputDocShowRuleFinalFormat && Object.keys(savedOutputDocShowRuleFinalFormat).length !== 0) {
-      showOutput = showOutput + `Output Doc Show Rule : ${JSON.stringify(savedOutputDocShowRuleFinalFormat)}`
-      setShowDocOutputRule(JSON.stringify(savedOutputDocShowRuleFinalFormat))
-
+    if (
+      savedMinMaxRuleFinalFormat &&
+      Object.keys(savedMinMaxRuleFinalFormat).length !== 0
+    ) {
+      showOutput =
+        showOutput +
+        `Visibility Rule : ${JSON.stringify(savedMinMaxRuleFinalFormat)} \n`;
+      setShowValidationRule(JSON.stringify(savedMinMaxRuleFinalFormat));
     } else {
-      setShowDocOutputRule(null)
+      setShowValidationRule(null);
+    }
+    if (
+      savedOutputDocShowRuleFinalFormat &&
+      Object.keys(savedOutputDocShowRuleFinalFormat).length !== 0
+    ) {
+      showOutput =
+        showOutput +
+        `Output Doc Show Rule : ${JSON.stringify(
+          savedOutputDocShowRuleFinalFormat
+        )}`;
+      setShowDocOutputRule(JSON.stringify(savedOutputDocShowRuleFinalFormat));
+    } else {
+      setShowDocOutputRule(null);
     }
     // setShowActionOutput(showOutput);
 
     // });
-  }
+  };
 
   useEffect(() => {
     display();
-  }, [_nestedRows])
+  }, [_nestedRows]);
   const _handleDeleteRow = (level: any) => {
     let releatedFields = _nestedRows.find((x: any[]) => x[sectionLevel]);
     if (releatedFields) {
@@ -917,63 +900,65 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   useEffect(() => {
     if (questionList && questionList.length) {
-      const listQuestions = questionList?.filter((x: any) => x["questionType"] === dbConstants?.questionTypes?.listQuestion)?.map((x: any) => x?.value);
+      const listQuestions = questionList
+        ?.filter(
+          (x: any) =>
+            x["questionType"] === dbConstants?.questionTypes?.listQuestion
+        )
+        ?.map((x: any) => x?.value);
       let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
       if (releatedFields) {
-        const fields = releatedFields[sectionLevel]?.fields?.map((x: any) => x?.field);
-        const matchedValues = listQuestions?.filter((value: any) => fields?.includes(value));
+        const fields = releatedFields[sectionLevel]?.fields?.map(
+          (x: any) => x?.field
+        );
+        const matchedValues = listQuestions?.filter((value: any) =>
+          fields?.includes(value)
+        );
         console.log("matchedValues", matchedValues);
         console.log("matchedValues listQuestions", listQuestions);
         console.log("matchedValues fields", fields);
 
-        if (matchedValues && matchedValues?.length) setListQuestionIds(matchedValues);
+        if (matchedValues && matchedValues?.length)
+          setListQuestionIds(matchedValues);
       }
-      setDropDownQuestionList(questionList?.filter((quesNme: any) =>
-        quesNme &&
-        quesNme["questionType"] !== "Grid" &&
-        quesNme["questionType"] !== "Header"
-      ))
+      setDropDownQuestionList(
+        questionList?.filter(
+          (quesNme: any) =>
+            quesNme &&
+            quesNme["questionType"] !== "Grid" &&
+            quesNme["questionType"] !== "Header"
+        )
+      );
     }
   }, [questionList]);
 
   useEffect(() => {
-    console.log("setListQuestionIds", listQuestionIds)
+    console.log("setListQuestionIds", listQuestionIds);
     if (listQuestionIds && listQuestionIds?.length) {
       setListQuestionLoading(true);
       fetchQuestionDetails(listQuestionIds);
     }
   }, [listQuestionIds]);
 
-
-  // useEffect(() => {
-  //   // const questionList = 
-  //   let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
-  //   if (releatedFields) {
-  //     console.log("releatedFieldsreleatedFields", releatedFields)
-  //     const feilds = releatedFields[sectionLevel]?.fields?.map((x: any) => x?.field)
-  //     console.log("feildsfeilds", feilds);
-      
-  //     if (feilds && feilds?.length) fetchQuestionDetails(feilds)
-  //   }
-  // }, [questionList]);
-
-
   const fetchQuestionDetails = async (questionIds: any) => {
     const questionListArray: any = [];
-  
+
     await Promise.all(
       questionIds?.map(async (questionId: any) => {
         const questionDetails = questionList?.find(
           (x: any) => x.value === questionId
         );
-  
-        if (questionDetails?.questionType === dbConstants.questionTypes.listQuestion) {
+
+        if (
+          questionDetails?.questionType ===
+          dbConstants.questionTypes.listQuestion
+        ) {
           setIsLoad(true);
-  
+
           const response = await getListAnswersByQuestionId(
             questionDetails?.questionId
           );
-  
+
           let dropDownData = [];
           if (response?.data?.entities) {
             dropDownData = response?.data.entities.map((x: any) => ({
@@ -986,228 +971,287 @@ const RowContainer: React.FC<TableRowProps> = ({
         }
       })
     );
-  
+
     if (questionListArray && questionListArray?.length) {
       setListAnsersWithQuestionIds(questionListArray);
-      
     }
     setListQuestionLoading(false);
   };
-  
 
-  useEffect(() => {
-    console.log("listAnsersWithQuestionIds", listAnsersWithQuestionIds);
-  }, [listAnsersWithQuestionIds])
-
-  useEffect(() => {
-    console.log("answersDropDownData", answersDropDownData);
-  }, [answersDropDownData])
-  
   const renderNestedConditions = (conditions: any[], marginLeft = 0) => {
-    console.log("conditions----->", conditions);
-
     if (conditions && conditions?.length) {
-      
       return conditions.map((condition: any, index: any) => {
         // fetchFieldData(condition?.field);
-        return <>
-          <div key={condition.level}>
-            {!condition?.collapse ? (
-              <div className="collapse-wrap">
-                <div className="flex-col-start">
-                  <div className="flex-row-start">
-                    {!condition.state && (
-                      <CaretDownOutlined
-                        style={{ color: "#0093FE" }}
+        return (
+          <>
+            <div key={condition.level}>
+              {!condition?.collapse ? (
+                <div className="collapse-wrap">
+                  <div className="flex-col-start">
+                    <div className="flex-row-start">
+                      {!condition.state && (
+                        <CaretDownOutlined
+                          style={{ color: "#0093FE" }}
+                          onClick={() =>
+                            setCollapse({
+                              state: true,
+                              fieldId: condition?.level,
+                            })
+                          }
+                        />
+                      )}
+                      <div className="validation-text"></div>
+                    </div>
+                    <div className="flex-row-start mb-15">
+                      <Button
+                        className="mr-10 btn-default"
                         onClick={() =>
-                          setCollapse({
-                            state: true,
-                            fieldId: condition?.level,
-                          })
+                          _handleAddRow(condition?.level, false, "AND")
                         }
-                      />
-                    )}
-                    <div className="validation-text"></div>
-                  </div>
-                  <div className="flex-row-start mb-15">
-                    <Button
-                      className="mr-10 btn-default"
-                      onClick={() =>
-                        _handleAddRow(condition?.level, false, "AND")
-                      }
-                      disabled={suerveyIsPublished}
-                    >
-                      {"+ " + languageConstants?.ExpressionBuilder_AddButton}
-                    </Button>
-                    <Button
-                      className="btn-default"
-                      onClick={() =>
-                        _handleAddNestedRow(condition?.level, true, "AND")
-                      }
-                      disabled={tabType === dbConstants?.tabTypes?.defaultValueTab ? true : suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
-                    >
-                      {"+ " + languageConstants?.ExpressionBuilder_AddNestedButton}
-                    </Button>
-                  </div>
-                </div>
-                <div className="loop">
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                    }}
-                  >
-                    <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.ExpressionBuilder_AndorLabel} </div>
-                      <DropDown
-                        dropDownData={expressionSampleData}
-                        isDisabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
-                        setExpression={setFieldValue}
-                        changedId={condition?.level}
-                        fieldName={"expression"}
-                        selectedValue={condition?.expression}
-                      />{" "}
-                    </div>
-
-                    <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.ExpressionBuilder_FieldLabel} </div>
-                      <FieldInput
-                        sampleData={
-                          tabType ===  dbConstants?.tabTypes?.defaultValueTab ? 
-                          dropDownQuestionList &&
-                          dropDownQuestionList.length &&
-                          dropDownQuestionList?.filter((x: { value: any; }) => x?.value !== currentQuestionDetails?.value)
-                          :  dropDownQuestionList
+                        disabled={suerveyIsPublished}
+                      >
+                        {"+ " + languageConstants?.ExpressionBuilder_AddButton}
+                      </Button>
+                      <Button
+                        className="btn-default"
+                        onClick={() =>
+                          _handleAddNestedRow(condition?.level, true, "AND")
                         }
-                        selectedValue={condition?.field}
-                        overrideSearch={false}
-                        setFieldValue={setFieldValue}
-                        changedId={condition?.level}
-                        fieldName={"field"}
-                        isDisabled={suerveyIsPublished}
-                      />{" "}
+                        disabled={
+                          tabType === dbConstants?.tabTypes?.defaultValueTab
+                            ? true
+                            : suerveyIsPublished
+                            ? suerveyIsPublished
+                            : condition?.level === 1
+                            ? true
+                            : false
+                        }
+                      >
+                        {"+ " +
+                          languageConstants?.ExpressionBuilder_AddNestedButton}
+                      </Button>
                     </div>
-                    <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.ExpressionBuilder_OperatorLabel} </div>
-                      {dropDownQuestionList?.find(
-                        (x: { value: string }) => x?.value === condition?.field
-                      )?.questionType === dbConstants.questionTypes.stringQuestion || dropDownQuestionList?.find(
-                        (x: { value: string }) => x?.value === condition?.field
-                      )?.questionType === dbConstants.questionTypes.listQuestion ?
+                  </div>
+                  <div className="loop">
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <div className="mr-20">
+                        <div className="condition-label">
+                          {languageConstants?.ExpressionBuilder_AndorLabel}{" "}
+                        </div>
                         <DropDown
-                          dropDownData={operationalSampleData[0]?.options?.filter((item: { value: string; }) => item?.value === "==" || item?.value === "!=")}
-                          isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
+                          dropDownData={expressionSampleData}
+                          isDisabled={
+                            suerveyIsPublished
+                              ? suerveyIsPublished
+                              : condition?.level === 1
+                              ? true
+                              : false
+                          }
                           setExpression={setFieldValue}
                           changedId={condition?.level}
-                          fieldName={"condition"}
-                          selectedValue={condition?.condition}
-                        /> :
+                          fieldName={"expression"}
+                          selectedValue={condition?.expression}
+                        />{" "}
+                      </div>
+
+                      <div className="mr-20">
+                        <div className="condition-label">
+                          {languageConstants?.ExpressionBuilder_FieldLabel}{" "}
+                        </div>
+                        <FieldInput
+                          sampleData={
+                            tabType === dbConstants?.tabTypes?.defaultValueTab
+                              ? dropDownQuestionList &&
+                                dropDownQuestionList.length &&
+                                dropDownQuestionList?.filter(
+                                  (x: { value: any }) =>
+                                    x?.value !== currentQuestionDetails?.value
+                                )
+                              : dropDownQuestionList
+                          }
+                          selectedValue={condition?.field}
+                          overrideSearch={false}
+                          setFieldValue={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"field"}
+                          isDisabled={suerveyIsPublished}
+                        />{" "}
+                      </div>
+                      <div className="mr-20">
+                        <div className="condition-label">
+                          {languageConstants?.ExpressionBuilder_OperatorLabel}{" "}
+                        </div>
+                        {dropDownQuestionList?.find(
+                          (x: { value: string }) =>
+                            x?.value === condition?.field
+                        )?.questionType ===
+                          dbConstants.questionTypes.stringQuestion ||
                         dropDownQuestionList?.find(
-                          (x: { value: string }) => x?.value === condition?.field
-                        )?.questionType === dbConstants.questionTypes.dateTimeQuestion ?
+                          (x: { value: string }) =>
+                            x?.value === condition?.field
+                        )?.questionType ===
+                          dbConstants.questionTypes.listQuestion ? (
                           <DropDown
-                            dropDownData={operationalSampleData[0]?.options?.filter((item: { value: string; }) => item?.value === "==")}
-                            isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
+                            dropDownData={operationalSampleData[0]?.options?.filter(
+                              (item: { value: string }) =>
+                                item?.value === "==" || item?.value === "!="
+                            )}
+                            isDisabled={
+                              suerveyIsPublished ? suerveyIsPublished : false
+                            }
                             setExpression={setFieldValue}
                             changedId={condition?.level}
                             fieldName={"condition"}
                             selectedValue={condition?.condition}
                           />
-                        :
-                        <DropDown
-                          dropDownData={operationalSampleData}
-                          isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                          setExpression={setFieldValue}
-                          changedId={condition?.level}
-                          fieldName={"condition"}
-                          selectedValue={condition?.condition}
-                        />
-                      }
-                    
-                    </div>
-                    
-                    <div className="mr-20">
-                      <div className="condition-label">{languageConstants?.ExpressionBuilder_ValueLabel}  </div>
-                    {!isLoad ? <div> 
-                      
-                      {dropDownQuestionList?.find(
-                        (x: { value: string }) => x?.value === condition?.field
-                      )?.questionType === dbConstants.questionTypes.numericQuestion ? (
-                            <NumberInputField
-                          selectedValue={condition?.value}
-                          handleNumberChange={{}}
-                          defaultDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                          setInputNumber={setFieldValue}
-                          changedId={condition?.level}
-                          fieldName={"value"}
-                          validatingSuccess={true}
-                        />
-                      ) : dropDownQuestionList?.find(
-                        (x: { value: string }) => x?.value === condition?.field
-                      )?.questionType === dbConstants.questionTypes.stringQuestion ? (
-                        <FieldStringInputProps
-                          sampleData={
-                            dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
-                          }
-                          selectedValue={condition?.value}
-                          overrideSearch={false}
-                          setFieldValue={setFieldValue}
-                          changedId={condition?.level}
-                          fieldName={"value"}
-                          isDisabled={suerveyIsPublished}
-                        />
-                      ) : dropDownQuestionList?.find(
-                        (x: { value: string }) => x?.value === condition?.field
-                      )?.questionType === dbConstants.questionTypes.dateTimeQuestion ? (
-                        <DatePickerCustom
-                          isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                          setFieldValue={setFieldValue}
-                          changedId={condition?.level}
-                          fieldName={"value"}
-                          selectedValue={condition?.value ? condition?.value : moment()}
-                    
-                        />
-                      ) : dropDownQuestionList?.find(
-                        (x: { value: string }) => x?.value === condition?.field
-                      )?.questionType === dbConstants.questionTypes.listQuestion ? (
-                        <ListDropDown
-                                    dropDownData={{}}
-                                    isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
-                                    setFieldValue={setFieldValue}
-                                    changedId={condition?.level}
-                                    fieldName={"value"}
-                                    selectedValue={condition?.value}
-                                    listDropDownData={
-                                      answersDropDownData.concat(listAnsersWithQuestionIds?.find((x: any) => x?.questionId === condition?.field)?.listAnswers)?.filter(x => x)
-                        }
-                        />
-                      ) : (
-                        <FieldStringInputProps
-                          sampleData={
-                            dropDownQuestionList && dropDownQuestionList.length && dropDownQuestionList
-                          }
-                          selectedValue={condition?.value}
-                          overrideSearch={false}
-                          setFieldValue={setFieldValue}
-                          changedId={condition?.level}
-                          fieldName={"value"}
-                          isDisabled={suerveyIsPublished}
-                        />
-                      )}
+                        ) : dropDownQuestionList?.find(
+                            (x: { value: string }) =>
+                              x?.value === condition?.field
+                          )?.questionType ===
+                          dbConstants.questionTypes.dateTimeQuestion ? (
+                          <DropDown
+                            dropDownData={operationalSampleData[0]?.options?.filter(
+                              (item: { value: string }) => item?.value === "=="
+                            )}
+                            isDisabled={
+                              suerveyIsPublished ? suerveyIsPublished : false
+                            }
+                            setExpression={setFieldValue}
+                            changedId={condition?.level}
+                            fieldName={"condition"}
+                            selectedValue={condition?.condition}
+                          />
+                        ) : (
+                          <DropDown
+                            dropDownData={operationalSampleData}
+                            isDisabled={
+                              suerveyIsPublished ? suerveyIsPublished : false
+                            }
+                            setExpression={setFieldValue}
+                            changedId={condition?.level}
+                            fieldName={"condition"}
+                            selectedValue={condition?.condition}
+                          />
+                        )}
+                      </div>
 
-                      </div> : <div>
-          <Space size="middle">
-            <Spin />
-          </Space>
-        </div>
-                    }
-                    
-                     
-                    </div>
+                      <div className="mr-20">
+                        <div className="condition-label">
+                          {languageConstants?.ExpressionBuilder_ValueLabel}{" "}
+                        </div>
+                        {!isLoad ? (
+                          <div>
+                            {dropDownQuestionList?.find(
+                              (x: { value: string }) =>
+                                x?.value === condition?.field
+                            )?.questionType ===
+                            dbConstants.questionTypes.numericQuestion ? (
+                              <NumberInputField
+                                selectedValue={condition?.value}
+                                handleNumberChange={{}}
+                                defaultDisabled={
+                                  suerveyIsPublished
+                                    ? suerveyIsPublished
+                                    : false
+                                }
+                                setInputNumber={setFieldValue}
+                                changedId={condition?.level}
+                                fieldName={"value"}
+                                validatingSuccess={true}
+                              />
+                            ) : dropDownQuestionList?.find(
+                                (x: { value: string }) =>
+                                  x?.value === condition?.field
+                              )?.questionType ===
+                              dbConstants.questionTypes.stringQuestion ? (
+                              <FieldStringInputProps
+                                sampleData={
+                                  dropDownQuestionList &&
+                                  dropDownQuestionList.length &&
+                                  dropDownQuestionList
+                                }
+                                selectedValue={condition?.value}
+                                overrideSearch={false}
+                                setFieldValue={setFieldValue}
+                                changedId={condition?.level}
+                                fieldName={"value"}
+                                isDisabled={suerveyIsPublished}
+                              />
+                            ) : dropDownQuestionList?.find(
+                                (x: { value: string }) =>
+                                  x?.value === condition?.field
+                              )?.questionType ===
+                              dbConstants.questionTypes.dateTimeQuestion ? (
+                              <DatePickerCustom
+                                isDisabled={
+                                  suerveyIsPublished
+                                    ? suerveyIsPublished
+                                    : false
+                                }
+                                setFieldValue={setFieldValue}
+                                changedId={condition?.level}
+                                fieldName={"value"}
+                                selectedValue={
+                                  condition?.value ? condition?.value : moment()
+                                }
+                              />
+                            ) : dropDownQuestionList?.find(
+                                (x: { value: string }) =>
+                                  x?.value === condition?.field
+                              )?.questionType ===
+                              dbConstants.questionTypes.listQuestion ? (
+                              <ListDropDown
+                                dropDownData={{}}
+                                isDisabled={
+                                  suerveyIsPublished
+                                    ? suerveyIsPublished
+                                    : false
+                                }
+                                setFieldValue={setFieldValue}
+                                changedId={condition?.level}
+                                fieldName={"value"}
+                                selectedValue={condition?.value}
+                                listDropDownData={answersDropDownData
+                                  .concat(
+                                    listAnsersWithQuestionIds?.find(
+                                      (x: any) =>
+                                        x?.questionId === condition?.field
+                                    )?.listAnswers
+                                  )
+                                  ?.filter((x) => x)}
+                              />
+                            ) : (
+                              <FieldStringInputProps
+                                sampleData={
+                                  dropDownQuestionList &&
+                                  dropDownQuestionList.length &&
+                                  dropDownQuestionList
+                                }
+                                selectedValue={condition?.value}
+                                overrideSearch={false}
+                                setFieldValue={setFieldValue}
+                                changedId={condition?.level}
+                                fieldName={"value"}
+                                isDisabled={suerveyIsPublished}
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          <div>
+                            <Space size="middle">
+                              <Spin />
+                            </Space>
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="custom-btn-wrap">
-                      {
-                        (suerveyIsPublished || condition?.level === 1) ?
+                      <div className="custom-btn-wrap">
+                        {suerveyIsPublished || condition?.level === 1 ? (
                           // <img
                           //   // src={imageUrls?.imageUrl} alt="icon"
                           //   width={'15px'}
@@ -1215,18 +1259,22 @@ const RowContainer: React.FC<TableRowProps> = ({
                           // >
                           // </img>
                           <></>
-                          :
-                          <div className="flex-wrap">  
+                        ) : (
+                          <div className="flex-wrap">
                             <img
-                            src={imageUrls?.imageUrl} alt="icon"
-                            onClick={() => _handleDeleteRow(condition?.level)}
-                            height={'15px'}
+                              src={imageUrls?.imageUrl}
+                              alt="icon"
+                              onClick={() => _handleDeleteRow(condition?.level)}
+                              height={"15px"}
                             />
-                            <span className="remove-text">{languageConstants?.ExpressionBuilder_RemoveButton} </span>
+                            <span className="remove-text">
+                              {
+                                languageConstants?.ExpressionBuilder_RemoveButton
+                              }{" "}
+                            </span>
                           </div>
-                         
-                      }
-                      {/* <Button
+                        )}
+                        {/* <Button
                       className="btn-default"
                       onClick={() => _handleDeleteRow(condition?.level)}
                       disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
@@ -1239,41 +1287,47 @@ const RowContainer: React.FC<TableRowProps> = ({
                         disabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
                       />
                     </Button> */}
-                      {/* <a><img src={deleteImg} className="delete-img" alt="delete"/></a> */}
+                        {/* <a><img src={deleteImg} className="delete-img" alt="delete"/></a> */}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex-row-start mb-10 collapse-wrap custom-width">
-                {!condition.state && (
-                  <div>
-                    <CaretRightOutlined
-                      style={{ color: "#0093FE" }}
-                      onClick={() =>
-                        setCollapse({
-                          state: false,
-                          fieldId: condition?.level,
-                        })
-                      }
-                    />
-                    <div className="condition-label">
-                      <DropDown
-                        dropDownData={expressionSampleData}
-                        isDisabled={suerveyIsPublished ? suerveyIsPublished : condition?.level === 1 ? true : false}
-                        setExpression={setFieldValue}
-                        changedId={condition?.level}
-                        fieldName={"expression"}
-                        selectedValue={condition?.expression}
-                      />{" "}
+              ) : (
+                <div className="flex-row-start mb-10 collapse-wrap custom-width">
+                  {!condition.state && (
+                    <div>
+                      <CaretRightOutlined
+                        style={{ color: "#0093FE" }}
+                        onClick={() =>
+                          setCollapse({
+                            state: false,
+                            fieldId: condition?.level,
+                          })
+                        }
+                      />
+                      <div className="condition-label">
+                        <DropDown
+                          dropDownData={expressionSampleData}
+                          isDisabled={
+                            suerveyIsPublished
+                              ? suerveyIsPublished
+                              : condition?.level === 1
+                              ? true
+                              : false
+                          }
+                          setExpression={setFieldValue}
+                          changedId={condition?.level}
+                          fieldName={"expression"}
+                          selectedValue={condition?.expression}
+                        />{" "}
+                      </div>
                     </div>
-                  </div>
-                )}
-                <div className="validation-text"></div>
-              </div>
-            )}
+                  )}
+                  <div className="validation-text"></div>
+                </div>
+              )}
 
-            {/* {condition.hasNested && (
+              {/* {condition.hasNested && (
             <div style={{ paddingLeft: "30px" }}>
               {renderNestedConditions(
                 condition.innerConditions,
@@ -1281,30 +1335,32 @@ const RowContainer: React.FC<TableRowProps> = ({
               )}
             </div>
           )} */}
-            <div style={{ paddingLeft: "30px" }}>
-              {
-                !listQuestionLoading && renderNestedConditions(condition?.innerConditions, marginLeft + 5)
-              }
-              
+              <div style={{ paddingLeft: "30px" }}>
+                {!listQuestionLoading &&
+                  renderNestedConditions(
+                    condition?.innerConditions,
+                    marginLeft + 5
+                  )}
+              </div>
             </div>
-          </div>
-        </>  
-    });
+          </>
+        );
+      });
     }
     // }
     // }
   };
   useEffect(() => {
-    console.log("isApiDataLoaded isLoad", isLoad)
-  }, [isLoad])
+    console.log("isApiDataLoaded isLoad", isLoad);
+  }, [isLoad]);
   return (
     <div>
-            {contextHolder}
-        <div>
-          <div className="flex-wrap mb-10">
-              <div className="text-left">
-                {" "}
-                {/* {_nestedRows &&
+      {contextHolder}
+      <div>
+        <div className="flex-wrap mb-10">
+          <div className="text-left">
+            {" "}
+            {/* {_nestedRows &&
                   _nestedRows?.length &&
                   "if(" +
                     generateOutputString(
@@ -1313,39 +1369,61 @@ const RowContainer: React.FC<TableRowProps> = ({
                       ]?.fields || []
                     ) +
                 ")"}{" "} */}
-              
-              {/* <div> 
+            {/* <div> 
               {" "}
                 {showActionOutput && "{ " + showActionOutput + " }"}{" "}
             </div> */}
-
-            
-             {
-              tabType === dbConstants?.tabTypes?.validationTab ? 
+            {tabType === dbConstants?.tabTypes?.validationTab ? (
               <>
-              <div>
-                {" "}
-                {
-                showVisibilityRule && Object.keys(showVisibilityRule).length !== 0 ?
-                  
-                <div style={{backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}> Visibility Rule : {" " + showVisibilityRule} </div>: null
-                }
-
-                {" "}
-                {
-                showDocOutputRule && Object.keys(showDocOutputRule).length !== 0 ? <div style={{ backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}> Doc Output Rule : {" " + showDocOutputRule} </div>: null
-                }
-
-
-                {" "}
-                {
-                  showValidationRule && Object.keys(showValidationRule).length !== 0 ? <div style={{backgroundColor: "#ECECEC", borderRadius: '6px', marginBottom: '5px', padding: '10px' }}>  Min/Max Rule : {" " + showValidationRule} </div> : null
-                }          
+                <div>
+                  {" "}
+                  {showVisibilityRule &&
+                  Object.keys(showVisibilityRule).length !== 0 ? (
+                    <div
+                      style={{
+                        backgroundColor: "#ECECEC",
+                        borderRadius: "6px",
+                        marginBottom: "5px",
+                        padding: "10px",
+                      }}
+                    >
+                      {" "}
+                      Visibility Rule : {" " + showVisibilityRule}{" "}
+                    </div>
+                  ) : null}{" "}
+                  {showDocOutputRule &&
+                  Object.keys(showDocOutputRule).length !== 0 ? (
+                    <div
+                      style={{
+                        backgroundColor: "#ECECEC",
+                        borderRadius: "6px",
+                        marginBottom: "5px",
+                        padding: "10px",
+                      }}
+                    >
+                      {" "}
+                      Doc Output Rule : {" " + showDocOutputRule}{" "}
+                    </div>
+                  ) : null}{" "}
+                  {showValidationRule &&
+                  Object.keys(showValidationRule).length !== 0 ? (
+                    <div
+                      style={{
+                        backgroundColor: "#ECECEC",
+                        borderRadius: "6px",
+                        marginBottom: "5px",
+                        padding: "10px",
+                      }}
+                    >
+                      {" "}
+                      Min/Max Rule : {" " + showValidationRule}{" "}
+                    </div>
+                  ) : null}
                 </div>
-              </> : 
-              
+              </>
+            ) : (
               <>
-              {_nestedRows &&
+                {_nestedRows &&
                   _nestedRows?.length &&
                   "if(" +
                     generateOutputString(
@@ -1353,35 +1431,30 @@ const RowContainer: React.FC<TableRowProps> = ({
                         sectionLevel
                       ]?.fields || []
                     ) +
-                ")"}{" "}
+                    ")"}{" "}
               </>
-             }
-             
-            </div>
-            
+            )}
+          </div>
 
+          <div>
             <div>
-             
-                
-              <div>
+              {suerveyIsPublished ? (
+                <img src={imageUrls?.imageUrl} alt="icon" height={"15px"}></img>
+              ) : (
+                <div className="flex-wrap">
+                  <img
+                    src={imageUrls?.imageUrl}
+                    alt="icon"
+                    height={"15px"}
+                    onClick={() => handleSectionRemove(sectionLevel, tabType)}
+                  />
+                  <span className="remove-text">
+                    {languageConstants?.ExpressionBuilder_RemoveButton}{" "}
+                  </span>
+                </div>
+              )}
 
-              { suerveyIsPublished ?
-                <img
-                  src={imageUrls?.imageUrl} alt="icon"
-                  height={'15px'}
-                >
-                  </img> :
-                  <div className="flex-wrap">
-                    <img
-                        src={imageUrls?.imageUrl} alt="icon"
-                      height={'15px'}
-                      onClick={() => handleSectionRemove(sectionLevel, tabType)}
-                        /> 
-                    <span className="remove-text">{languageConstants?.ExpressionBuilder_RemoveButton} </span>
-                  </div>
-                }
-                
-                  {/* <Button
+              {/* <Button
                     className="btn-default"
                   onClick={() => handleSectionRemove(sectionLevel)}
                   disabled={suerveyIsPublished}
@@ -1389,18 +1462,16 @@ const RowContainer: React.FC<TableRowProps> = ({
                     {" "}
                     Remove Section
                   </Button> */}
-                </div>
-              </div>
-         </div>
-          {_nestedRows &&
-            _nestedRows?.length &&
-            renderNestedConditions(
-              _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-                ?.fields || []
-            )}
-        
+            </div>
+          </div>
         </div>
-    
+        {_nestedRows &&
+          _nestedRows?.length &&
+          renderNestedConditions(
+            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
+              ?.fields || []
+          )}
+      </div>
     </div>
   );
 };
