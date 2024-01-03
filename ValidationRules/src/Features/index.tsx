@@ -1787,17 +1787,30 @@ const ParentComponent = ({
                           />
                         </div>
                       ))}
-                    <div className="text-right">
-                      <Button
-                        onClick={handleSaveLogic}
-                        className="btn-primary"
-                        disabled={suerveyIsPublished}
-                      >
-                        {
-                          languageConstants?.ExpressionBuilder_SaveButtonConstants
-                        }
-                      </Button>
-                    </div>
+                    <div style={{ display: "flex", textAlign: "right" }}>
+                          <div className="text-right">
+                            <Button
+                              onClick={handleSaveLogic}
+                              className="btn-primary"
+                              disabled={suerveyIsPublished}
+                            >
+                              {
+                                languageConstants?.ExpressionBuilder_SaveButtonConstants
+                              }
+                            </Button>
+                          </div>
+                          <div className="save-close">
+                            <Button
+                              onClick={handleSaveAndClose}
+                              className="btn-primary"
+                              disabled={suerveyIsPublished}
+                            >
+                              {
+                                languageConstants?.ExpressionBuilder_SaveAndCloseButton
+                              }
+                            </Button>
+                          </div>
+                        </div>
                   </div>
                 )}
               </div>
