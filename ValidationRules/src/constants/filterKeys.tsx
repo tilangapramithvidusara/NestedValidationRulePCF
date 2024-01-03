@@ -42,6 +42,7 @@ export const filterKeys = [
     "ExpressionBuilder_FristExpCannotChanged",
     "ExpressionBuilder_SelectQuestions",
     "ExpressionBuilder_FieldsEmpty",
-    "ExpressionBuilder_ErrorOccured"
+    "ExpressionBuilder_ErrorOccured",
+    "ExpressionBuilder_SaveAndCloseButton"
     
 ]

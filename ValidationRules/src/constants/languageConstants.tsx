@@ -45,7 +45,8 @@ export const languageConstantsForCountry : any = {
         ExpressionBuilder_FieldsEmpty: "Fields cannot be empty.",
         ExpressionBuilder_ErrorOccured: "Error Occured.",
         ExpressionBuilder_AtLeastOneActionNeedToSelect: "If the fields are not empty, you must select at least one action.",
-        ExpressionBuilder_SameQuesRefForCurrentQuestion: "You cannot select the current question in a visibility rule."
+        ExpressionBuilder_SameQuesRefForCurrentQuestion: "You cannot select the current question in a visibility rule.",
+        ExpressionBuilder_SaveAndCloseButton: "Save & Close" 
 
     },
     po: {

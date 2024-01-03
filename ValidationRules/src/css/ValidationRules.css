@@ -355,6 +355,11 @@
     text-align: right;
   }
 
+  .validation-wrap .save-close{
+    text-align: right;
+    margin-left: 10px;
+  }
+
   .validation-wrap .btn-primary {
     height: 30px;
     min-width: 85px;

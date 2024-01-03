@@ -30,6 +30,7 @@ import {
   getPublishedStatus,
   loadResourceString,
   getListAnswersByQuestionId,
+  closeTab,
 } from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
 import { normalConverter } from "../Utils/dbFormatToJson";
@@ -58,12 +59,12 @@ const ParentComponent = ({
   const [_nestedRows, _setNestedRows] = useState<any>([]);
   const [_defaultRows, _setDefaultRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-  //   currentPosition: "question",
-  //   questionType: "List",
-  //   id: "ddd"
-  // });
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+    currentPosition: "question",
+    questionType: "List",
+    id: "ddd",
+  });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -104,7 +105,7 @@ const ParentComponent = ({
   // });
   const [selectedLanguage, setSelectedLanguage] = useState<any>("en");
   const [selectedTab, setSelectedTab] = useState<any>("vr");
-  const [localTest, setLocalTest] = useState(false);
+  const [localTest, setLocalTest] = useState(true);
   const [languageConstants, setLanguageConstants] = useState<any>(
     languageConstantsForCountry.en
   );
@@ -304,7 +305,7 @@ const ParentComponent = ({
             : dbData?.visibility?.length
             ? dbData?.visibility
             : [dbData?.visibility];
-            if (visibilityString) {
+          if (visibilityString) {
             // const visibilityString = dbData?.visibility?.if;
             const showUpdatedDataArray: any[] = [];
             let visibilityDta = visibilityString;
@@ -1569,6 +1570,12 @@ const ParentComponent = ({
     }
   };
 
+  const handleSaveAndClose = async () => {
+    setIsApiDataLoaded(true);
+    await handleSaveLogic();
+    setIsApiDataLoaded(false);
+    await closeTab();
+  };
   const showPromiseConfirm: any = async () => {
     confirm({
       title: "Do you want to clear the creation rule?",
@@ -1686,27 +1693,29 @@ const ParentComponent = ({
 
                     {_nestedRows?.length > 0 && (
                       <>
-                        <div className="text-right">
-                          <Button
-                            onClick={handleSaveLogic}
-                            className="btn-primary"
-                            disabled={suerveyIsPublished}
-                          >
-                            {
-                              languageConstants?.ExpressionBuilder_SaveButtonConstants
-                            }
-                          </Button>
-                        </div>
-                        <div className="text-right">
-                          <Button
-                            onClick={handleSaveLogic}
-                            className="btn-primary"
-                            disabled={suerveyIsPublished}
-                          >
-                            {
-                              languageConstants?.ExpressionBuilder_SaveButtonConstants
-                            }
-                          </Button>
+                        <div style={{ display: "flex", textAlign: "right" }}>
+                          <div className="text-right">
+                            <Button
+                              onClick={handleSaveLogic}
+                              className="btn-primary"
+                              disabled={suerveyIsPublished}
+                            >
+                              {
+                                languageConstants?.ExpressionBuilder_SaveButtonConstants
+                              }
+                            </Button>
+                          </div>
+                          <div className="save-close">
+                            <Button
+                              onClick={handleSaveAndClose}
+                              className="btn-primary"
+                              disabled={suerveyIsPublished}
+                            >
+                              {
+                                languageConstants?.ExpressionBuilder_SaveAndCloseButton
+                              }
+                            </Button>
+                          </div>
                         </div>
                       </>
                     )}

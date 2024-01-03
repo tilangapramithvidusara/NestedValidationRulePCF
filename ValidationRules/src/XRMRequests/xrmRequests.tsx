@@ -11,24 +11,17 @@ declare global {
 }
 
 export const loadAllQuestionsInSurvey = async () => {
-  console.log('come');
   try {    
     const templateID = await window.parent.Xrm.Page.ui._formContext.getAttribute("gyde_surveytemplate").getValue()[0].id.replace("{", "").replace("}", "");
-    console.log('template id =========> ', templateID);
     const result = await window.parent.Xrm.WebApi.retrieveMultipleRecords("gyde_surveytemplatechaptersectionquestion", "?$select=gyde_name,gyde_answertype,gyde_shortname,gyde_label&$filter= _gyde_surveytemplate_value eq " + templateID);
-    console.log("result ===========> ", result);
-    console.log('result.entities=====> ', questionArraySample);
-    
     return {
       error: false,
       data: result?.entities?.length > 0 ? result?.entities : []
     }
     
   } catch (error) {
-    // console.log("error ========> ", operationsSampleData);
     return {
       error: true,
-      // data: [],
       data: questionArraySample
     }
   }
@@ -36,15 +29,10 @@ export const loadAllQuestionsInSurvey = async () => {
 
 export const getCurrentState = async () => {
   try {    
-    // let result = await window.parent.Xrm.Page.ui._formContext.getAttribute("gyde_relatedsurveytemplateitem").getValue();
     const entityTypeName = window.parent.Xrm.Page.ui._formContext.contextToken.entityTypeName
     console.log("entityTypeName State ===========> ", entityTypeName);
     const updatedId = parent.Xrm.Page.ui.formContext.data.entity.getId().replace("{", "").replace("}", "");
-
-    console.log("updatedId State ===========> ", updatedId);
-    // result = result?.map((obj: any) => {
-      // const updatedId = obj?.id.replace("{", "").replace("}", "");
-      let currentPosition;
+    let currentPosition;
     let currentName;
     let currentEntityNme;
     if (entityTypeName.includes('question')) {
@@ -83,9 +71,7 @@ export const getCurrentState = async () => {
 export const saveValidationRules = async(validationRuleData: object) => {
   try {
     const id = await window.parent.Xrm.Page.ui._formContext.data.entity.getId().replace("{", "").replace("}", "");
-    const currentEntity = await window.parent.Xrm.Page.ui._formContext.contextToken.entityTypeName;
-    console.log("validation rules data ===========> ", validationRuleData);
-    
+    const currentEntity = await window.parent.Xrm.Page.ui._formContext.contextToken.entityTypeName;    
   } catch (error) {
     console.log("save error =========> ", error);
     
@@ -102,15 +88,8 @@ export const saveValidationRules = async(validationRuleData: object) => {
       let _result : any = {}
       if (result?.gyde_validationrule) _result = result[dbConstants.question.gyde_minmaxvalidationrule];
       else if(result?.gyde_visibilityrule) _result = result[dbConstants.common.gyde_visibilityrule];
-      // else if(result?.gyde_validationrule?.length) _result = result[dbConstants.common.gyde_validationrule];
       else if (result?.gyde_documentoutputrule) _result = result[dbConstants.question.gyde_documentOutputRule];
       else if(result?.gyde_questionresponsedefaultrule) _result = result[dbConstants.question.gyde_defaultValueFormula];
-      // console.log("RESULTTT", _result)
-      // if (_result) {
-      //   _result = JSON.parse(_result)
-      //   if(!_result || !_result?.length) return { error: false, data: [], loading: false };
-      // }
-      console.log("fetch Result ..." , _result)
       if (typeof _result === 'object') {
         _result = {}
       } else { 
@@ -133,13 +112,9 @@ export const saveValidationRules = async(validationRuleData: object) => {
   ): Promise<any> => {
     try {
       let result
-      console.log("saving requeesttttt", entityLogicalName, id, data);
       result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName, id, data);
-      console.log("saving requeesttttt result", result);
       return { error: false, data: result, loading: false };
     } catch (error: any) {
-      // handle error conditions
-      console.log("error",error);
       return { error: true, data: [], loading: false };
     }
   };
@@ -281,4 +256,14 @@ export const loadResourceString = async () : Promise<any> => {
       error: true, data: {}
     }
   }
+  }
+
+  export const closeTab = async () : Promise<any> =>{
+      var formContext =  window?.parent?.Xrm.Page;
+      // Check if the form context is available
+      if (formContext.ui && formContext.ui.close) {
+          formContext.ui.close();
+      } else {
+          console.error("formContext.ui.close is not available.");
+      }
   }
