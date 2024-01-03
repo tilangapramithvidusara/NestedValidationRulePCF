@@ -217,9 +217,6 @@ const ParentComponent = ({
   };
 
   useEffect(() => {
-    console.log("currentPossitionDetails 1", currentPossitionDetails);
-    console.log("questionList 1", questionList);
-
     if (
       questionList &&
       questionList?.length &&
@@ -238,10 +235,7 @@ const ParentComponent = ({
     const response = await getListAnswersByQuestionId(
       currentQuestionDetails?.questionId
     );
-    console.log("JJFJFJFJNJUBJU", response);
-
     if (response?.data?.entities) {
-      console.log("JJFJFJFJNJUBJU");
       setCurrentListQuestionAnswers((prev: any) => {
         return {
           ...prev,
@@ -261,13 +255,6 @@ const ParentComponent = ({
       getCurrentQuestionListAnswers();
     }
   }, [currentQuestionDetails]);
-
-  useEffect(() => {
-    console.log(
-      "currentListQuestionAnswers -----> ",
-      currentListQuestionAnswers
-    );
-  }, [currentListQuestionAnswers]);
 
   useEffect(() => {
     setSections(
@@ -546,8 +533,6 @@ const ParentComponent = ({
 
   // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
-    console.log("_minMaxRulePrev", _minMaxRulePrev);
-
     if (_minMaxRulePrev?.length) {
       let key = 15;
 
@@ -682,8 +667,6 @@ const ParentComponent = ({
 
   // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
-    console.log("_defaultValueRule", _defaultValueRule);
-
     if (_defaultValueRule && _defaultValueRule?.length) {
       let key = 100;
       // const __defaultValRule = _defaultValueRule?.defaultValRule;
@@ -1140,8 +1123,6 @@ const ParentComponent = ({
   };
 
   useEffect(() => {
-    console.log("currentId ----->", currentPossitionDetails);
-
     if (currentPossitionDetails) {
       getRequestedData();
     }
@@ -1790,15 +1771,6 @@ const ParentComponent = ({
       console.log("error ====>", error);
     }
   };
-
-  useEffect(() => {
-    console.log("_defaultRows", _defaultRows);
-  }, [_defaultRows]);
-
-  useEffect(() => {
-    console.log("_nestedRows", _nestedRows);
-  }, [_nestedRows]);
-
   const clearItems = async (): Promise<void> => {
     if (selectedTab === "vr") {
       await saveVisibilityData({}, {}, {}, {}, false);

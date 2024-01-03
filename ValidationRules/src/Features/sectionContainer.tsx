@@ -378,10 +378,6 @@ function SectionContainer({
     );
   }, [currentPossitionDetails, languageConstants]);
 
-  useEffect(() => {
-    console.log("currentQuestionDetails ", currentQuestionDetails);
-  }, [currentQuestionDetails]);
-
   const handleMinMaxWhenToggleChanged = (minValue: any, maxValue: any) => {
     setMinMaxValue((prev: any) => ({ ...prev, minValue, maxValue }));
     let releatedFields = _nestedRows.find(

@@ -247,7 +247,6 @@ const RowContainer: React.FC<TableRowProps> = ({
   };
 
   useEffect(() => {
-    console.log("fieldValue", fieldValue);
     if (fieldValue) {
       fieldValueSetToNestedRows(fieldValue);
     }
@@ -1350,9 +1349,7 @@ const RowContainer: React.FC<TableRowProps> = ({
     // }
     // }
   };
-  useEffect(() => {
-    console.log("isApiDataLoaded isLoad", isLoad);
-  }, [isLoad]);
+
   return (
     <div>
       {contextHolder}
