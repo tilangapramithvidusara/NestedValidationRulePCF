@@ -1368,11 +1368,11 @@ const ParentComponent = ({
           );
           minMaxDBFormatArray.push(
             {
-              type: typeof minValue === "string" ? "MINIMUM_LENGTH" : "MINIMUM",
+              type: typeof minMax?.minValue === "string" ? "MINIMUM_LENGTH" : "MINIMUM",
               value: { if: formattingForMin },
             },
             {
-              type: typeof minValue === "string" ? "MAXIMUM_LENGTH" : "MAXIMUM",
+              type: typeof minMax?.maxValue === "string" ? "MAXIMUM_LENGTH" : "MAXIMUM",
               value: { if: formattingForMax },
             }
           );
