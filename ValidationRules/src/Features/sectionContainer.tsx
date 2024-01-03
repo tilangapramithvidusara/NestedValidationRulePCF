@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import DropDown from "../Components/commonComponents/DropDown";
 import {
-  Button,
-  Card,
   Checkbox,
   DatePicker,
   Input,
   InputNumber,
-  Pagination,
   Radio,
   Select,
   Space,
@@ -15,14 +12,8 @@ import {
 } from "antd";
 import RowContainer from "./rowContainer";
 import CheckBox from "../Components/commonComponents/CheckBox";
-import { CheckboxValueType } from "antd/es/checkbox/Group";
 import NumberInputField from "../Components/commonComponents/NumberInputField";
-import sampleInputQuestion from "../SampleData/sampleInputQuestion";
 import { updateAllLevelActionsArray } from "../Utils/utilsHelper";
-import {
-  getListAnswersByQuestionId,
-  loadAllQuestionsInSurvey,
-} from "../XRMRequests/xrmRequests";
 import { dbConstants } from "../constants/dbConstants";
 import type { SelectProps } from "antd";
 import type { SizeType } from "antd/es/config-provider/SizeContext";
@@ -33,16 +24,6 @@ import mathOperators from "../configs/mathOperators";
 dayjs.extend(customParseFormat);
 
 const { Option } = Select;
-
-interface NestedRowProps {
-  children: React.ReactNode;
-}
-
-const gridStyle: React.CSSProperties = {
-  width: "5%",
-  textAlign: "center",
-  height: "2px",
-};
 
 interface Row {
   level: number;
@@ -116,16 +97,12 @@ function SectionContainer({
   const [checkedReferences, setCheckedReferences] = useState<any>(false);
   const [checkedReferencesQuesOrVal, setCheckedReferencesQuesOrVal] =
     useState<any>(false);
-
   const [radioDefaultValOption, setRadioDefaultValOption] = useState<any>();
   const [addValue, setAddValue] = useState<any>(null);
-
   const [defaultMathematicalOperators, setDefaultMathematicalOperators] =
     useState<any>();
   const [selectedValues, setSelectedValues] = useState<any>([]);
-
   const options: SelectProps["options"] = [];
-  const [size, setSize] = useState<SizeType>("middle");
   const [pickQuestionDefault, setPickQuestionDefault] = useState<any>();
   const [pickOperatorDefault, setPickOperatorDefault] = useState<any>();
   const [pickQuestion2Default, setPickQuestion2Default] = useState<any>();
@@ -260,6 +237,8 @@ function SectionContainer({
         setRadioDefaultValOption(releatedActionsForSefaultValue[0]?.type);
         setCheckedReferences(true);
         if (releatedActionsForSefaultValue[0]?.type === "MAT_F") {
+          console.log("releatedActionsForSefaultValue", releatedActionsForSefaultValue)
+          if(!releatedActionsForSefaultValue?.[0]?.value) return;
           const operator: any = Object.keys(
             releatedActionsForSefaultValue[0]?.value
           )[0];
@@ -545,6 +524,19 @@ function SectionContainer({
           },
         ])
       );
+    } else{
+      console.log("Add Null");
+      if(radioDefaultValOption) {
+        _setNestedRows(
+          updateAllLevelActionsArray(_nestedRows, sectionLevel, [
+            {
+              type: "MAT_F",
+              value: addValue,
+            },
+          ])
+        );
+      }
+      
     }
   }, [radioDefaultValOption, addValue]);
 
