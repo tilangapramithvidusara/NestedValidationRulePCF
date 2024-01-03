@@ -290,12 +290,6 @@ const ParentComponent = ({
     );
     _getCurrentState();
     messageHandler();
-    console.log(
-      "imageUrl, imageUrl1, imageUrl2",
-      imageUrl,
-      imageUrl1,
-      imageUrl2
-    );
   }, []);
 
   // This useEffect is responsible for Convert DB Format to our JSON format
@@ -304,15 +298,13 @@ const ParentComponent = ({
     if (_visibilityRulePrev?.length) {
       let key = 45;
       _visibilityRulePrev.forEach((dbData) => {
-        console.log("Loading Visibility Data", dbData);
         _setNestedRows((prevData: any) => {
           let visibilityString = dbData?.visibility?.if?.length
             ? dbData?.visibility?.if
             : dbData?.visibility?.length
             ? dbData?.visibility
             : [dbData?.visibility];
-          console.log("visibilityString", visibilityString);
-          if (visibilityString) {
+            if (visibilityString) {
             // const visibilityString = dbData?.visibility?.if;
             const showUpdatedDataArray: any[] = [];
             let visibilityDta = visibilityString;
@@ -333,17 +325,6 @@ const ParentComponent = ({
             const isNestedIfs = visibilityDta?.some(
               (x: {}) => Object.keys(x)[0] === "if"
             );
-            console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
-            console.log(
-              "Fetch Type isFirstExpWithEmptyStringKey",
-              isFirstExpWithEmptyStringKey
-            );
-            console.log(
-              "Fetch Type isFirstExpWithoutEmptyStringKey",
-              isFirstExpWithoutEmptyStringKey
-            );
-            console.log("Fetch Type isAllAreNormal", isAllAreNormal);
-            console.log("Fetch Type isNestedIfs", isNestedIfs);
 
             if (isNestedIfs) {
               refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
@@ -361,13 +342,8 @@ const ParentComponent = ({
               refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
             }
 
-            console.log(
-              "Visibility DB Dataaa Converting refactorDtaaaa",
-              refactorDta
-            );
             if (refactorDta && refactorDta?.length) {
               refactorDta?.forEach((fieldDta: any): any => {
-                console.log("Each Section Field Data", fieldDta);
                 let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
 
                 showUpdatedDataArray.push({
@@ -390,15 +366,6 @@ const ParentComponent = ({
               });
 
               if (showUpdatedDataArray && showUpdatedDataArray.length) {
-                // const reversedArray = showUpdatedDataArray.reverse();
-                console.log(
-                  "Visibility Data Retrieving ",
-                  showUpdatedDataArray
-                );
-                console.log("Validation DB Dataaa showUpdatedDataArray ", [
-                  ...prevData,
-                  showUpdatedDataArray,
-                ]);
                 return [...prevData, ...showUpdatedDataArray];
               }
             }
@@ -414,19 +381,16 @@ const ParentComponent = ({
     if (_documentOutputRulePrev?.length) {
       let key = 1;
       _documentOutputRulePrev.forEach((dbData) => {
-        console.log("Loading Document Output Data", dbData);
         _setNestedRows((prevData: any) => {
           let docRuleOutput = dbData?.docRuleOutput?.if?.length
             ? dbData?.docRuleOutput?.if
             : [dbData?.docRuleOutput];
-          console.log("docRuleOutput String", docRuleOutput);
           if (docRuleOutput) {
             // docRuleOutput = dbData?.docRuleOutput?.if;
             const showUpdatedDocOutputDataArray: any[] = [];
             let docOutputDta = docRuleOutput;
             // const refactorDta = removeIfKeyAndGetDbProperty(docOutputDta);
             // let visibilityDta = docOutputDta;
-            console.log("Document Data Converting ---->>>> ", docOutputDta);
             const isRetrieveAsNormal = docRuleOutput?.some(
               (x: any) => x?.or?.length || x?.and?.length
             );
@@ -446,19 +410,6 @@ const ParentComponent = ({
             );
             const isFirstExpWithoutEmptyStringKey = docRuleOutput?.some(
               (x: any) => (x[Object.keys(x)[0]] as any[])?.length === 2
-            );
-
-            console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
-            console.log("Fetch Type isFirstExp", isFirstExp);
-            console.log("Fetch Type isAllAreNormal", isAllAreNormal);
-            console.log("Fetch Type isNestedIfs", isNestedIfs);
-            console.log(
-              "Fetch Type isFirstExpWithEmptyStringKey",
-              isFirstExpWithEmptyStringKey
-            );
-            console.log(
-              "Fetch Type isFirstExpWithoutEmptyStringKey",
-              isFirstExpWithoutEmptyStringKey
             );
 
             if (isNestedIfs) {
@@ -482,9 +433,7 @@ const ParentComponent = ({
 
             if (docOutputDta && docOutputDta?.length) {
               docOutputDta?.forEach((fieldDta: any): any => {
-                console.log("Document Output DB Dataaa Converting", fieldDta);
                 let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
-
                 showUpdatedDocOutputDataArray.push({
                   [key++]: {
                     actions: [
@@ -503,24 +452,10 @@ const ParentComponent = ({
                   },
                 });
               });
-              console.log(
-                "showUpdatedDocOutputDataArray DB Data ",
-                showUpdatedDocOutputDataArray
-              );
               if (
                 showUpdatedDocOutputDataArray &&
                 showUpdatedDocOutputDataArray.length
               ) {
-                // const reversedArray = showUpdatedDocOutputDataArray.reverse();
-
-                console.log(
-                  "Update Doc DB Data retrieving ",
-                  showUpdatedDocOutputDataArray
-                );
-                console.log("Validation DB Dataaa showUpdatedDataArray ", [
-                  ...prevData,
-                  showUpdatedDocOutputDataArray,
-                ]);
                 return [...prevData, ...showUpdatedDocOutputDataArray];
               }
             }
@@ -537,14 +472,11 @@ const ParentComponent = ({
       let key = 15;
 
       _minMaxRulePrev?.forEach((dbData: any) => {
-        console.log("Loading _minMaxRulePrev", dbData);
         _setNestedRows((prevData: any) => {
           const minMax = dbData?.minMax;
           const minMaxOutputDataArray: any[] = [];
           let minMaxDta = minMax;
           if (minMaxDta?.length) {
-            // minMaxDta.forEach((fieldMinMax: any) => {
-            console.log("fieldMinMax", minMaxDta);
             const minObj = minMaxDta?.find(
               (minMax: any) =>
                 minMax?.type === "MINIMUM_LENGTH" || minMax?.type === "MINIMUM"
@@ -553,21 +485,15 @@ const ParentComponent = ({
               (minMax: any) =>
                 minMax?.type === "MAXIMUM_LENGTH" || minMax?.type === "MAXIMUM"
             );
-            // console.log("minObjminObj", minObj);
-            console.log("maxObjmaxObj", maxObj);
-
             let _refactorDtaMin = removeMinMaxIfKeyAndGetDbProperty([
               minObj?.value,
             ]);
             let _refactorDtaMax = removeMinMaxIfKeyAndGetDbProperty([
               maxObj?.value,
             ]);
-            console.log("_refactorDtaMin", _refactorDtaMin);
-            console.log("_refactorDtaMax", _refactorDtaMax);
             const refactoredMinMax =
               _refactorDtaMin[0]?.ifConditions ||
               _refactorDtaMax[0]?.ifConditions;
-            console.log("refactorDta Min Maxxx", refactoredMinMax);
             let _minMaxArrayStr = refactoredMinMax?.length
               ? refactoredMinMax
               : [refactoredMinMax];
@@ -592,11 +518,6 @@ const ParentComponent = ({
               (x: {}) => Object.keys(x)[0] === "if"
             );
 
-            console.log("isRetrieveAsNormal Min Max", isRetrieveAsNormal);
-            console.log("isFirstExp Min Max", isFirstExp);
-            console.log("isAllAreNormal Min Max", isAllAreNormal);
-            console.log("isNestedIfs Min Max", isNestedIfs);
-
             let _minMaxArray;
             if (isNestedIfs) {
               _minMaxArray = removeIfKeyAndGetDbProperty(_minMaxArrayStr);
@@ -613,10 +534,8 @@ const ParentComponent = ({
               _minMaxArray = removeIfKeyAndGetDbProperty(_minMaxArrayStr);
             }
 
-            console.log("visibilityStringvisibilityString", _minMaxArray);
             if (_minMaxArray && _minMaxArray?.length) {
               _minMaxArray?.forEach((fieldDta: any): any => {
-                console.log("Each Section Field Data", fieldDta);
                 let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
 
                 minMaxOutputDataArray.push({
@@ -639,26 +558,10 @@ const ParentComponent = ({
                 });
               });
             }
-            // });
             if (minMaxOutputDataArray && minMaxOutputDataArray.length) {
-              console.log(
-                "Validation DB Dataaa showUpdatedDataArray ",
-                minMaxOutputDataArray
-              );
-              console.log("Validation DB Dataaa showUpdatedDataArray ", [
-                ...prevData,
-                minMaxOutputDataArray,
-              ]);
               return [...prevData, ...minMaxOutputDataArray];
             }
           }
-          // });
-          // console.log(
-          //   "Validation DB Dataaa showUpdatedDataArray ",
-          //   minMaxOutputDataArray
-          // );
-
-          // })
         });
       });
       setIsApiDataLoaded(false);
@@ -673,22 +576,15 @@ const ParentComponent = ({
       let __defaultValueRule = JSON.parse(JSON.stringify(_defaultValueRule));
 
       __defaultValueRule?.forEach((defTriggers: any) => {
-        console.log("defTriggers", defTriggers);
         const triggers = defTriggers?.defaultValRule?.triggers
           ? defTriggers?.defaultValRule?.triggers
           : defTriggers?.defaultValRule;
-        // const triggers = defTriggers?.defaultValRule;
-        console.log("defaultData triggers", triggers);
 
         if (triggers && triggers?.length) {
           for (const trigger of triggers) {
             _setDefaultRows((prevData: any) => {
               let defaultString = [trigger?.rule?.rule];
-              console.log("defaultString", defaultString);
               let defaultAction = trigger?.action?.value;
-              console.log("defaultAction", defaultAction);
-              console.log("defaultAction Type", typeof defaultAction);
-
               let actionMap: any;
               if (!defaultAction && defaultAction !== 0) {
                 actionMap = {
@@ -736,44 +632,22 @@ const ParentComponent = ({
                 const isNestedIfs = visibilityDta?.some(
                   (x: {}) => Object.keys(x)[0] === "if"
                 );
-                console.log(
-                  "Fetch Type isRetrieveAsNormal ",
-                  isRetrieveAsNormal
-                );
-                console.log(
-                  "Fetch Type isFirstExpWithEmptyStringKey",
-                  isFirstExpWithEmptyStringKey
-                );
-                console.log(
-                  "Fetch Type isFirstExpWithoutEmptyStringKey",
-                  isFirstExpWithoutEmptyStringKey
-                );
-                console.log("Fetch Type isAllAreNormal", isAllAreNormal);
-                console.log("Fetch Type isNestedIfs", isNestedIfs);
 
                 if (isNestedIfs) {
                   _refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
                 } else if (isAllAreNormal) {
                   _refactorDta = visibilityDta[0]?.or;
                 } else if (isRetrieveAsNormal) {
-                  // refactorDta = visibilityDta[0]?.or?.length ? visibilityDta[0]?.or : visibilityDta[0]?.and
                   _refactorDta = visibilityDta;
                 } else if (isFirstExpWithoutEmptyStringKey) {
                   _refactorDta = [{ or: [defaultString[0]] }];
                 } else if (isFirstExpWithEmptyStringKey) {
-                  // refactorDta = visibilityDta;
                   _refactorDta = [{ or: Object.values(visibilityDta[0])[0] }];
                 } else {
                   _refactorDta = removeIfKeyAndGetDbProperty(visibilityDta);
                 }
-
-                console.log(
-                  "Visibility DB Dataaa Converting refactorDtaaaa",
-                  _refactorDta
-                );
                 if (_refactorDta && _refactorDta?.length) {
                   _refactorDta?.forEach((fieldDta: any): any => {
-                    console.log("Each Section Field Data", fieldDta);
                     let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
 
                     defaultDataArray.push({
@@ -785,15 +659,6 @@ const ParentComponent = ({
                   });
 
                   if (defaultDataArray && defaultDataArray.length) {
-                    // const reversedArray = showUpdatedDataArray.reverse();
-                    console.log(
-                      "defaultDataArray Data Retrieving ",
-                      defaultDataArray
-                    );
-                    console.log("defaultDataArray ", [
-                      ...prevData,
-                      defaultDataArray,
-                    ]);
                     return [...prevData, ...defaultDataArray];
                   }
                 }
@@ -813,7 +678,6 @@ const ParentComponent = ({
     if (_visibilityAndDocOutput?.length) {
       let key = 700;
       _visibilityAndDocOutput.forEach((dbData) => {
-        console.log("Loading Document Output Data", dbData);
         if (
           dbData &&
           dbData?.visibilityAndDocRuleOutput &&
@@ -825,14 +689,9 @@ const ParentComponent = ({
             ?.if?.length
             ? dbData?.visibilityAndDocRuleOutput?.if
             : [dbData?.visibilityAndDocRuleOutput];
-          console.log("docRuleOutput String", visibilityAndDocRuleOutput);
           if (visibilityAndDocRuleOutput) {
-            // docRuleOutput = dbData?.docRuleOutput?.if;
             const showUpdatedDocOutputDataArray: any[] = [];
             let docOutputDta = visibilityAndDocRuleOutput;
-            // const refactorDta = removeIfKeyAndGetDbProperty(docOutputDta);
-            // let visibilityDta = docOutputDta;
-            console.log("Document Data Converting ---->>>> ", docOutputDta);
             const isRetrieveAsNormal = visibilityAndDocRuleOutput?.some(
               (x: any) => x?.or?.length || x?.and?.length
             );
@@ -855,20 +714,6 @@ const ParentComponent = ({
               visibilityAndDocRuleOutput?.some(
                 (x: any) => (x[Object.keys(x)[0]] as any[])?.length === 2
               );
-
-            console.log("Fetch Type isRetrieveAsNormal ", isRetrieveAsNormal);
-            console.log("Fetch Type isFirstExp", isFirstExp);
-            console.log("Fetch Type isAllAreNormal", isAllAreNormal);
-            console.log("Fetch Type isNestedIfs", isNestedIfs);
-            console.log(
-              "Fetch Type isFirstExpWithEmptyStringKey",
-              isFirstExpWithEmptyStringKey
-            );
-            console.log(
-              "Fetch Type isFirstExpWithoutEmptyStringKey",
-              isFirstExpWithoutEmptyStringKey
-            );
-
             if (isNestedIfs) {
               docOutputDta = removeIfKeyAndGetDbProperty(
                 visibilityAndDocRuleOutput
@@ -898,9 +743,7 @@ const ParentComponent = ({
 
             if (docOutputDta && docOutputDta?.length) {
               docOutputDta?.forEach((fieldDta: any): any => {
-                console.log("Document Output DB Dataaa Converting", fieldDta);
                 let _fieldDta = JSON.parse(JSON.stringify(fieldDta));
-
                 showUpdatedDocOutputDataArray.push({
                   [key++]: {
                     actions: [
@@ -925,24 +768,10 @@ const ParentComponent = ({
                   },
                 });
               });
-              console.log(
-                "showUpdatedDocOutputDataArray DB Data ",
-                showUpdatedDocOutputDataArray
-              );
               if (
                 showUpdatedDocOutputDataArray &&
                 showUpdatedDocOutputDataArray.length
               ) {
-                // const reversedArray = showUpdatedDocOutputDataArray.reverse();
-
-                console.log(
-                  "Update Doc DB Data retrieving ",
-                  showUpdatedDocOutputDataArray
-                );
-                console.log("Validation DB Dataaa showUpdatedDataArray ", [
-                  ...prevData,
-                  showUpdatedDocOutputDataArray,
-                ]);
                 return [...prevData, ...showUpdatedDocOutputDataArray];
               }
             }
@@ -1051,10 +880,6 @@ const ParentComponent = ({
         visibilityRulePreviousValues?.data &&
         Object.keys(visibilityRulePreviousValues?.data).length !== 0
       ) {
-        console.log(
-          "visibilityRulePreviousValues111111 -----> ",
-          visibilityRulePreviousValues
-        );
         let _visibilityRulePreviousValues = JSON.parse(
           JSON.stringify(visibilityRulePreviousValues)
         );
@@ -1118,7 +943,6 @@ const ParentComponent = ({
   };
   const getCurrentPublishedStatus = async () => {
     const { data = null } = await getPublishedStatus(currentPossitionDetails);
-    console.log("Published Status", data);
     if (data?.isPublished) setSuerveyIsPublished(data?.isPublished);
   };
 
@@ -1134,9 +958,6 @@ const ParentComponent = ({
   }, [currentPossitionDetails]);
 
   const handleSectionRemove = (deleteSectionKey: any, tab: any) => {
-    console.log("deleteSectionKey", deleteSectionKey);
-    console.log("deleteSectionKey", tab);
-
     if (tab === dbConstants?.tabTypes?.validationTab) {
       if (deleteSectionKey) {
         _setNestedRows((prevNestedRows: any) => {
@@ -1178,12 +999,6 @@ const ParentComponent = ({
     minMaxDBFormatArray: any,
     defaultValueRuleNormal: any
   ) => {
-    console.log("validationRule 1", visibilityRule);
-    console.log("validationRule 2", validationRule);
-    console.log("validationRule 3", outputDocShow);
-    console.log("validationRule 4", minMaxDBFormatArray);
-    console.log("validationRule 5", defaultValueRuleNormal);
-
     let logicalName;
 
     if (currentPossitionDetails?.currentPosition === "question") {
@@ -1193,11 +1008,6 @@ const ParentComponent = ({
     } else if (currentPossitionDetails?.currentPosition === "chapter") {
       logicalName = dbConstants.chapter.fieldName;
     }
-    console.log("logicalName when saving", logicalName);
-    console.log(
-      "logicalName when saving currentPossitionDetails",
-      currentPossitionDetails
-    );
 
     if (
       currentPossitionDetails?.id &&
@@ -1244,10 +1054,6 @@ const ParentComponent = ({
         });
       }
       console.log("defaultValueRuleNormal", defaultValueRuleNormal);
-      console.log(
-        "currentQuestionDetails?.questionType",
-        currentQuestionDetails?.questionType
-      );
       if (defaultValueRuleNormal) {
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants?.question?.gyde_defaultValueFormula]:
@@ -1265,9 +1071,6 @@ const ParentComponent = ({
 
   const createActionObject = (actionType: any, value: any) => {
     let actionObject = {};
-    console.log("actionType", actionType);
-    console.log("value", value);
-
     if (actionType === "CLE_Q") {
       return {
         type: "SET_QUESTION_RESPONSE",
@@ -1349,25 +1152,19 @@ const ParentComponent = ({
     });
 
     sortedDataForDefaultValue.forEach((sec: any) => {
-      console.log("Default Section", sec);
       const key = Object.keys(sec)[0];
 
       const defaultActionSet = sec[key]?.actions[0];
-      console.log("defaultActionSet", defaultActionSet);
       if (!defaultActionSet) {
         isReferencesEmpty = true;
         return;
       }
       const typeOfAction = defaultActionSet?.type;
-      console.log("typeOfAction", typeOfAction);
       let prepareForValidation = JSON.parse(JSON.stringify(sec[key].fields));
-      console.log("prepareForValidation", prepareForValidation);
       prepareForValidation[0].expression = "Emp";
       const _hasNullFields = hasNullFieldsDefault(prepareForValidation);
-      console.log("_hasNullFields Default Val", _hasNullFields);
 
       if (_hasNullFields) {
-        console.log("Rej 1");
         isfieldsHasEmptyFieldsDefault = true;
         return;
       }
@@ -1403,7 +1200,6 @@ const ParentComponent = ({
       let _defaultValue: any = convertJSONFormatToDBFormat(sec[key], true);
       _defaultValue = _defaultValue?.exp;
       const __defaultValue = JSON.parse(JSON.stringify(_defaultValue));
-      console.log("Pushing Default", __defaultValue);
       const _rule = __defaultValue[""]?.length
         ? __defaultValue[""][0]
         : _defaultValue;
@@ -1421,16 +1217,12 @@ const ParentComponent = ({
         action: actionObj,
       };
       defaultValueRuleNormal.push(obj);
-
-      console.log("Pushing defaultValueRuleNormal", defaultValueRuleNormal);
     });
     if (defaultValueRuleNormal && defaultValueRuleNormal?.length) {
-      // defaultTriggers = { triggers: defaultValueRuleNormal };
       defaultTriggers = defaultValueRuleNormal;
     }
 
     sortedData.forEach((sec: any) => {
-      console.log("SECCCCCCCC", sec);
       const key = Object.keys(sec)[0];
 
       const checkboxValues = sec[key]?.actions[0]?.checkBoxValues;
@@ -1548,7 +1340,6 @@ const ParentComponent = ({
         const minMax = sec[key]?.actions[0]?.minMax;
         let minValue = minMax?.minValue || null;
         let maxValue = minMax?.maxValue || null;
-        console.log("Min Max ", minMax);
         if (minMax) {
           if (minValue && typeof minValue === "string" && minValue !== "0") {
             minValue = {
@@ -1560,13 +1351,8 @@ const ParentComponent = ({
               var: minMax?.maxValue,
             };
           }
-          console.log("_minMaxDbFormarFields", _minMaxDbFormarFields?.exp);
           const formattingForMin = [];
           const formattingForMax = [];
-          // visibilityRuleNormal.push(
-          //   _minMaxDbFormarFields?.exp[""]?.length ? _minMaxDbFormarFields?.exp[""][0] : _minMaxDbFormarFields?.exp
-          // );
-
           formattingForMin.push(
             _minMaxDbFormarFields?.exp[""]?.length
               ? _minMaxDbFormarFields?.exp[""][0]
