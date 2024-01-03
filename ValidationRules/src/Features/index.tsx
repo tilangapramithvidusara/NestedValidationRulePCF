@@ -59,12 +59,12 @@ const ParentComponent = ({
   const [_nestedRows, _setNestedRows] = useState<any>([]);
   const [_defaultRows, _setDefaultRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-    currentPosition: "question",
-    questionType: "List",
-    id: "ddd",
-  });
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+  //   currentPosition: "question",
+  //   questionType: "List",
+  //   id: "ddd",
+  // });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -105,7 +105,7 @@ const ParentComponent = ({
   // });
   const [selectedLanguage, setSelectedLanguage] = useState<any>("en");
   const [selectedTab, setSelectedTab] = useState<any>("vr");
-  const [localTest, setLocalTest] = useState(true);
+  const [localTest, setLocalTest] = useState(false);
   const [languageConstants, setLanguageConstants] = useState<any>(
     languageConstantsForCountry.en
   );
