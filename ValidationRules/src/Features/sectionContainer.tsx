@@ -245,30 +245,39 @@ function SectionContainer({
 
           if (operator === "0") {
             const values = releatedActionsForSefaultValue[0].value;
+            console.log("releatedActionsForSefaultValue values", values)
             const array = [values[0], values[1], values[2]];
             setDefaultMathematicalOperators(array);
             setSelectedValues(array);
             setPickQuestionDefault(values[0]);
             setPickOperatorDefault(values[1]);
             setPickQuestion2Default(values[2]);
+            console.log("questionList values", questionList)
 
-            setCheckedReferencesQuesOrVal(
-              questionList?.filter((ques: any) => ques?.value === values[1])
-                ?.length
-                ? true
-                : false
-            );
+            setTimeout(() => {
+              setCheckedReferencesQuesOrVal(
+                questionList?.filter((ques: any) => ques?.value === values[2])
+                  ?.length
+                  ? true
+                  : false
+              );
+            }, 1000)
+           
           } else {
+            console.log("releatedw type ActionsForSefaultValue", releatedActionsForSefaultValue)
             const values = releatedActionsForSefaultValue[0].value[operator];
+            console.log("releatedw releatedActionsForSefaultValue array", releatedActionsForSefaultValue)
 
-            const array = [values[0]?.var, operator, values[1]];
+            const array = [values[0]?.var, operator, values[1]?.var ? values[1]?.var : values[1]];
+            console.log("releatedw type array", array)
+
             setDefaultMathematicalOperators(array);
             setSelectedValues(array);
             setPickQuestionDefault(values[0]?.var);
             setPickOperatorDefault(operator);
-            setPickQuestion2Default(values[1]);
+            setPickQuestion2Default(values[1]?.var ? values[1]?.var : values[1]);
             setCheckedReferencesQuesOrVal(
-              questionList?.filter((ques: any) => ques?.value === values[1])
+              questionList?.filter((ques: any) => ques?.value === values[1] || ques?.value === values[1]?.var)
                 ?.length
                 ? true
                 : false
@@ -541,6 +550,7 @@ function SectionContainer({
   }, [radioDefaultValOption, addValue]);
 
   useEffect(() => {
+    console.log("pickQuestionDefault", pickQuestion2Default)
     if (radioDefaultValOption === "MAT_F" && checkedReferences) {
       if (pickOperatorDefault && pickQuestion2Default && pickQuestionDefault) {
         setAddValue([
@@ -844,9 +854,7 @@ function SectionContainer({
                   )}
 
                   {(currentQuestionDetails?.questionType ===
-                    dbConstants?.questionTypes?.numericQuestion ||
-                    currentQuestionDetails?.questionType ===
-                      dbConstants?.questionTypes?.stringQuestion) && (
+                    dbConstants?.questionTypes?.numericQuestion) && (
                     <Radio value={"MAT_F"}>
                       {languageConstants?.ExpressionBuilder_MatheFormula}
                     </Radio>

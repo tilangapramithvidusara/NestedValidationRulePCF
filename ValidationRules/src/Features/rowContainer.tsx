@@ -341,6 +341,10 @@ const RowContainer: React.FC<TableRowProps> = ({
       _fieldValue.input = " ";
       _fieldValue.fieldName = "value";
       fieldValueSetToNestedRows(_fieldValue);
+
+      _fieldValue.fieldName = "condition";
+      fieldValueSetToNestedRows(_fieldValue);
+
     }
   }, [fieldValue]);
 
@@ -768,16 +772,30 @@ const RowContainer: React.FC<TableRowProps> = ({
             : _minMaxDbFormarFields?.exp,
           maxValue
         );
-        minMaxDBFormatArray.push(
-          {
-            type: typeof minMax?.minValue === "string" ? "MINIMUM_LENGTH" : "MINIMUM",
-            value: { if: formattingForMin },
-          },
-          {
-            type: typeof minMax?.maxValue === "string" ? "MAXIMUM_LENGTH" : "MAXIMUM",
-            value: { if: formattingForMax },
-          }
-        );
+        if(currentQuestionDetails?.questionType === dbConstants.questionTypes.stringQuestion || 
+          currentQuestionDetails?.questionType === dbConstants.questionTypes.dateTimeQuestion) {
+          minMaxDBFormatArray.push(
+            {
+              type: "MINIMUM_LENGTH",
+              value: { if: formattingForMin },
+            },
+            {
+              type: "MAXIMUM_LENGTH",
+              value: { if: formattingForMax },
+            }
+          );
+        } else {
+          minMaxDBFormatArray.push(
+            {
+              type: "MINIMUM",
+              value: { if: formattingForMin },
+            },
+            {
+              type: "MAXIMUM",
+              value: { if: formattingForMax },
+            }
+          );
+        }
       }
     }
     if (

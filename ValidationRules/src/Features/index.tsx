@@ -1072,6 +1072,7 @@ const ParentComponent = ({
 
   const createActionObject = (actionType: any, value: any) => {
     let actionObject = {};
+    console.log("Create value", value)
     if (actionType === "CLE_Q") {
       return {
         type: "SET_QUESTION_RESPONSE",
@@ -1101,7 +1102,10 @@ const ParentComponent = ({
             {
               var: value[0],
             },
-            value[2],
+            !isNaN(value[2]) ? Number(value[2]) : 
+            {
+              var: value[2]
+            },
           ],
         },
       };
@@ -1366,16 +1370,31 @@ const ParentComponent = ({
               : _minMaxDbFormarFields?.exp,
             maxValue
           );
-          minMaxDBFormatArray.push(
-            {
-              type: typeof minMax?.minValue === "string" ? "MINIMUM_LENGTH" : "MINIMUM",
-              value: { if: formattingForMin },
-            },
-            {
-              type: typeof minMax?.maxValue === "string" ? "MAXIMUM_LENGTH" : "MAXIMUM",
-              value: { if: formattingForMax },
-            }
-          );
+          if(currentQuestionDetails?.questionType === dbConstants.questionTypes.stringQuestion || 
+            currentQuestionDetails?.questionType === dbConstants.questionTypes.dateTimeQuestion) {
+            minMaxDBFormatArray.push(
+              {
+                type: "MINIMUM_LENGTH",
+                value: { if: formattingForMin },
+              },
+              {
+                type: "MAXIMUM_LENGTH",
+                value: { if: formattingForMax },
+              }
+            );
+          } else {
+            minMaxDBFormatArray.push(
+              {
+                type: "MINIMUM",
+                value: { if: formattingForMin },
+              },
+              {
+                type: "MAXIMUM",
+                value: { if: formattingForMax },
+              }
+            );
+          }
+          
         }
       }
     });
@@ -1710,7 +1729,7 @@ const ParentComponent = ({
                               onClick={handleSaveAndClose}
                               className="btn-primary"
                               disabled={suerveyIsPublished}
-                            >
+                            > 
                               {
                                 languageConstants?.ExpressionBuilder_SaveAndCloseButton
                               }
