@@ -12,7 +12,11 @@ export const dbConstants = {
     gyde_minmaxvalidationrule: "gyde_validationrule",
     gyde_documentOutputRule: "gyde_documentoutputrule",
     gyde_defaultValueFormula: "gyde_questionresponsedefaultrule",
-    publishedStatus: 528670001
+    publishedStatus: 528670001,
+
+    gyde_griddisplayminrows: "gyde_griddisplayminrows",
+    gyde_griddisplaymaxrows: "gyde_griddisplaymaxrows",
+
   },
   common: {
     gyde_validationrule: "gyde_validationrule",
