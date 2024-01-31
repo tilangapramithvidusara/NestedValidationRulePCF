@@ -107,7 +107,7 @@ const ParentComponent = ({
   };
 
   let addComponent = () => {
-    console.log("sections", sections)
+    console.log('sections', sections);
     setSections([
       ...sections,
       {
@@ -132,7 +132,6 @@ const ParentComponent = ({
   const loadQuestionHandler = async () => {
     setIsApiDataLoaded(true);
     const result = await loadAllQuestionsInSurvey();
-    console.log('resss =====> ', result);
     let questionListArray = result.data || [];
     if (questionListArray && questionListArray.length && currentPossitionDetails) {
       const formattedQuestionList = questionListArray
@@ -150,15 +149,8 @@ const ParentComponent = ({
         ?.filter((secQues: any) => {
           if (currentPossitionDetails?.currentPosition !== 'question') {
             let result = currentPossitionDetails?.currentName;
-            // if (currentPossitionDetails?.currentPosition === "question") {
-            //   const value = currentPossitionDetails?.currentName;
-            //   const index = value.lastIndexOf("_");
-            //   result = value.substring(0, index);
-            // }
-            console.log(result);
-            console.log('Quering Ress', secQues?.value?.includes(result));
             if (secQues?.value && result) return !secQues?.value?.includes(result);
-          }  else {
+          } else {
             return secQues;
           }
         })
@@ -177,7 +169,6 @@ const ParentComponent = ({
         });
         setQuestionList(formattedQuestionList);
       }
-
       setIsApiDataLoaded(false);
     } else {
       setQuestionList([]);
@@ -223,7 +214,6 @@ const ParentComponent = ({
   }, [currentQuestionDetails]);
 
   useEffect(() => {
-    console.log("JJJJJJJJ", _nestedRows)
     setSections(
       _nestedRows
         ?.map((item: {}) => Object.keys(item))
@@ -259,7 +249,6 @@ const ParentComponent = ({
 
   // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
-    console.log('_visibilityRulePrev', _visibilityRulePrev);
     if (_visibilityRulePrev?.length) {
       let key = 45;
       _visibilityRulePrev.forEach((dbData) => {
@@ -715,7 +704,6 @@ const ParentComponent = ({
   const getRequestedData = async () => {
     let visibilityRulePreviousValues: any;
     let minMaxPreviousValues: any;
-    let validationRulePreviousValues: any;
     let documentOutputRule: any;
     let defaultValueRule: any;
     setIsApiDataLoaded(false);
@@ -816,34 +804,16 @@ const ParentComponent = ({
         { defaultValRule: _defaultValueRule?.data }
       ]);
     }
-    //test
-    // _setVisibilityRulePrev((prevValue) => [
-    //   ...prevValue,
-    //   {
-    //     visibility:
-    //     {"if":[{"and":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},22]},{"==":[{"var":"AS_Tst_C01_S01_Q01"},333]},{"or":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},444]},{"==":[{"var":"AS_Tst_C01_S01_Q01"},444]}]}]},{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},66666]}]},{"if":[{"":[{"==":[{"var":"AS_Tst_C01_S01_Q01"},55555]}]}]}]}]}
-    //   }
-    // ])
-
+    //test Data
     // _setVisibilityRulePrev((prevValue) => [
     //   ...prevValue,
     //   {
     //     visibility: [ { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 222" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "222" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 222123" ] } ] }, { "and": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-08" ] }, { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-23" ] }, { "==": [ { "var": "NTemp_C2_S1_Q1" }, " 222" ] } ] } ]
     //   }
     // ])
-    // _setVisibilityRulePrev((prevData: any) => [
-    //   ...prevData,
-    //   {
-    //     visibility: { "if": [ { "or": [ { "==": [ { "var": "TDSsur_C02_S01_NO1" }, 4 ] }, { "==": [ { "var": "TDSsur_C02_S01_NO1" }, 3 ] }, { "and": [ { "==": [ { "var": "TDSsur_C02_S01_NO1" }, 3 ] } ] } ] } ] }
-    //   },
-    // ]);
-    // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [ [ { "type": "MINIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, 2 ] } }, { "type": "MAXIMUM_LENGTH", "value": { "if": [ { "": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-08-18" ] } ] }, null ] } } ] ]}]);
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"type":"MINIMUM","value":{"if":[{"or":[{"==":[{"var":"TDSwi_C01_S01_str"},"12"]},{"==":[{"var":"TDSwi_C01_S01_str"},"byr"]}]},2]}},{"type":"MAXIMUM","value":{"if":[{"or":[{"==":[{"var":"TDSwi_C01_S01_str"},"12"]},{"==":[{"var":"TDSwi_C01_S01_str"},"byr"]}]},5]}}]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
-    // _setEnabledPrev((prevData: any) => [...prevData, {validation: JSON.parse("[{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]},{\"==\":[{\"var\":\"CE_ACM_CM_Q2\"},5]}]},{\"if\":[{\"and\":[{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]},{\"==\":[{\"var\":\"CE_ACM_CM_01\"},4]}]}]}]}]") }]);
     // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_QUESTION_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } }]}  }] )
-    // _setDefaultValyeRule([ { "id": "trigger_1", "rule": { "type": "QUESTION_RESPONSE", "rule": { "and": [ { "==": [ { "var": "NTemp_C01_04_Q_04" }, "2023-10-02" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "333" ] } ] } }, "action": { "type": "SET_QUESTION_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } } ])
-    // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TDSTem_C01_S01_Str"},"89"]}},"action":{"type":"SET_QUESTION_RESPONSE","value":{"/":[{"var":"TDSTem_C01_S01_NO"},"TDSTem_C01_S01_NO"]}}}]}  }] )
   };
   const getCurrentPublishedStatus = async () => {
     const { data = null } = await getPublishedStatus(currentPossitionDetails);
@@ -892,7 +862,6 @@ const ParentComponent = ({
 
   const _getCurrentState = async () => {
     const result = await getCurrentState();
-    console.log('Current State Details ----> ', result);
     if (result?.data?.length) setCurrentPossitionDetails(result?.data[0]);
   };
 
@@ -926,10 +895,6 @@ const ParentComponent = ({
       currentPossitionDetails?.id &&
       currentPossitionDetails?.currentPosition === 'question'
     ) {
-      console.log('Before Saving visibilityRule', visibilityRule);
-      console.log('Before Saving minMaxDBFormatArray', minMaxDBFormatArray);
-      console.log('Before Saving outputDocShow', outputDocShow);
-
       if (visibilityRule) {
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants.common.gyde_visibilityrule]:
@@ -966,7 +931,6 @@ const ParentComponent = ({
             const getMappedMinData = minArray?.map((x: any) => x?.value);
             console.log('getMappedMaxData', getMappedMaxData);
             console.log('getMappedMinData', getMappedMinData);
-
             await saveRequest(logicalName, currentPossitionDetails?.id, {
               [dbConstants?.question?.gyde_griddisplaymaxrows]:
                 Object.keys(getMappedMaxData).length === 0 ? '' : JSON.stringify(getMappedMaxData)
@@ -986,7 +950,6 @@ const ParentComponent = ({
         });
       }
 
-      console.log('defaultValueRuleNormal', defaultValueRuleNormal);
       if (defaultValueRuleNormal) {
         await saveRequest(logicalName, currentPossitionDetails?.id, {
           [dbConstants?.question?.gyde_defaultValueFormula]:
@@ -1000,8 +963,6 @@ const ParentComponent = ({
   };
 
   const createActionObject = (actionType: any, value: any) => {
-    let actionObject = {};
-    console.log('Create value', value);
     if (actionType === 'CLE_Q') {
       return {
         type: 'SET_QUESTION_RESPONSE',
@@ -1041,18 +1002,17 @@ const ParentComponent = ({
       };
     }
   };
+
+  // Hanlde Saving logics for both tabs (Default value tab and validation tab)
+  // When the user click save btn our JSON array is convert to their JSON
   const handleSaveLogic = () => {
     let minMaxDBFormatArray: any = [];
-    let minMaxDBFormatArrayNormal: any = [];
 
     let visibilityRule: any = [];
     let visibilityRuleNormal: any = [];
 
     let outputDocShow: any = [];
     let outputDocShowNormal: any = [];
-
-    let validationRule: any = [];
-    let validationRuleNormal: any = [];
 
     let showIfCount = 0;
     let outputDocShowCount = 0;
@@ -1061,7 +1021,6 @@ const ParentComponent = ({
     let isShowInDocNested: any = [];
     let isMinMaxNested: any = [];
 
-    let defaultValueRule: any = [];
     let defaultValueRuleNormal: any = [];
     let defaultTriggers: any;
 
@@ -1074,18 +1033,22 @@ const ParentComponent = ({
     let isActionIsNotAllowedForQuestion: any = [];
 
     let minMaxExmptyIfTheCheckBoxIsEnabled = false;
+
+    // Sorting for validation builder
     const sortedData = [..._nestedRows].sort((a, b) => {
       const aKey = Object.keys(a)[0];
       const bKey = Object.keys(b)[0];
       return parseInt(aKey) - parseInt(bKey);
     });
 
+    // Sorting for default value builder
     const sortedDataForDefaultValue = [..._defaultRows].sort((a, b) => {
       const aKey = Object.keys(a)[0];
       const bKey = Object.keys(b)[0];
       return parseInt(aKey) - parseInt(bKey);
     });
 
+    // Looping and convert to their format (Default Value)
     sortedDataForDefaultValue.forEach((sec: any) => {
       const key = Object.keys(sec)[0];
 
@@ -1105,13 +1068,11 @@ const ParentComponent = ({
       }
 
       if (typeOfAction !== 'CLE_Q' && !defaultActionSet?.value && defaultActionSet?.value !== 0) {
-        console.log('Rej 2', defaultActionSet?.value);
         isfieldsHasEmptyFieldsDefault = true;
         return;
       }
 
       if (typeOfAction === 'MAT_F' && !defaultTabValidationPassed) {
-        console.log('Rej 3');
         isfieldsHasEmptyFieldsDefault = true;
         return;
       }
@@ -1123,7 +1084,6 @@ const ParentComponent = ({
         defaultActionSet?.value !== 0
       ) {
         isAddValuefieldsHasEmptyActionsDefault = true;
-        console.log('Rej 4');
         return;
       }
 
@@ -1150,6 +1110,7 @@ const ParentComponent = ({
       defaultTriggers = defaultValueRuleNormal;
     }
 
+  // Looping and convert to their format (Validation Value)
     sortedData.forEach((sec: any) => {
       const key = Object.keys(sec)[0];
 
@@ -1207,7 +1168,6 @@ const ParentComponent = ({
           );
           isActionIsNotAllowedForQuestion.push(_visibility?.validation);
           _visibility = _visibility?.exp;
-          console.log('Validation Return visibility', isActionIsNotAllowedForQuestion);
           const __visibility = JSON.parse(JSON.stringify(_visibility));
           console.log('Pushing visibility', __visibility);
           visibilityRuleNormal.push(__visibility['']?.length ? __visibility[''][0] : _visibility);
@@ -1231,7 +1191,6 @@ const ParentComponent = ({
       }
 
       if (minMaxExists) {
-        console.log('Min Max when saving ----> ', sec[key].actions[0]?.minMax);
         isMinMaxNested.push(sec[key]?.fields?.some((flds: { hasNested: any }) => flds?.hasNested));
         const _minMaxDbFormarFields: any = convertJSONFormatToDBFormat(sec[key], true);
         const minMax = sec[key]?.actions[0]?.minMax;
@@ -1322,9 +1281,6 @@ const ParentComponent = ({
       !isShowInDocNested.some((x: any) => x)
     ) {
       if (outputDocShowNormal.length === 1) {
-        // savedOutputDocShowRuleFinalFormat = {
-        //   if: outputDocShowNormal
-        // };
 
         if (outputDocShowNormal[0][''] && outputDocShowNormal[0][''][0]) {
           savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0][''][0];
@@ -1348,12 +1304,6 @@ const ParentComponent = ({
     } else {
       savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
     }
-
-    console.log('savedVisibilityRuleFinalFormat', savedVisibilityRuleFinalFormat);
-    console.log('savedValidationRuleFinalFormat', savedValidationRuleFinalFormat);
-
-    console.log('savedOutputDocShowRuleFinalFormat', savedOutputDocShowRuleFinalFormat);
-    console.log('savedMinMaxRuleFinalFormat', savedMinMaxRuleFinalFormat);
 
     if (isActionIsNotAllowedForQuestion?.some((val: any) => val)) {
       openNotificationWithIcon(
@@ -1449,17 +1399,15 @@ const ParentComponent = ({
   const clearItems = async (): Promise<void> => {
     if (selectedTab === 'vr') {
       await saveVisibilityData({}, {}, {}, {}, false);
-      if(currentQuestionDetails?.questionType === dbConstants.questionTypes.gridQuestion) {
+      if (currentQuestionDetails?.questionType === dbConstants.questionTypes.gridQuestion) {
         await saveRequest(dbConstants.question.fieldName, currentPossitionDetails?.id, {
-          [dbConstants?.question?.gyde_griddisplaymaxrows]:
-             ''
+          [dbConstants?.question?.gyde_griddisplaymaxrows]: ''
         });
         await saveRequest(dbConstants.question.fieldName, currentPossitionDetails?.id, {
-          [dbConstants?.question?.gyde_griddisplayminrows]:
-             ''
+          [dbConstants?.question?.gyde_griddisplayminrows]: ''
         });
       }
-      
+
       _setNestedRows([]);
     }
 
@@ -1493,17 +1441,6 @@ const ParentComponent = ({
   return (
     <div>
       {contextHolder}
-      {/* <div className="country-lan">
-        <Radio.Group
-          options={countryMappedConfigs}
-          onChange = { (e) => languageChangeHandler(e)}
-          value={selectedLanguage}
-          optionType="button"
-          buttonStyle="solid"
-      />
-
-      </div> */}
-
       {currentPossitionDetails?.currentPosition === 'question' &&
         currentQuestionDetails?.questionType !== 'Grid' && (
           <div className="tabs-configs">
@@ -1570,7 +1507,6 @@ const ParentComponent = ({
                             currentPossitionDetails={currentPossitionDetails}
                             questionList={questionList}
                             setValidation={setValidation}
-                            // setDeleteSectionKey={setDeleteSectionKey}
                             setSaveAsIsNested={setSaveAsIsNested}
                             imageUrls={{ imageUrl, imageUrl1, imageUrl2 }}
                             suerveyIsPublished={suerveyIsPublished}
@@ -1579,8 +1515,6 @@ const ParentComponent = ({
                             languageConstants={languageConstants}
                             tabType={dbConstants?.tabTypes?.validationTab}
                             setDefaultTabValidationPassed={setDefaultTabValidationPassed}
-                            // setDefaultActionSetWhenRetriving={setDefaultActionSetWhenRetriving}
-                            // defaultActionSetWhenRetriving={defaultActionSetWhenRetriving}
                             setMinMaxCheckboxEnabled={setMinMaxCheckboxEnabled}
                           />
                         </div>
