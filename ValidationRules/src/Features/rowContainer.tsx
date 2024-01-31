@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import DropDown from "../Components/commonComponents/DropDown";
-import FieldInput from "../Components/commonComponents/FieldInput";
-import { Button, Input, Space, Spin, notification } from "antd";
-import { expressionSampleData } from "../SampleData/expressionSampleData";
-import { operationalSampleData } from "../SampleData/operationalSampleData";
-import { sampleInputQuestion } from "../SampleData/sampleInputQuestion";
-import NumberInputField from "../Components/commonComponents/NumberInputField";
-import FieldStringInputProps from "../Components/commonComponents/StringInput";
+import React, { useEffect, useState } from 'react';
+import DropDown from '../Components/commonComponents/DropDown';
+import FieldInput from '../Components/commonComponents/FieldInput';
+import { Button, Input, Space, Spin, notification } from 'antd';
+import { expressionSampleData } from '../SampleData/expressionSampleData';
+import { operationalSampleData } from '../SampleData/operationalSampleData';
+import { sampleInputQuestion } from '../SampleData/sampleInputQuestion';
+import NumberInputField from '../Components/commonComponents/NumberInputField';
+import FieldStringInputProps from '../Components/commonComponents/StringInput';
 // import deleteImg from "../assets/delete.png";
-import dayjs from "dayjs";
-import { hasNullFields, hasNullFieldsDefault } from "../Utils/utilsHelper";
+import dayjs from 'dayjs';
+import { hasNullFields, hasNullFieldsDefault } from '../Utils/utilsHelper';
 
 import {
   _updateExpressionByParentId,
@@ -21,24 +21,21 @@ import {
   removeByKey,
   updateAllLevelArray,
   updateByParentId,
-  updateFieldByLevel,
-} from "../Utils/utilsHelper";
+  updateFieldByLevel
+} from '../Utils/utilsHelper';
 import {
   CaretDownOutlined,
   CaretRightOutlined,
   DownOutlined,
-  RightOutlined,
-} from "@ant-design/icons";
-import { getListAnswersByQuestionId } from "../XRMRequests/xrmRequests";
-import ListDropDown from "../Components/commonComponents/ListDropDown";
-import { dbConstants } from "../constants/dbConstants";
-import DatePickerCustom from "../Components/commonComponents/DatePickerCustom";
-import moment from "moment";
-import tabsConfigs from "../configs/tabsConfigs";
-import {
-  convertJSONFormatToDBFormat,
-  findAndUpdateLastNestedIf,
-} from "../Utils/logics.utils";
+  RightOutlined
+} from '@ant-design/icons';
+import { getListAnswersByQuestionId } from '../XRMRequests/xrmRequests';
+import ListDropDown from '../Components/commonComponents/ListDropDown';
+import { dbConstants } from '../constants/dbConstants';
+import DatePickerCustom from '../Components/commonComponents/DatePickerCustom';
+import moment from 'moment';
+import tabsConfigs from '../configs/tabsConfigs';
+import { convertJSONFormatToDBFormat, findAndUpdateLastNestedIf } from '../Utils/logics.utils';
 interface NestedRowProps {
   children: React.ReactNode;
 }
@@ -90,7 +87,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   suerveyIsPublished,
   languageConstants,
   tabType,
-  currentQuestionDetails,
+  currentQuestionDetails
 }) => {
   const [nestedRows, setNestedRows] = useState<React.ReactNode[]>([]);
   const [collapse, setCollapse] = useState<any>({ state: false, fieldId: 0 });
@@ -107,24 +104,17 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   const [answersDropDownData, setAnswersDropDownData] = useState<any[]>([]);
   const [api, contextHolder]: any = notification.useNotification();
-  const [listAnsersWithQuestionIds, setListAnsersWithQuestionIds] =
-    useState<any>();
+  const [listAnsersWithQuestionIds, setListAnsersWithQuestionIds] = useState<any>();
   const [listQuestionLoading, setListQuestionLoading] = useState<any>(false);
 
   const [listQuestionIds, setListQuestionIds] = useState<any>();
 
-  const findConditionByLevel = (
-    level: any,
-    conditions: any
-  ): Condition | null => {
+  const findConditionByLevel = (level: any, conditions: any): Condition | null => {
     for (const condition of conditions) {
       if (condition.level === level) {
         return condition;
       } else if (condition.hasNested) {
-        const foundCondition = findConditionByLevel(
-          level,
-          condition.innerConditions
-        );
+        const foundCondition = findConditionByLevel(level, condition.innerConditions);
         if (foundCondition) {
           return foundCondition;
         }
@@ -133,31 +123,20 @@ const RowContainer: React.FC<TableRowProps> = ({
     return null;
   };
 
-  const idGenerator = (
-    parentLevel: number,
-    hasNested: boolean,
-    nestedRowArray: any
-  ) => {
+  const idGenerator = (parentLevel: number, hasNested: boolean, nestedRowArray: any) => {
     let newKey;
     if (hasNested) {
       newKey = parseInt(parentLevel + `1`);
     } else {
-      const highestLevel = nestedRowArray.reduce(
-        (maxLevel: number, obj: { level: number }) => {
-          return obj.level > maxLevel ? obj.level : maxLevel;
-        },
-        0
-      );
+      const highestLevel = nestedRowArray.reduce((maxLevel: number, obj: { level: number }) => {
+        return obj.level > maxLevel ? obj.level : maxLevel;
+      }, 0);
       newKey = highestLevel + 100;
     }
     return newKey;
   };
 
-  const _handleAddNestedRow = (
-    level: number,
-    hasNested: boolean,
-    expression: string = ""
-  ) => {
+  const _handleAddNestedRow = (level: number, hasNested: boolean, expression: string = '') => {
     setSaveAsIsNested(true);
     let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
     if (releatedFields) {
@@ -168,9 +147,7 @@ const RowContainer: React.FC<TableRowProps> = ({
       let higestLevel;
       let childArrays;
       if (nearestNestedIdParentId?.innerConditions?.length) {
-        childArrays = nearestNestedIdParentId.innerConditions.map(
-          (x: { level: any }) => x.level
-        );
+        childArrays = nearestNestedIdParentId.innerConditions.map((x: { level: any }) => x.level);
         higestLevel = Math.max(...childArrays);
       }
 
@@ -184,14 +161,14 @@ const RowContainer: React.FC<TableRowProps> = ({
         higestLevel = idGenerator(level, hasNested, []);
       }
       let newRow = {
-        field: "",
-        condition: "",
-        value: "",
+        field: '',
+        condition: '',
+        value: '',
         sort: 1,
         level: higestLevel,
         hasNested: false,
         innerConditions: [],
-        collapse: false,
+        collapse: false
       };
       _setNestedRows(
         updateAllLevelArray(
@@ -204,9 +181,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   };
 
   const fieldValueSetToNestedRows = (fieldValue: any) => {
-    const existingLevel1Index = _nestedRows.findIndex(
-      (item: any) => sectionLevel in item
-    );
+    const existingLevel1Index = _nestedRows.findIndex((item: any) => sectionLevel in item);
     const currentActions = _nestedRows.map(
       (prevData: any, index: number) => prevData[sectionLevel]?.actions
     );
@@ -222,17 +197,16 @@ const RowContainer: React.FC<TableRowProps> = ({
               {
                 fieldName: fieldValue?.fieldName,
                 fieldValue:
-                  typeof fieldValue?.input === "string"
+                  typeof fieldValue?.input === 'string'
                     ? fieldValue?.input.trim()
                     : fieldValue?.input,
-                questionType: fieldValue?.questionType,
+                questionType: fieldValue?.questionType
               }
             ),
             actions:
-              _nestedRows?.find((x: { [x: string]: any }) => x[sectionLevel])[
-                sectionLevel
-              ]?.actions || [],
-          },
+              _nestedRows?.find((x: { [x: string]: any }) => x[sectionLevel])[sectionLevel]
+                ?.actions || []
+          }
         };
         return newData;
       });
@@ -242,7 +216,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   const openNotificationWithIcon = (type: any, message: any) => {
     api[type]({
       message: type,
-      description: message,
+      description: message
     });
   };
 
@@ -251,80 +225,44 @@ const RowContainer: React.FC<TableRowProps> = ({
       fieldValueSetToNestedRows(fieldValue);
     }
     // Added validation, If the same level expression Changed other child has to be changed
-    if (fieldValue?.fieldName === "expression") {
-      console.log("fieldValue Exp", fieldValue);
-      let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
-        sectionLevel
-      ]?.fields;
+    if (fieldValue?.fieldName === 'expression') {
+      let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields;
       if (releatedFields) {
         let _collapseList = getAllChildrenIDs(
           findGroupId(
-            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-              ?.fields,
+            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields,
             fieldValue.changedId
           )
         );
-        console.log("Expressions numbers", [
-          ..._collapseList,
-          fieldValue.changedId,
-        ]);
         _collapseList = [..._collapseList, fieldValue.changedId];
-        const nearestIdParentObject = getNearestParentByItems(
-          releatedFields,
-          fieldValue.changedId
-        );
-        console.log("nearestIdParentObject", nearestIdParentObject);
-
+        const nearestIdParentObject = getNearestParentByItems(releatedFields, fieldValue.changedId);
         // Changed expression to the nearest parent expression
         if (nearestIdParentObject) {
-          const sameLevelInnerConditions =
-            nearestIdParentObject?.innerConditions;
-          console.log("sameLevelInnerConditions", sameLevelInnerConditions);
+          const sameLevelInnerConditions = nearestIdParentObject?.innerConditions;
           let sameLevelIds = sameLevelInnerConditions.map((x: any) => x?.level);
-          console.log("sameLevelIds", sameLevelIds);
           // sameLevelIds = [...sameLevelIds, nearestIdParentObject?.level]
           const fields = _updateExpressionByParentId(
-            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-              ?.fields,
+            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields,
             sameLevelIds,
             fieldValue.input
           );
-          _setNestedRows(
-            updateAllLevelArray(_nestedRows, sectionLevel, fields)
-          );
+          _setNestedRows(updateAllLevelArray(_nestedRows, sectionLevel, fields));
         } else {
-          const parentExpressions = releatedFields?.map(
-            (lvl: any) => lvl?.expression
-          );
+          const parentExpressions = releatedFields?.map((lvl: any) => lvl?.expression);
           let parentIds = releatedFields?.map((lvl: any) => lvl?.level);
 
           if (releatedFields?.length > 1) {
             const firstExp = releatedFields[1]?.expression;
             const initialEmptyFieldId = releatedFields[0]?.level;
-            parentIds = parentIds?.filter(
-              (item: any) => item !== initialEmptyFieldId
-            );
-            console.log("parentExpressions", parentExpressions);
-            console.log("parentExpressions firstExp", firstExp);
-            console.log(
-              "parentExpressions firstExp",
-              firstExp !== fieldValue.input
-            );
-
+            parentIds = parentIds?.filter((item: any) => item !== initialEmptyFieldId);
             if (firstExp !== fieldValue.input && parentIds.length) {
-              openNotificationWithIcon(
-                "error",
-                "First Selected Expression cannot be changed!"
-              );
+              openNotificationWithIcon('error', 'First Selected Expression cannot be changed!');
               const fields = _updateExpressionByParentId(
-                _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-                  ?.fields,
+                _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields,
                 parentIds,
                 firstExp
               );
-              _setNestedRows(
-                updateAllLevelArray(_nestedRows, sectionLevel, fields)
-              );
+              _setNestedRows(updateAllLevelArray(_nestedRows, sectionLevel, fields));
             }
           }
         }
@@ -333,92 +271,59 @@ const RowContainer: React.FC<TableRowProps> = ({
   }, [fieldValue]);
 
   useEffect(() => {
-    if (fieldValue?.fieldName === "field") {
+    if (fieldValue?.fieldName === 'field') {
       const resss: any = fetchFieldData(fieldValue?.input);
 
       // When the field value get change need to empty value field
       let _fieldValue: any = fieldValue;
-      _fieldValue.input = " ";
-      _fieldValue.fieldName = "value";
+      _fieldValue.input = ' ';
+      _fieldValue.fieldName = 'value';
       fieldValueSetToNestedRows(_fieldValue);
 
-      _fieldValue.fieldName = "condition";
+      _fieldValue.fieldName = 'condition';
       fieldValueSetToNestedRows(_fieldValue);
-
     }
   }, [fieldValue]);
 
-  const addConditionToData = (
-    data: any[],
-    level: number,
-    condition: any
-  ): any[] => {
+  const addConditionToData = (data: any[], level: number, condition: any): any[] => {
     return data.map((item) => {
       if (item.level === level) {
         // If the item matches the specified level and has nested conditions
         item.innerConditions.push(condition); // Add the newCondition to its innerConditions
       } else if (item.innerConditions.length > 0) {
         // If the item has nested conditions, recursively call the function on its innerConditions
-        item.innerConditions = addConditionToData(
-          item.innerConditions,
-          level,
-          condition
-        );
+        item.innerConditions = addConditionToData(item.innerConditions, level, condition);
       }
       return item;
     });
   };
 
-  const _handleAddRow = (
-    level: number,
-    hasNested: boolean,
-    expression: string = ""
-  ) => {
-    console.log("Clicked Level normal ", level);
-
+  const _handleAddRow = (level: number, hasNested: boolean, expression: string = '') => {
     let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
     if (releatedFields) {
       releatedFields = releatedFields[sectionLevel].fields;
-      const nearestIdParentObject = getNearestParentByItems(
-        releatedFields,
-        level
-      );
-      console.log(
-        "Clicked Level normal nearestIdParentObject",
-        nearestIdParentObject
-      );
+      const nearestIdParentObject = getNearestParentByItems(releatedFields, level);
 
       let higestLevel;
       if (nearestIdParentObject?.innerConditions?.length)
         higestLevel = Math.max(
-          ...nearestIdParentObject.innerConditions.map(
-            (x: { level: any }) => x.level
-          )
+          ...nearestIdParentObject.innerConditions.map((x: { level: any }) => x.level)
         );
 
-      console.log("nearestId --------------> ", higestLevel);
       let newRow = {
-        field: "",
-        condition: "",
-        value: "",
+        field: '',
+        condition: '',
+        value: '',
         sort: 1,
-        level: higestLevel
-          ? higestLevel + 1
-          : idGenerator(level, hasNested, releatedFields),
+        level: higestLevel ? higestLevel + 1 : idGenerator(level, hasNested, releatedFields),
         hasNested: false,
         innerConditions: [],
-        collapse: false,
+        collapse: false
       };
 
       const parentIds = releatedFields.map((lvl: { level: any }) => lvl.level);
-      console.log("parent Ids -----> ", parentIds);
       if (parentIds.includes(level)) {
-        // _setNestedRows([..._nestedRows, newRow]);
-
-        const existingLevel1Index = _nestedRows.findIndex(
-          (item: any) => sectionLevel in item
-        );
-        console.log("existingLevel1Index", existingLevel1Index);
+        const existingLevel1Index = _nestedRows.findIndex((item: any) => sectionLevel in item);
         if (existingLevel1Index !== -1) {
           const currentFields = _nestedRows.map(
             (prevData: any, index: number) => prevData[sectionLevel]?.actions
@@ -427,57 +332,35 @@ const RowContainer: React.FC<TableRowProps> = ({
           _setNestedRows((prevData: any) => {
             const newData = [...prevData];
             const newFields = [...releatedFields, newRow];
-            console.log("prevData---->", prevData);
-
-            console.log("newData---->", newData);
-
-            console.log("newFields---->", newFields);
-
             newData[existingLevel1Index] = {
               [sectionLevel]: {
                 fields: newFields,
                 actions:
-                  _nestedRows?.find(
-                    (x: { [x: string]: any }) => x[sectionLevel]
-                  )[sectionLevel]?.actions || [],
-              },
+                  _nestedRows?.find((x: { [x: string]: any }) => x[sectionLevel])[sectionLevel]
+                    ?.actions || []
+              }
             };
             return newData;
           });
         }
       } else {
         if (nearestIdParentObject) {
-          setNestedRows(
-            updateByParentId(
-              releatedFields,
-              nearestIdParentObject.level,
-              newRow
-            )
-          );
+          setNestedRows(updateByParentId(releatedFields, nearestIdParentObject.level, newRow));
         }
       }
     }
   };
 
   useEffect(() => {
-    const item = _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
-      sectionLevel
-    ]?.actions[0];
+    const item = _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.actions[0];
     const checkBoxValueString: string =
       item?.checkBoxValues
-        ?.map(
-          (obj: { [key: string]: { value: any } }) =>
-            Object.values(obj)[0]?.value
-        )
+        ?.map((obj: { [key: string]: { value: any } }) => Object.values(obj)[0]?.value)
         .filter((value: any) => value)
-        .join(" && ") || null;
+        .join(' && ') || null;
 
-    const minValue = item?.minMax?.minValue
-      ? `min=${item?.minMax?.minValue}`
-      : null;
-    const maxValue = item?.minMax?.maxValue
-      ? `max=${item?.minMax?.maxValue}`
-      : null;
+    const minValue = item?.minMax?.minValue ? `min=${item?.minMax?.minValue}` : null;
+    const maxValue = item?.minMax?.maxValue ? `max=${item?.minMax?.maxValue}` : null;
 
     let displayArray = [];
     if (minValue) displayArray.push(minValue);
@@ -492,54 +375,39 @@ const RowContainer: React.FC<TableRowProps> = ({
     _setNestedRows(
       updateAllLevelArray(_nestedRows, sectionLevel, [
         {
-          field: "",
-          condition: "",
-          value: "",
+          field: '',
+          condition: '',
+          value: '',
           sort: 1,
           level: 1,
           hasNested: isNested,
-          expression: "",
+          expression: '',
           innerConditions: [],
           collapse: false,
-          actions: [],
-        },
+          actions: []
+        }
       ])
     );
   }, [sectionLevel]);
 
   const collapseHandle = (number: any, collapse: boolean) => {
     let _collapseList = getAllChildrenIDs(
-      findGroupId(
-        _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-          ?.fields,
-        number
-      )
+      findGroupId(_nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields, number)
     );
-    console.log("_collapseList number", [..._collapseList, number]);
     _collapseList = [..._collapseList, number];
     if (_collapseList && _collapseList.length) {
-      if (
-        _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields
-          ?.length
-      ) {
+      if (_nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields?.length) {
         const fields = _updateCollapseByParentId(
-          _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-            ?.fields,
+          _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields,
           _collapseList,
           collapse
         );
-        console.log("FIELDSSSSSSSS", fields);
         _setNestedRows(updateAllLevelArray(_nestedRows, sectionLevel, fields));
       }
     }
   };
 
-  const _updateCollapseByParentId = (
-    _data: any,
-    parentIds: any,
-    collapse: any
-  ) => {
-    console.log("------------>", _data, parentIds, collapse);
+  const _updateCollapseByParentId = (_data: any, parentIds: any, collapse: any) => {
     parentIds?.forEach((x: any) => {
       _data?.map((i: { level: any; innerConditions: any[]; collapse: any }) => {
         if (x === i.level) {
@@ -549,8 +417,6 @@ const RowContainer: React.FC<TableRowProps> = ({
         }
       });
     });
-
-    console.log("------------ data>", _data);
     const newArr = _data ? [..._data] : [];
     return newArr;
   };
@@ -573,7 +439,7 @@ const RowContainer: React.FC<TableRowProps> = ({
         return {
           ...condition,
           innerConditions: updatedInnerConditions,
-          collapse,
+          collapse
         };
       }
       return condition;
@@ -584,23 +450,16 @@ const RowContainer: React.FC<TableRowProps> = ({
     try {
       // Make a request to the backend to fetch the data
 
-      const questionDetails = dropDownQuestionList?.find(
-        (x: any) => x.value === questionId
-      );
-      console.log("questionDetails", questionDetails);
-      if (
-        questionDetails?.questionType === dbConstants.questionTypes.listQuestion
-      ) {
+      const questionDetails = dropDownQuestionList?.find((x: any) => x.value === questionId);
+      if (questionDetails?.questionType === dbConstants.questionTypes.listQuestion) {
         setIsLoad(true);
-        const response = await getListAnswersByQuestionId(
-          questionDetails?.questionId
-        );
+        const response = await getListAnswersByQuestionId(questionDetails?.questionId);
         let dropDownData = [];
         if (response?.data?.entities) {
           dropDownData = response?.data.entities.map((x: any) => {
             return {
               label: x.gyde_answervalue,
-              value: x.gyde_answervalue,
+              value: x.gyde_answervalue
             };
           });
         }
@@ -610,7 +469,7 @@ const RowContainer: React.FC<TableRowProps> = ({
         setIsLoad(false);
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching data:', error);
       // setSelectedFieldData([]); // Reset the data to an empty array in case of an error
     }
   };
@@ -645,26 +504,18 @@ const RowContainer: React.FC<TableRowProps> = ({
     if (!sectionLevel) return;
     let releatedFields = _nestedRows?.find((x: any[]) => x && x[sectionLevel]);
     if (!releatedFields) return;
-    const checkboxValues =
-      releatedFields[sectionLevel]?.actions[0]?.checkBoxValues;
+    const checkboxValues = releatedFields[sectionLevel]?.actions[0]?.checkBoxValues;
     const minMaxExists =
-      Object.keys(releatedFields[sectionLevel]?.actions[0]?.minMax || {})
-        .length !== 0;
+      Object.keys(releatedFields[sectionLevel]?.actions[0]?.minMax || {}).length !== 0;
 
-    const isShowExists = checkboxValues?.some(
-      (x: any) => Object.keys(x)[0] === "show"
-    );
+    const isShowExists = checkboxValues?.some((x: any) => Object.keys(x)[0] === 'show');
     const isOutputDocShowExists = checkboxValues?.some(
-      (x: any) => Object.keys(x)[0] === "OutPutDoc:Show"
+      (x: any) => Object.keys(x)[0] === 'OutPutDoc:Show'
     );
-    const isEnableExists = checkboxValues?.some(
-      (x: any) => Object.keys(x)[0] === "enable"
-    );
-    let prepareForValidation = JSON.parse(
-      JSON.stringify(releatedFields[sectionLevel].fields)
-    );
+    const isEnableExists = checkboxValues?.some((x: any) => Object.keys(x)[0] === 'enable');
+    let prepareForValidation = JSON.parse(JSON.stringify(releatedFields[sectionLevel].fields));
     if (!prepareForValidation?.length) return;
-    prepareForValidation[0].expression = "Emp";
+    prepareForValidation[0].expression = 'Emp';
     const _hasNullFields = hasNullFields(prepareForValidation);
     if (_hasNullFields) {
       isfieldsHasEmptyFields = true;
@@ -675,9 +526,7 @@ const RowContainer: React.FC<TableRowProps> = ({
       if (isShowExists) {
         showIfCount = showIfCount + 1;
         isVisibilityNested.push(
-          releatedFields[sectionLevel]?.fields?.some(
-            (flds: { hasNested: any }) => flds?.hasNested
-          )
+          releatedFields[sectionLevel]?.fields?.some((flds: { hasNested: any }) => flds?.hasNested)
         );
         let _visibility: any = convertJSONFormatToDBFormat(
           releatedFields[sectionLevel],
@@ -687,38 +536,23 @@ const RowContainer: React.FC<TableRowProps> = ({
         isActionIsNotAllowedForQuestion.push(_visibility?.validation);
         _visibility = _visibility?.exp;
         const __visibility = JSON.parse(JSON.stringify(_visibility));
-        visibilityRuleNormal.push(
-          __visibility[""]?.length ? __visibility[""][0] : _visibility
-        );
-        visibilityRule = findAndUpdateLastNestedIf(
-          visibilityRule,
-          { if: [_visibility] },
-          false
-        );
+        visibilityRuleNormal.push(__visibility['']?.length ? __visibility[''][0] : _visibility);
+        visibilityRule = findAndUpdateLastNestedIf(visibilityRule, { if: [_visibility] }, false);
       }
       if (isOutputDocShowExists) {
         outputDocShowCount = outputDocShowCount + 1;
-        let _outputDocShow: any = convertJSONFormatToDBFormat(
-          releatedFields[sectionLevel],
-          true
-        );
+        let _outputDocShow: any = convertJSONFormatToDBFormat(releatedFields[sectionLevel], true);
         _outputDocShow = _outputDocShow?.exp;
         const __outputDocShow = JSON.parse(JSON.stringify(_outputDocShow));
 
         isShowInDocNested.push(
-          releatedFields[sectionLevel]?.fields?.some(
-            (flds: { hasNested: any }) => flds?.hasNested
-          )
+          releatedFields[sectionLevel]?.fields?.some((flds: { hasNested: any }) => flds?.hasNested)
         );
         // outputDocShowNormal.push(_outputDocShow);
         outputDocShowNormal.push(
-          __outputDocShow[""]?.length ? __outputDocShow[""][0] : _outputDocShow
+          __outputDocShow['']?.length ? __outputDocShow[''][0] : _outputDocShow
         );
-        outputDocShow = findAndUpdateLastNestedIf(
-          outputDocShow,
-          { if: [_outputDocShow] },
-          false
-        );
+        outputDocShow = findAndUpdateLastNestedIf(outputDocShow, { if: [_outputDocShow] }, false);
       }
     }
 
@@ -728,14 +562,8 @@ const RowContainer: React.FC<TableRowProps> = ({
     let savedMinMaxRuleFinalFormat;
 
     if (minMaxExists) {
-      console.log(
-        "Min Max when saving ----> ",
-        releatedFields[sectionLevel].actions[0]?.minMax
-      );
       isMinMaxNested.push(
-        releatedFields[sectionLevel]?.fields?.some(
-          (flds: { hasNested: any }) => flds?.hasNested
-        )
+        releatedFields[sectionLevel]?.fields?.some((flds: { hasNested: any }) => flds?.hasNested)
       );
       const _minMaxDbFormarFields: any = convertJSONFormatToDBFormat(
         releatedFields[sectionLevel],
@@ -744,55 +572,54 @@ const RowContainer: React.FC<TableRowProps> = ({
       const minMax = releatedFields[sectionLevel]?.actions[0]?.minMax;
       let minValue = minMax?.minValue || null;
       let maxValue = minMax?.maxValue || null;
-      console.log("Min Max ", minMax);
-
       if (minMax) {
-        if (minValue && typeof minValue === "string" && minValue !== "0") {
+        if (minValue && typeof minValue === 'string' && minValue !== '0') {
           minValue = {
-            var: minMax?.minValue,
+            var: minMax?.minValue
           };
         }
-        if (maxValue && typeof maxValue === "string" && minValue !== "0") {
+        if (maxValue && typeof maxValue === 'string' && minValue !== '0') {
           maxValue = {
-            var: minMax?.maxValue,
+            var: minMax?.maxValue
           };
         }
-        console.log("_minMaxDbFormarFields", _minMaxDbFormarFields?.exp);
         const formattingForMin = [];
         const formattingForMax = [];
         formattingForMin.push(
-          _minMaxDbFormarFields?.exp[""]?.length
-            ? _minMaxDbFormarFields?.exp[""][0]
+          _minMaxDbFormarFields?.exp['']?.length
+            ? _minMaxDbFormarFields?.exp[''][0]
             : _minMaxDbFormarFields?.exp,
           minValue
         );
         formattingForMax.push(
-          _minMaxDbFormarFields?.exp[""]?.length
-            ? _minMaxDbFormarFields?.exp[""][0]
+          _minMaxDbFormarFields?.exp['']?.length
+            ? _minMaxDbFormarFields?.exp[''][0]
             : _minMaxDbFormarFields?.exp,
           maxValue
         );
-        if(currentQuestionDetails?.questionType === dbConstants.questionTypes.stringQuestion || 
-          currentQuestionDetails?.questionType === dbConstants.questionTypes.dateTimeQuestion) {
+        if (
+          currentQuestionDetails?.questionType === dbConstants.questionTypes.stringQuestion ||
+          currentQuestionDetails?.questionType === dbConstants.questionTypes.dateTimeQuestion
+        ) {
           minMaxDBFormatArray.push(
             {
-              type: "MINIMUM_LENGTH",
-              value: { if: formattingForMin },
+              type: 'MINIMUM_LENGTH',
+              value: { if: formattingForMin }
             },
             {
-              type: "MAXIMUM_LENGTH",
-              value: { if: formattingForMax },
+              type: 'MAXIMUM_LENGTH',
+              value: { if: formattingForMax }
             }
           );
         } else {
           minMaxDBFormatArray.push(
             {
-              type: "MINIMUM",
-              value: { if: formattingForMin },
+              type: 'MINIMUM',
+              value: { if: formattingForMin }
             },
             {
-              type: "MAXIMUM",
-              value: { if: formattingForMax },
+              type: 'MAXIMUM',
+              value: { if: formattingForMax }
             }
           );
         }
@@ -804,14 +631,14 @@ const RowContainer: React.FC<TableRowProps> = ({
       !isVisibilityNested.some((x: any) => x)
     ) {
       if (visibilityRuleNormal.length === 1) {
-        if (visibilityRuleNormal[0][""] && visibilityRuleNormal[0][""][0]) {
-          savedVisibilityRuleFinalFormat = visibilityRuleNormal[0][""][0];
+        if (visibilityRuleNormal[0][''] && visibilityRuleNormal[0][''][0]) {
+          savedVisibilityRuleFinalFormat = visibilityRuleNormal[0][''][0];
         } else {
           savedVisibilityRuleFinalFormat = visibilityRuleNormal[0];
         }
       } else {
         savedVisibilityRuleFinalFormat = {
-          or: visibilityRuleNormal,
+          or: visibilityRuleNormal
         };
       }
     } else {
@@ -823,43 +650,25 @@ const RowContainer: React.FC<TableRowProps> = ({
       !isShowInDocNested.some((x: any) => x)
     ) {
       if (outputDocShowNormal.length === 1) {
-        if (outputDocShowNormal[0][""] && outputDocShowNormal[0][""][0]) {
-          savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0][""][0];
+        if (outputDocShowNormal[0][''] && outputDocShowNormal[0][''][0]) {
+          savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0][''][0];
         } else {
           savedOutputDocShowRuleFinalFormat = outputDocShowNormal[0];
         }
       } else {
         savedOutputDocShowRuleFinalFormat = {
-          or: outputDocShowNormal,
+          or: outputDocShowNormal
         };
       }
     } else {
       savedOutputDocShowRuleFinalFormat = outputDocShow[0];
     }
-    if (
-      isMinMaxNested.length &&
-      isMinMaxNested.length > 0 &&
-      !isMinMaxNested.some((x: any) => x)
-    ) {
+    if (isMinMaxNested.length && isMinMaxNested.length > 0 && !isMinMaxNested.some((x: any) => x)) {
       savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
     } else {
       savedMinMaxRuleFinalFormat = minMaxDBFormatArray;
     }
 
-    console.log(
-      "savedVisibilityRuleFinalFormat",
-      savedVisibilityRuleFinalFormat
-    );
-    console.log(
-      "savedValidationRuleFinalFormat",
-      savedValidationRuleFinalFormat
-    );
-
-    console.log(
-      "savedOutputDocShowRuleFinalFormat",
-      savedOutputDocShowRuleFinalFormat
-    );
-    console.log("savedMinMaxRuleFinalFormat", savedMinMaxRuleFinalFormat);
     let showOutput;
 
     if (
@@ -870,13 +679,9 @@ const RowContainer: React.FC<TableRowProps> = ({
     } else {
       setShowVisibilityRule(null);
     }
-    if (
-      savedMinMaxRuleFinalFormat &&
-      Object.keys(savedMinMaxRuleFinalFormat).length !== 0
-    ) {
+    if (savedMinMaxRuleFinalFormat && Object.keys(savedMinMaxRuleFinalFormat).length !== 0) {
       showOutput =
-        showOutput +
-        `Visibility Rule : ${JSON.stringify(savedMinMaxRuleFinalFormat)} \n`;
+        showOutput + `Visibility Rule : ${JSON.stringify(savedMinMaxRuleFinalFormat)} \n`;
       setShowValidationRule(JSON.stringify(savedMinMaxRuleFinalFormat));
     } else {
       setShowValidationRule(null);
@@ -886,10 +691,7 @@ const RowContainer: React.FC<TableRowProps> = ({
       Object.keys(savedOutputDocShowRuleFinalFormat).length !== 0
     ) {
       showOutput =
-        showOutput +
-        `Output Doc Show Rule : ${JSON.stringify(
-          savedOutputDocShowRuleFinalFormat
-        )}`;
+        showOutput + `Output Doc Show Rule : ${JSON.stringify(savedOutputDocShowRuleFinalFormat)}`;
       setShowDocOutputRule(JSON.stringify(savedOutputDocShowRuleFinalFormat));
     } else {
       setShowDocOutputRule(null);
@@ -918,39 +720,25 @@ const RowContainer: React.FC<TableRowProps> = ({
   useEffect(() => {
     if (questionList && questionList.length) {
       const listQuestions = questionList
-        ?.filter(
-          (x: any) =>
-            x["questionType"] === dbConstants?.questionTypes?.listQuestion
-        )
+        ?.filter((x: any) => x['questionType'] === dbConstants?.questionTypes?.listQuestion)
         ?.map((x: any) => x?.value);
       let releatedFields = _nestedRows?.find((x: any[]) => x[sectionLevel]);
       if (releatedFields) {
-        const fields = releatedFields[sectionLevel]?.fields?.map(
-          (x: any) => x?.field
-        );
-        const matchedValues = listQuestions?.filter((value: any) =>
-          fields?.includes(value)
-        );
-        console.log("matchedValues", matchedValues);
-        console.log("matchedValues listQuestions", listQuestions);
-        console.log("matchedValues fields", fields);
+        const fields = releatedFields[sectionLevel]?.fields?.map((x: any) => x?.field);
+        const matchedValues = listQuestions?.filter((value: any) => fields?.includes(value));
 
-        if (matchedValues && matchedValues?.length)
-          setListQuestionIds(matchedValues);
+        if (matchedValues && matchedValues?.length) setListQuestionIds(matchedValues);
       }
       setDropDownQuestionList(
         questionList?.filter(
           (quesNme: any) =>
-            quesNme &&
-            quesNme["questionType"] !== "Grid" &&
-            quesNme["questionType"] !== "Header"
+            quesNme && quesNme['questionType'] !== 'Grid' && quesNme['questionType'] !== 'Header'
         )
       );
     }
   }, [questionList]);
 
   useEffect(() => {
-    console.log("setListQuestionIds", listQuestionIds);
     if (listQuestionIds && listQuestionIds?.length) {
       setListQuestionLoading(true);
       fetchQuestionDetails(listQuestionIds);
@@ -962,25 +750,18 @@ const RowContainer: React.FC<TableRowProps> = ({
 
     await Promise.all(
       questionIds?.map(async (questionId: any) => {
-        const questionDetails = questionList?.find(
-          (x: any) => x.value === questionId
-        );
+        const questionDetails = questionList?.find((x: any) => x.value === questionId);
 
-        if (
-          questionDetails?.questionType ===
-          dbConstants.questionTypes.listQuestion
-        ) {
+        if (questionDetails?.questionType === dbConstants.questionTypes.listQuestion) {
           setIsLoad(true);
 
-          const response = await getListAnswersByQuestionId(
-            questionDetails?.questionId
-          );
+          const response = await getListAnswersByQuestionId(questionDetails?.questionId);
 
           let dropDownData = [];
           if (response?.data?.entities) {
             dropDownData = response?.data.entities.map((x: any) => ({
               label: x.gyde_answervalue,
-              value: x.gyde_answervalue,
+              value: x.gyde_answervalue
             }));
             questionListArray.push({ questionId, listAnswers: dropDownData });
             setIsLoad(false);
@@ -1008,11 +789,11 @@ const RowContainer: React.FC<TableRowProps> = ({
                     <div className="flex-row-start">
                       {!condition.state && (
                         <CaretDownOutlined
-                          style={{ color: "#0093FE" }}
+                          style={{ color: '#0093FE' }}
                           onClick={() =>
                             setCollapse({
                               state: true,
-                              fieldId: condition?.level,
+                              fieldId: condition?.level
                             })
                           }
                         />
@@ -1022,18 +803,14 @@ const RowContainer: React.FC<TableRowProps> = ({
                     <div className="flex-row-start mb-15">
                       <Button
                         className="mr-10 btn-default"
-                        onClick={() =>
-                          _handleAddRow(condition?.level, false, "AND")
-                        }
+                        onClick={() => _handleAddRow(condition?.level, false, 'AND')}
                         disabled={suerveyIsPublished}
                       >
-                        {"+ " + languageConstants?.ExpressionBuilder_AddButton}
+                        {'+ ' + languageConstants?.ExpressionBuilder_AddButton}
                       </Button>
                       <Button
                         className="btn-default"
-                        onClick={() =>
-                          _handleAddNestedRow(condition?.level, true, "AND")
-                        }
+                        onClick={() => _handleAddNestedRow(condition?.level, true, 'AND')}
                         disabled={
                           tabType === dbConstants?.tabTypes?.defaultValueTab
                             ? true
@@ -1044,21 +821,20 @@ const RowContainer: React.FC<TableRowProps> = ({
                             : false
                         }
                       >
-                        {"+ " +
-                          languageConstants?.ExpressionBuilder_AddNestedButton}
+                        {'+ ' + languageConstants?.ExpressionBuilder_AddNestedButton}
                       </Button>
                     </div>
                   </div>
                   <div className="loop">
                     <div
                       style={{
-                        display: "flex",
-                        flexDirection: "row",
+                        display: 'flex',
+                        flexDirection: 'row'
                       }}
                     >
                       <div className="mr-20">
                         <div className="condition-label">
-                          {languageConstants?.ExpressionBuilder_AndorLabel}{" "}
+                          {languageConstants?.ExpressionBuilder_AndorLabel}{' '}
                         </div>
                         <DropDown
                           dropDownData={expressionSampleData}
@@ -1071,14 +847,14 @@ const RowContainer: React.FC<TableRowProps> = ({
                           }
                           setExpression={setFieldValue}
                           changedId={condition?.level}
-                          fieldName={"expression"}
+                          fieldName={'expression'}
                           selectedValue={condition?.expression}
-                        />{" "}
+                        />{' '}
                       </div>
 
                       <div className="mr-20">
                         <div className="condition-label">
-                          {languageConstants?.ExpressionBuilder_FieldLabel}{" "}
+                          {languageConstants?.ExpressionBuilder_FieldLabel}{' '}
                         </div>
                         <FieldInput
                           sampleData={
@@ -1086,8 +862,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                               ? dropDownQuestionList &&
                                 dropDownQuestionList.length &&
                                 dropDownQuestionList?.filter(
-                                  (x: { value: any }) =>
-                                    x?.value !== currentQuestionDetails?.value
+                                  (x: { value: any }) => x?.value !== currentQuestionDetails?.value
                                 )
                               : dropDownQuestionList
                           }
@@ -1095,63 +870,51 @@ const RowContainer: React.FC<TableRowProps> = ({
                           overrideSearch={false}
                           setFieldValue={setFieldValue}
                           changedId={condition?.level}
-                          fieldName={"field"}
+                          fieldName={'field'}
                           isDisabled={suerveyIsPublished}
-                        />{" "}
+                        />{' '}
                       </div>
                       <div className="mr-20">
                         <div className="condition-label">
-                          {languageConstants?.ExpressionBuilder_OperatorLabel}{" "}
+                          {languageConstants?.ExpressionBuilder_OperatorLabel}{' '}
                         </div>
                         {dropDownQuestionList?.find(
-                          (x: { value: string }) =>
-                            x?.value === condition?.field
-                        )?.questionType ===
-                          dbConstants.questionTypes.stringQuestion ||
+                          (x: { value: string }) => x?.value === condition?.field
+                        )?.questionType === dbConstants.questionTypes.stringQuestion ||
                         dropDownQuestionList?.find(
-                          (x: { value: string }) =>
-                            x?.value === condition?.field
-                        )?.questionType ===
-                          dbConstants.questionTypes.listQuestion ? (
+                          (x: { value: string }) => x?.value === condition?.field
+                        )?.questionType === dbConstants.questionTypes.listQuestion ? (
                           <DropDown
                             dropDownData={operationalSampleData[0]?.options?.filter(
                               (item: { value: string }) =>
-                                item?.value === "==" || item?.value === "!="
+                                item?.value === '==' || item?.value === '!='
                             )}
-                            isDisabled={
-                              suerveyIsPublished ? suerveyIsPublished : false
-                            }
+                            isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
                             setExpression={setFieldValue}
                             changedId={condition?.level}
-                            fieldName={"condition"}
+                            fieldName={'condition'}
                             selectedValue={condition?.condition}
                           />
                         ) : dropDownQuestionList?.find(
-                            (x: { value: string }) =>
-                              x?.value === condition?.field
-                          )?.questionType ===
-                          dbConstants.questionTypes.dateTimeQuestion ? (
+                            (x: { value: string }) => x?.value === condition?.field
+                          )?.questionType === dbConstants.questionTypes.dateTimeQuestion ? (
                           <DropDown
                             dropDownData={operationalSampleData[0]?.options?.filter(
-                              (item: { value: string }) => item?.value === "=="
+                              (item: { value: string }) => item?.value === '=='
                             )}
-                            isDisabled={
-                              suerveyIsPublished ? suerveyIsPublished : false
-                            }
+                            isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
                             setExpression={setFieldValue}
                             changedId={condition?.level}
-                            fieldName={"condition"}
+                            fieldName={'condition'}
                             selectedValue={condition?.condition}
                           />
                         ) : (
                           <DropDown
                             dropDownData={operationalSampleData}
-                            isDisabled={
-                              suerveyIsPublished ? suerveyIsPublished : false
-                            }
+                            isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
                             setExpression={setFieldValue}
                             changedId={condition?.level}
-                            fieldName={"condition"}
+                            fieldName={'condition'}
                             selectedValue={condition?.condition}
                           />
                         )}
@@ -1159,33 +922,25 @@ const RowContainer: React.FC<TableRowProps> = ({
 
                       <div className="mr-20">
                         <div className="condition-label">
-                          {languageConstants?.ExpressionBuilder_ValueLabel}{" "}
+                          {languageConstants?.ExpressionBuilder_ValueLabel}{' '}
                         </div>
                         {!isLoad ? (
                           <div>
                             {dropDownQuestionList?.find(
-                              (x: { value: string }) =>
-                                x?.value === condition?.field
-                            )?.questionType ===
-                            dbConstants.questionTypes.numericQuestion ? (
+                              (x: { value: string }) => x?.value === condition?.field
+                            )?.questionType === dbConstants.questionTypes.numericQuestion ? (
                               <NumberInputField
                                 selectedValue={condition?.value}
                                 handleNumberChange={{}}
-                                defaultDisabled={
-                                  suerveyIsPublished
-                                    ? suerveyIsPublished
-                                    : false
-                                }
+                                defaultDisabled={suerveyIsPublished ? suerveyIsPublished : false}
                                 setInputNumber={setFieldValue}
                                 changedId={condition?.level}
-                                fieldName={"value"}
+                                fieldName={'value'}
                                 validatingSuccess={true}
                               />
                             ) : dropDownQuestionList?.find(
-                                (x: { value: string }) =>
-                                  x?.value === condition?.field
-                              )?.questionType ===
-                              dbConstants.questionTypes.stringQuestion ? (
+                                (x: { value: string }) => x?.value === condition?.field
+                              )?.questionType === dbConstants.questionTypes.stringQuestion ? (
                               <FieldStringInputProps
                                 sampleData={
                                   dropDownQuestionList &&
@@ -1196,48 +951,33 @@ const RowContainer: React.FC<TableRowProps> = ({
                                 overrideSearch={false}
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}
-                                fieldName={"value"}
+                                fieldName={'value'}
                                 isDisabled={suerveyIsPublished}
                               />
                             ) : dropDownQuestionList?.find(
-                                (x: { value: string }) =>
-                                  x?.value === condition?.field
-                              )?.questionType ===
-                              dbConstants.questionTypes.dateTimeQuestion ? (
+                                (x: { value: string }) => x?.value === condition?.field
+                              )?.questionType === dbConstants.questionTypes.dateTimeQuestion ? (
                               <DatePickerCustom
-                                isDisabled={
-                                  suerveyIsPublished
-                                    ? suerveyIsPublished
-                                    : false
-                                }
+                                isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}
-                                fieldName={"value"}
-                                selectedValue={
-                                  condition?.value ? condition?.value : moment()
-                                }
+                                fieldName={'value'}
+                                selectedValue={condition?.value ? condition?.value : moment()}
                               />
                             ) : dropDownQuestionList?.find(
-                                (x: { value: string }) =>
-                                  x?.value === condition?.field
-                              )?.questionType ===
-                              dbConstants.questionTypes.listQuestion ? (
+                                (x: { value: string }) => x?.value === condition?.field
+                              )?.questionType === dbConstants.questionTypes.listQuestion ? (
                               <ListDropDown
                                 dropDownData={{}}
-                                isDisabled={
-                                  suerveyIsPublished
-                                    ? suerveyIsPublished
-                                    : false
-                                }
+                                isDisabled={suerveyIsPublished ? suerveyIsPublished : false}
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}
-                                fieldName={"value"}
+                                fieldName={'value'}
                                 selectedValue={condition?.value}
                                 listDropDownData={answersDropDownData
                                   .concat(
                                     listAnsersWithQuestionIds?.find(
-                                      (x: any) =>
-                                        x?.questionId === condition?.field
+                                      (x: any) => x?.questionId === condition?.field
                                     )?.listAnswers
                                   )
                                   ?.filter((x) => x)}
@@ -1253,7 +993,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                                 overrideSearch={false}
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}
-                                fieldName={"value"}
+                                fieldName={'value'}
                                 isDisabled={suerveyIsPublished}
                               />
                             )}
@@ -1282,12 +1022,10 @@ const RowContainer: React.FC<TableRowProps> = ({
                               src={imageUrls?.imageUrl}
                               alt="icon"
                               onClick={() => _handleDeleteRow(condition?.level)}
-                              height={"15px"}
+                              height={'15px'}
                             />
                             <span className="remove-text">
-                              {
-                                languageConstants?.ExpressionBuilder_RemoveButton
-                              }{" "}
+                              {languageConstants?.ExpressionBuilder_RemoveButton}{' '}
                             </span>
                           </div>
                         )}
@@ -1314,11 +1052,11 @@ const RowContainer: React.FC<TableRowProps> = ({
                   {!condition.state && (
                     <div>
                       <CaretRightOutlined
-                        style={{ color: "#0093FE" }}
+                        style={{ color: '#0093FE' }}
                         onClick={() =>
                           setCollapse({
                             state: false,
-                            fieldId: condition?.level,
+                            fieldId: condition?.level
                           })
                         }
                       />
@@ -1334,9 +1072,9 @@ const RowContainer: React.FC<TableRowProps> = ({
                           }
                           setExpression={setFieldValue}
                           changedId={condition?.level}
-                          fieldName={"expression"}
+                          fieldName={'expression'}
                           selectedValue={condition?.expression}
-                        />{" "}
+                        />{' '}
                       </div>
                     </div>
                   )}
@@ -1352,12 +1090,9 @@ const RowContainer: React.FC<TableRowProps> = ({
               )}
             </div>
           )} */}
-              <div style={{ paddingLeft: "30px" }}>
+              <div style={{ paddingLeft: '30px' }}>
                 {!listQuestionLoading &&
-                  renderNestedConditions(
-                    condition?.innerConditions,
-                    marginLeft + 5
-                  )}
+                  renderNestedConditions(condition?.innerConditions, marginLeft + 5)}
               </div>
             </div>
           </>
@@ -1374,7 +1109,7 @@ const RowContainer: React.FC<TableRowProps> = ({
       <div>
         <div className="flex-wrap mb-10">
           <div className="text-left">
-            {" "}
+            {' '}
             {/* {_nestedRows &&
                   _nestedRows?.length &&
                   "if(" +
@@ -1391,47 +1126,44 @@ const RowContainer: React.FC<TableRowProps> = ({
             {tabType === dbConstants?.tabTypes?.validationTab ? (
               <>
                 <div>
-                  {" "}
-                  {showVisibilityRule &&
-                  Object.keys(showVisibilityRule).length !== 0 ? (
+                  {' '}
+                  {showVisibilityRule && Object.keys(showVisibilityRule).length !== 0 ? (
                     <div
                       style={{
-                        backgroundColor: "#ECECEC",
-                        borderRadius: "6px",
-                        marginBottom: "5px",
-                        padding: "10px",
+                        backgroundColor: '#ECECEC',
+                        borderRadius: '6px',
+                        marginBottom: '5px',
+                        padding: '10px'
                       }}
                     >
-                      {" "}
-                      Visibility Rule : {" " + showVisibilityRule}{" "}
+                      {' '}
+                      Visibility Rule : {' ' + showVisibilityRule}{' '}
                     </div>
-                  ) : null}{" "}
-                  {showDocOutputRule &&
-                  Object.keys(showDocOutputRule).length !== 0 ? (
+                  ) : null}{' '}
+                  {showDocOutputRule && Object.keys(showDocOutputRule).length !== 0 ? (
                     <div
                       style={{
-                        backgroundColor: "#ECECEC",
-                        borderRadius: "6px",
-                        marginBottom: "5px",
-                        padding: "10px",
+                        backgroundColor: '#ECECEC',
+                        borderRadius: '6px',
+                        marginBottom: '5px',
+                        padding: '10px'
                       }}
                     >
-                      {" "}
-                      Doc Output Rule : {" " + showDocOutputRule}{" "}
+                      {' '}
+                      Doc Output Rule : {' ' + showDocOutputRule}{' '}
                     </div>
-                  ) : null}{" "}
-                  {showValidationRule &&
-                  Object.keys(showValidationRule).length !== 0 ? (
+                  ) : null}{' '}
+                  {showValidationRule && Object.keys(showValidationRule).length !== 0 ? (
                     <div
                       style={{
-                        backgroundColor: "#ECECEC",
-                        borderRadius: "6px",
-                        marginBottom: "5px",
-                        padding: "10px",
+                        backgroundColor: '#ECECEC',
+                        borderRadius: '6px',
+                        marginBottom: '5px',
+                        padding: '10px'
                       }}
                     >
-                      {" "}
-                      Min/Max Rule : {" " + showValidationRule}{" "}
+                      {' '}
+                      Min/Max Rule : {' ' + showValidationRule}{' '}
                     </div>
                   ) : null}
                 </div>
@@ -1440,13 +1172,11 @@ const RowContainer: React.FC<TableRowProps> = ({
               <>
                 {_nestedRows &&
                   _nestedRows?.length &&
-                  "if(" +
+                  'if(' +
                     generateOutputString(
-                      _nestedRows?.find((x: any[]) => x[sectionLevel])?.[
-                        sectionLevel
-                      ]?.fields || []
+                      _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields || []
                     ) +
-                    ")"}{" "}
+                    ')'}{' '}
               </>
             )}
           </div>
@@ -1454,17 +1184,17 @@ const RowContainer: React.FC<TableRowProps> = ({
           <div>
             <div>
               {suerveyIsPublished ? (
-                <img src={imageUrls?.imageUrl} alt="icon" height={"15px"}></img>
+                <img src={imageUrls?.imageUrl} alt="icon" height={'15px'}></img>
               ) : (
                 <div className="flex-wrap">
                   <img
                     src={imageUrls?.imageUrl}
                     alt="icon"
-                    height={"15px"}
+                    height={'15px'}
                     onClick={() => handleSectionRemove(sectionLevel, tabType)}
                   />
                   <span className="remove-text">
-                    {languageConstants?.ExpressionBuilder_RemoveButton}{" "}
+                    {languageConstants?.ExpressionBuilder_RemoveButton}{' '}
                   </span>
                 </div>
               )}
@@ -1483,8 +1213,7 @@ const RowContainer: React.FC<TableRowProps> = ({
         {_nestedRows &&
           _nestedRows?.length &&
           renderNestedConditions(
-            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]
-              ?.fields || []
+            _nestedRows?.find((x: any[]) => x[sectionLevel])?.[sectionLevel]?.fields || []
           )}
       </div>
     </div>
