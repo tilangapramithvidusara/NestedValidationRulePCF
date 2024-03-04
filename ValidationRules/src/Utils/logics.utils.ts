@@ -204,34 +204,45 @@ function convertMinMaxDBFormatToJSON(obj: { and: any }, level = 1) {
       if (keys.length === 1) {
         const expression = keys[0];
 
-        if ((expression === "eq" || expression === "lt" || expression === "lte" || expression === "gte" || expression === "gt"|| expression === "nq") &&
-          (condition["eq"]?.length === 2 || condition["lt"]?.length === 2 || condition["lte"]?.length === 2 || condition["gt"]?.length === 2 || condition["gte"]?.length === 2 || condition["nq"]?.length === 2) &&
-          (typeof condition["eq"][0].var === "string" || typeof condition["lt"][0].var === "string" || typeof condition["lte"][0].var === "string" || typeof condition["gt"][0].var === "string" || typeof condition["gte"][0].var === "string" || typeof condition["nq"][0].var === "string"))
-        {
-          let field 
+        if (
+          (expression === "eq" ||
+            expression === "lt" ||
+            expression === "lte" ||
+            expression === "gte" ||
+            expression === "gt" ||
+            expression === "nq") &&
+          (condition["eq"]?.length === 2 ||
+            condition["lt"]?.length === 2 ||
+            condition["lte"]?.length === 2 ||
+            condition["gt"]?.length === 2 ||
+            condition["gte"]?.length === 2 ||
+            condition["nq"]?.length === 2) &&
+          (typeof condition["eq"][0].var === "string" ||
+            typeof condition["lt"][0].var === "string" ||
+            typeof condition["lte"][0].var === "string" ||
+            typeof condition["gt"][0].var === "string" ||
+            typeof condition["gte"][0].var === "string" ||
+            typeof condition["nq"][0].var === "string")
+        ) {
+          let field;
           let value;
           if (condition["eq"][0].var && condition["eq"][1]) {
-            field = condition["eq"][0].var
+            field = condition["eq"][0].var;
             value = condition["eq"][1];
-          }
-          else if (condition["lt"][0].var && condition["lt"][1]) {
-            field = condition["lt"][0].var
+          } else if (condition["lt"][0].var && condition["lt"][1]) {
+            field = condition["lt"][0].var;
             value = condition["lt"][1];
-          }
-          else if (condition["lte"][0].var && condition["lte"][1]) {
-            field = condition["lte"][0].var
+          } else if (condition["lte"][0].var && condition["lte"][1]) {
+            field = condition["lte"][0].var;
             value = condition["lte"][1];
-          }
-          else if (condition["gt"][0].var && condition["gt"][1]) {
-            field = condition["gt"][0].var
+          } else if (condition["gt"][0].var && condition["gt"][1]) {
+            field = condition["gt"][0].var;
             value = condition["gt"][1];
-          }
-          else if (condition["gte"][0].var && condition["gte"][1]) {
-            field = condition["gte"][0].var
+          } else if (condition["gte"][0].var && condition["gte"][1]) {
+            field = condition["gte"][0].var;
             value = condition["gte"][1];
-          }
-          else if (condition["nq"][0].var && condition["nq"][1]) {
-            field = condition["nq"][0].var
+          } else if (condition["nq"][0].var && condition["nq"][1]) {
+            field = condition["nq"][0].var;
             value = condition["nq"][1];
           }
           // const field = condition.eq[0].var;
@@ -291,17 +302,17 @@ const convertJSONFormatToDBFormat = (
   const minMax = allSections?.actions[0]?.minMax;
   const arr = allSections.fields;
 
-  let parentExpression = '';
+  let parentExpression = "";
 
   if (arr[1] && arr[1]?.expression) {
-    parentExpression = arr[1]?.expression === '&&' ? 'and' : 'or';
+    parentExpression = arr[1]?.expression === "&&" ? "and" : "or";
   } else if (
     arr[1] &&
     arr[1].expression &&
     arr[1].expression?.innerConditions[0]?.expression
   ) {
     parentExpression =
-      arr[1].expression?.innerConditions[0]?.expression === '&&' ? 'and' : 'or';
+      arr[1].expression?.innerConditions[0]?.expression === "&&" ? "and" : "or";
   }
   // console.log("convertJSONFormatToDBFormat", arr);
   // console.log("convertJSONFormatToDBFormat allSections", allSections);
@@ -364,16 +375,16 @@ const convertJSONFormatToDBFormat = (
             });
 
         break;
-        case "!=":
-          visibilityRuleOverride
-            ? (condition = {
-                "!=": [{ var: conditionObj.field }, conditionObj.value],
-              })
-            : (condition = {
-                nq: [{ var: conditionObj.field }, conditionObj.value],
-              });
-  
-          break;
+      case "!=":
+        visibilityRuleOverride
+          ? (condition = {
+              "!=": [{ var: conditionObj.field }, conditionObj.value],
+            })
+          : (condition = {
+              nq: [{ var: conditionObj.field }, conditionObj.value],
+            });
+
+        break;
       default:
         condition = null;
         break;
@@ -384,10 +395,10 @@ const convertJSONFormatToDBFormat = (
   function buildInnerConditions(innerConditions: any): any {
     let innerResult: any = [];
 
-    for (const innerCondition of innerConditions)  {
+    for (const innerCondition of innerConditions) {
       const condition = buildCondition(innerCondition);
       // console.log("condition", innerCondition)
-      const exp = innerCondition?.innerConditions[1]?.expression
+      const exp = innerCondition?.innerConditions[1]?.expression;
       // console.log("condition exp", exp?.innerConditions[1]?.expression)
       // if(currentQuestionDetails?.questionId === innerCondition?.field) isValidation = true
 
@@ -401,18 +412,24 @@ const convertJSONFormatToDBFormat = (
         const nestedConditions = buildInnerConditions(
           innerCondition.innerConditions
         );
-        innerResult.push({ [exp === '&&' || exp === 'and' || exp === 'AND' ? 'and' : 'or']: nestedConditions });
+        innerResult.push({
+          [exp === "&&" || exp === "and" || exp === "AND" ? "and" : "or"]:
+            nestedConditions,
+        });
       }
     }
     return innerResult;
   }
 
-
   for (const conditionObj of arr) {
     const condition = buildCondition(conditionObj);
-    console.log("currentQuestionDetails?.questionId 123", currentQuestionDetails?.questionId);
-    console.log("conditionObj?.field 123", conditionObj)
-    if(currentQuestionDetails?.value === conditionObj?.field) isValidation = true
+    console.log(
+      "currentQuestionDetails?.questionId 123",
+      currentQuestionDetails?.questionId
+    );
+    console.log("conditionObj?.field 123", conditionObj);
+    if (currentQuestionDetails?.value === conditionObj?.field)
+      isValidation = true;
 
     if (condition) {
       result.push(condition);
@@ -421,9 +438,12 @@ const convertJSONFormatToDBFormat = (
       const nestedConditions = buildInnerConditions(
         conditionObj.innerConditions
       );
-      
-      const exp = conditionObj?.innerConditions[1]?.expression
-      result.push({ [exp === '&&' || exp === 'and' || exp === 'AND' ? 'and' : 'or']: nestedConditions });
+
+      const exp = conditionObj?.innerConditions[1]?.expression;
+      result.push({
+        [exp === "&&" || exp === "and" || exp === "AND" ? "and" : "or"]:
+          nestedConditions,
+      });
     }
   }
 
@@ -539,7 +559,6 @@ const convertJSONFormatToDBFormat = (
 //     return innerResult;
 //   }
 
-
 //   for (const conditionObj of arr) {
 //     const condition = buildCondition(conditionObj);
 //     if (condition) {
@@ -557,37 +576,41 @@ const convertJSONFormatToDBFormat = (
 //   return { [parentExpression]: result };
 // };
 
-
-
-function findAndUpdateLastNestedIf(obj: any, condition: any, overrideMinMax: boolean) {
+function findAndUpdateLastNestedIf(
+  obj: any,
+  condition: any,
+  overrideMinMax: boolean
+) {
   if (!obj.length) return [condition];
 
   let updated = false; // Flag to track if the update has been done
 
-  return obj.map((x: { if: any[]; }, index: any) => {
-      if (x?.if && !updated) {
-          const isLastIf = x.if.filter((item: { if: any; }) => item.if);
-          if (!isLastIf.length) {
-              x.if[overrideMinMax ? 2 : 1] = condition;
-              updated = true;
-          } else {
-              x.if = findAndUpdateLastNestedIf(x.if, condition, overrideMinMax);
-          }
+  return obj.map((x: { if: any[] }, index: any) => {
+    if (x?.if && !updated) {
+      const isLastIf = x.if.filter((item: { if: any }) => item.if);
+      if (!isLastIf.length) {
+        x.if[overrideMinMax ? 2 : 1] = condition;
+        updated = true;
+      } else {
+        x.if = findAndUpdateLastNestedIf(x.if, condition, overrideMinMax);
       }
-      return x;
+    }
+    return x;
   });
 }
 
 function _removeIfKeyAndGetDbProperty(obj: any) {
   const ifConditions: any = [];
-  console.log("LKKKKKKKKKxadawad xxxxxx", obj)
+  console.log("LKKKKKKKKKxadawad xxxxxx", obj);
   obj.map((x: any) => {
     if (x?.if) {
       if (!x.if.length) {
         ifConditions.push(x.if);
       } else {
-        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or );
-        console.log("LKKKKKKKKKxadawad", filteredVal)
+        const filteredVal = x?.if?.find(
+          (x: { and: any; or: any }) => x.and || x.or
+        );
+        console.log("LKKKKKKKKKxadawad", filteredVal);
 
         if (filteredVal) {
           ifConditions.push(filteredVal);
@@ -596,7 +619,7 @@ function _removeIfKeyAndGetDbProperty(obj: any) {
         ifConditions.push(..._removeIfKeyAndGetDbProperty(x.if));
       }
     } else if (x[""]) {
-      console.log("XXXXXX", x[""])
+      console.log("XXXXXX", x[""]);
       ifConditions.push({ or: [x[""][0]] });
     }
   });
@@ -604,19 +627,24 @@ function _removeIfKeyAndGetDbProperty(obj: any) {
 }
 function removeIfKeyAndGetDbProperty(obj: any[]) {
   console.log("removeIfKeyAndGetDbProperty", obj);
-  const initialHasNormal = obj?.some(x => Object.keys(x)[0] === 'and' || Object.keys(x)[0] === 'or');
+  const initialHasNormal = obj?.some(
+    (x) => Object.keys(x)[0] === "and" || Object.keys(x)[0] === "or"
+  );
   let _rmvFinal = _removeIfKeyAndGetDbProperty(obj);
   console.log("_rmvFinal_rmvFinal", _rmvFinal);
 
   if (initialHasNormal) {
-    _rmvFinal.push(obj?.find(x => Object.keys(x)[0] === 'and' || Object.keys(x)[0] === 'or' ))
+    _rmvFinal.push(
+      obj?.find(
+        (x) => Object.keys(x)[0] === "and" || Object.keys(x)[0] === "or"
+      )
+    );
   }
-  console.log("_rmvFinal", _rmvFinal)
+  console.log("_rmvFinal", _rmvFinal);
   return _rmvFinal;
 }
 
-
-function removeMinMaxIfKeyAndGetDbProperty(obj: any[]){
+function removeMinMaxIfKeyAndGetDbProperty(obj: any[]) {
   const ifConditions: any = [];
   // console.log("LKKKKKKKKKxadawad xxxxxx", obj)
 
@@ -630,15 +658,17 @@ function removeMinMaxIfKeyAndGetDbProperty(obj: any[]){
           ifConditions.push({ ifConditions: x?.if, minOrMax });
         }
       } else {
-        const filteredVal = x?.if?.find((x: { and: any; or: any; }) => x.and || x.or || x);
+        const filteredVal = x?.if?.find(
+          (x: { and: any; or: any }) => x.and || x.or || x
+        );
         if (filteredVal) {
           console.log("x?.if", x?.if);
           // const minMax = x?.if?.map((x: any[]) => x[1])?.filter((x: any) => x);
           // const _minMax = x?.if?.map((x: any[]) => x[1])?.filter((x: any) => x);
-          const minOrMax = x?.if[1]
+          const minOrMax = x?.if[1];
 
-          if(minOrMax) ifConditions.push({ifConditions: filteredVal, minMax: minOrMax });
-        
+          if (minOrMax)
+            ifConditions.push({ ifConditions: filteredVal, minMax: minOrMax });
         }
         // Recursively call the function and merge results with ifConditions
         ifConditions.push(...removeMinMaxIfKeyAndGetDbProperty(x.if));
@@ -649,5 +679,66 @@ function removeMinMaxIfKeyAndGetDbProperty(obj: any[]){
   return ifConditions;
 }
 
+function findFieldValues(data: any[]): string[] {
+  const fieldValues: string[] = [];
 
-export { convertMinMaxDBFormatToJSON, convertJSONFormatToDBFormat, findAndUpdateLastNestedIf, removeIfKeyAndGetDbProperty, removeMinMaxIfKeyAndGetDbProperty };
+  function traverse(obj: any) {
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        if (typeof obj[key] === "object" && obj[key] !== null) {
+          if (Object.prototype.hasOwnProperty.call(obj[key], "fields")) {
+            obj[key].fields.forEach((fieldObj: any) => {
+              if (
+                Object.prototype.hasOwnProperty.call(fieldObj, "field") &&
+                fieldObj.field !== ""
+              ) {
+                fieldValues.push(fieldObj.field);
+              }
+              if (
+                Object.prototype.hasOwnProperty.call(fieldObj, "hasNested") &&
+                fieldObj.hasNested === true
+              ) {
+                traverse(fieldObj.innerConditions);
+              }
+            });
+          }
+          if (
+            Object.prototype.hasOwnProperty.call(obj[key], "innerConditions") &&
+            Array.isArray(obj[key].innerConditions)
+          ) {
+            obj[key].innerConditions.forEach((innerCondition: any) => {
+              if (
+                Object.prototype.hasOwnProperty.call(innerCondition, "field") &&
+                innerCondition.field !== ""
+              ) {
+                fieldValues.push(innerCondition.field);
+              }
+              if (
+                Object.prototype.hasOwnProperty.call(
+                  innerCondition,
+                  "hasNested"
+                ) &&
+                innerCondition.hasNested === true
+              ) {
+                traverse(innerCondition.innerConditions);
+              }
+            });
+          }
+          traverse(obj[key]);
+        }
+      }
+    }
+  }
+
+  data.forEach((obj) => traverse(obj));
+  return fieldValues;
+}
+
+export {
+  findFieldValues,
+  convertMinMaxDBFormatToJSON,
+  convertJSONFormatToDBFormat,
+  findAndUpdateLastNestedIf,
+  removeIfKeyAndGetDbProperty,
+  removeMinMaxIfKeyAndGetDbProperty,
+};
