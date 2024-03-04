@@ -1200,7 +1200,7 @@ const ParentComponent = ({
         openNotificationWithIcon(
           "error",
           languageConstantsForCountry.en
-            .ExpressionBuilder_SameQuestionNameAsFieldValue
+            .ExpressionBuilder_SameQuesRefForCurrentQuestion
         );
         isErrorOccurred = true;
 
