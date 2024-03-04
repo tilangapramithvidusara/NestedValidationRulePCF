@@ -41,6 +41,7 @@ import tabsConfigs from "../configs/tabsConfigs";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import operationalSampleData from "../SampleData/operationalSampleData";
 import sample from "../SampleData/sampleSaved.json";
+import { generalConstants } from "../constants/generalConstants";
 
 const { confirm } = Modal;
 
@@ -59,6 +60,7 @@ const ParentComponent = ({
   const [sections, setSections] = useState<any[]>([]);
   const [defaultSections, setDefaultSections] = useState<any[]>([]);
   const [_nestedRows, _setNestedRows] = useState<any>([]);
+  //Local testing
   // const [_nestedRows, _setNestedRows] = useState<any>([
   //   {
   //     "1": {
@@ -84,7 +86,7 @@ const ParentComponent = ({
   const [isNested, setIsNested] = useState<any>();
   const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
 
-  //Comment
+  //Local testing
   // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
   //   currentPosition: "question",
   //   questionType: "List",
@@ -113,7 +115,7 @@ const ParentComponent = ({
   });
   const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
   const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
-  //Comment
+  //Local testing
   const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>();
   const [minMaxCheckBoxEnabled, setMinMaxCheckboxEnabled] = useState<any>({
     minCheckbox: false,
@@ -122,6 +124,7 @@ const ParentComponent = ({
   const [currentListQuestionAnswers, setCurrentListQuestionAnswers] =
     useState();
 
+  //Local testing
   // const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
   //   label: "TSDTem_C01_S01_date",
   //   value: "TSDTem_C01_S01_date",
@@ -240,22 +243,14 @@ const ParentComponent = ({
     if (
       questionList &&
       questionList?.length &&
-      currentPossitionDetails?.currentPosition === "question" &&
+      currentPossitionDetails?.currentPosition === generalConstants.QUESTION &&
       !localTest
     ) {
       const currnetQuestionDetails = questionList?.find(
         (ques) =>
           ques?.questionId === currentPossitionDetails?.id?.toLowerCase()
       );
-      console.log(
-        "currentPossitionDetails in useEffect",
-        currentPossitionDetails
-      );
 
-      console.log(
-        "currnetQuestionDetails in useEffect",
-        currnetQuestionDetails
-      );
       setCurrentQuestionDetails(currnetQuestionDetails);
     }
   }, [questionList, currentPossitionDetails]);
@@ -381,8 +376,8 @@ const ParentComponent = ({
                         checkBoxValues: [
                           {
                             show: {
-                              logicalName: "Show",
-                              value: "show",
+                              logicalName: generalConstants.SHOW_CAPITAL,
+                              value: generalConstants.SHOW_SIMPLE,
                             },
                           },
                         ],
@@ -571,7 +566,7 @@ const ParentComponent = ({
                     actions: [
                       {
                         minMax: {
-                          logicalName: "minMax",
+                          logicalName: generalConstants.MIN_MAX,
                           minValue: _refactorDtaMin[0]?.minMax?.var
                             ? _refactorDtaMin[0]?.minMax?.var
                             : _refactorDtaMin[0]?.minMax,
@@ -616,7 +611,7 @@ const ParentComponent = ({
               let actionMap: any;
               if (!defaultAction && defaultAction !== 0) {
                 actionMap = {
-                  type: "CLE_Q",
+                  type: generalConstants.CLE_Q,
                   value: null,
                 };
               } else if (typeof defaultAction === "object") {
@@ -702,7 +697,6 @@ const ParentComponent = ({
 
   // This useEffect is responsible for Convert DB Format to our JSON format
   useEffect(() => {
-    console.log("_visibilityAndDocOutput", _visibilityAndDocOutput);
     if (_visibilityAndDocOutput?.length) {
       let key = 700;
       _visibilityAndDocOutput.forEach((dbData) => {
@@ -778,15 +772,15 @@ const ParentComponent = ({
                       {
                         checkBoxValues: [
                           {
-                            "OutPutDoc:Show": {
-                              logicalName: "Show in Document",
-                              value: "OutPutDoc:Show",
+                            [generalConstants.OUTPUTDOC_SHOW]: {
+                              logicalName: generalConstants.SHOW_IN_DOCUMENT,
+                              value: generalConstants.OUTPUTDOC_SHOW,
                             },
                           },
                           {
                             show: {
-                              logicalName: "Show",
-                              value: "show",
+                              logicalName: generalConstants.SHOW_CAPITAL,
+                              value: generalConstants.SHOW_SIMPLE,
                             },
                           },
                         ],
@@ -824,19 +818,23 @@ const ParentComponent = ({
     let defaultValueRule: any;
     setIsApiDataLoaded(false);
     let logicalName;
-    if (currentPossitionDetails?.currentPosition === "chapter") {
+    if (currentPossitionDetails?.currentPosition === generalConstants.CHAPTER) {
       logicalName = dbConstants.chapter.fieldName;
-    } else if (currentPossitionDetails?.currentPosition === "section") {
+    } else if (
+      currentPossitionDetails?.currentPosition === generalConstants.SECTION
+    ) {
       logicalName = dbConstants.section.fieldName;
-    } else if (currentPossitionDetails?.currentPosition === "question") {
+    } else if (
+      currentPossitionDetails?.currentPosition === generalConstants.QUESTION
+    ) {
       logicalName = dbConstants.question.fieldName;
     }
 
     if (
       logicalName &&
       currentPossitionDetails?.id &&
-      (currentPossitionDetails?.currentPosition === "chapter" ||
-        currentPossitionDetails?.currentPosition === "section")
+      (currentPossitionDetails?.currentPosition === generalConstants.CHAPTER ||
+        currentPossitionDetails?.currentPosition === generalConstants.SECTION)
     ) {
       visibilityRulePreviousValues = await fetchRequest(
         logicalName,
@@ -846,7 +844,7 @@ const ParentComponent = ({
     } else if (
       logicalName &&
       currentPossitionDetails?.id &&
-      currentPossitionDetails?.currentPosition === "question"
+      currentPossitionDetails?.currentPosition === generalConstants.QUESTION
     ) {
       minMaxPreviousValues = await fetchRequest(
         logicalName,
@@ -1009,18 +1007,24 @@ const ParentComponent = ({
   ) => {
     let logicalName;
 
-    if (currentPossitionDetails?.currentPosition === "question") {
+    if (
+      currentPossitionDetails?.currentPosition === generalConstants.QUESTION
+    ) {
       logicalName = dbConstants.question.fieldName;
-    } else if (currentPossitionDetails?.currentPosition === "section") {
+    } else if (
+      currentPossitionDetails?.currentPosition === generalConstants.SECTION
+    ) {
       logicalName = dbConstants.section.fieldName;
-    } else if (currentPossitionDetails?.currentPosition === "chapter") {
+    } else if (
+      currentPossitionDetails?.currentPosition === generalConstants.CHAPTER
+    ) {
       logicalName = dbConstants.chapter.fieldName;
     }
 
     if (
       currentPossitionDetails?.id &&
-      (currentPossitionDetails.currentPosition === "section" ||
-        currentPossitionDetails?.currentPosition === "chapter")
+      (currentPossitionDetails.currentPosition === generalConstants.SECTION ||
+        currentPossitionDetails?.currentPosition === generalConstants.CHAPTER)
     ) {
       await saveRequest(logicalName, currentPossitionDetails?.id, {
         [dbConstants.common.gyde_visibilityrule]:
@@ -1030,7 +1034,7 @@ const ParentComponent = ({
       });
     } else if (
       currentPossitionDetails?.id &&
-      currentPossitionDetails?.currentPosition === "question"
+      currentPossitionDetails?.currentPosition === generalConstants.QUESTION
     ) {
       if (visibilityRule) {
         await saveRequest(logicalName, currentPossitionDetails?.id, {
@@ -1065,20 +1069,19 @@ const ParentComponent = ({
             const maxArray =
               (minMaxDBFormatArray &&
                 minMaxDBFormatArray?.filter(
-                  (max: any) => max?.type === "MAXIMUM"
+                  (max: any) => max?.type === generalConstants.MAXIMUM
                 )) ||
               [];
             const minArray =
               (minMaxDBFormatArray &&
                 minMaxDBFormatArray?.filter(
-                  (min: any) => min?.type === "MINIMUM"
+                  (min: any) => min?.type === generalConstants.MINIMUM
                 )) ||
               [];
 
             const getMappedMaxData = maxArray?.map((x: any) => x?.value);
             const getMappedMinData = minArray?.map((x: any) => x?.value);
-            console.log("getMappedMaxData", getMappedMaxData);
-            console.log("getMappedMinData", getMappedMinData);
+
             await saveRequest(logicalName, currentPossitionDetails?.id, {
               [dbConstants?.question?.gyde_griddisplaymaxrows]:
                 Object.keys(getMappedMaxData).length === 0
@@ -1120,19 +1123,19 @@ const ParentComponent = ({
   };
 
   const createActionObject = (actionType: any, value: any) => {
-    if (actionType === "CLE_Q") {
+    if (actionType === generalConstants.CLE_Q) {
       return {
         type: "SET_QUESTION_RESPONSE",
         questionId: currentQuestionDetails?.value,
         value: null,
       };
-    } else if (actionType === "ADD_V") {
+    } else if (actionType === generalConstants.ADD_V) {
       return {
         type: "SET_QUESTION_RESPONSE",
         questionId: currentQuestionDetails?.value,
         value: value,
       };
-    } else if (actionType === "VAL_Q") {
+    } else if (actionType === generalConstants.VAL_Q) {
       return {
         type: "SET_QUESTION_RESPONSE",
         questionId: currentQuestionDetails?.value,
@@ -1140,7 +1143,7 @@ const ParentComponent = ({
           var: value,
         },
       };
-    } else if (actionType === "MAT_F") {
+    } else if (actionType === generalConstants.MAT_F) {
       return {
         type: "SET_QUESTION_RESPONSE",
         questionId: currentQuestionDetails?.value,
@@ -1269,10 +1272,6 @@ const ParentComponent = ({
         isAddValuefieldsHasEmptyActionsDefault = true;
         return;
       }
-      console.log(
-        "Current Question Details from save handler",
-        currentQuestionDetails
-      );
 
       let _defaultValue: any = convertJSONFormatToDBFormat(sec[key], true);
       _defaultValue = _defaultValue?.exp;
@@ -1327,7 +1326,7 @@ const ParentComponent = ({
         (x: any) => Object.keys(x)[0] === "show"
       );
       const isOutputDocShowExists = checkboxValues?.some(
-        (x: any) => Object.keys(x)[0] === "OutPutDoc:Show"
+        (x: any) => Object.keys(x)[0] === generalConstants.OUTPUTDOC_SHOW
       );
       const isEnableExists = checkboxValues?.some(
         (x: any) => Object.keys(x)[0] === "enable"
@@ -1682,25 +1681,10 @@ const ParentComponent = ({
     });
   };
 
-  console.log("currentQuestionDetails", currentQuestionDetails);
-
-  console.log("_nestedRow", _nestedRows);
-
-  console.log("Newly uploaded");
-
-  console.log("currentPossitionDetails in ", currentPossitionDetails);
-  36;
-
-  // console.log("type of _nestedRow", typeof _nestedRows);
-
-  // console.log(
-  //   "Testting",
-  //   _nestedRows[0]["1"]["fields"][0]["field"] === currentQuestionDetails.value
-  // );
   return (
     <div>
       {contextHolder}
-      {currentPossitionDetails?.currentPosition === "question" &&
+      {currentPossitionDetails?.currentPosition === generalConstants.QUESTION &&
         currentQuestionDetails?.questionType !== "Grid" && (
           <div className="tabs-configs">
             <Radio.Group
