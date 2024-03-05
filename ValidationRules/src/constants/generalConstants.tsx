@@ -1,0 +1,16 @@
+export const generalConstants: any = {
+  SHOW_CAPITAL: "Show",
+  SHOW_SIMPLE: "show",
+  OUTPUTDOC_SHOW: "OutPutDoc:Show",
+  SHOW_IN_DOCUMENT: "Show in Document",
+  MIN_MAX: "minMax",
+  CLE_Q: "CLE_Q",
+  ADD_V: "ADD_V",
+  VAL_Q: "VAL_Q",
+  MAT_F: "MAT_F",
+  QUESTION: "question",
+  SECTION: "section",
+  CHAPTER: "chapter",
+  MAXIMUM: "MAXIMUM",
+  MINIMUM: "MINIMUM",
+};

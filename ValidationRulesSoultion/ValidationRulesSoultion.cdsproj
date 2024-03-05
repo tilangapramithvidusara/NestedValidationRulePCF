@@ -55,6 +55,7 @@
   
   <ItemGroup>
     <ProjectReference Include="../ValidationRulesPCF.pcfproj" />
+    <ProjectReference Include="..\ValidationRulesPCF.pcfproj" />
   </ItemGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
