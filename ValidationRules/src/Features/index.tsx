@@ -59,39 +59,39 @@ const ParentComponent = ({
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
   const [defaultSections, setDefaultSections] = useState<any[]>([]);
-  const [_nestedRows, _setNestedRows] = useState<any>([]);
+  // const [_nestedRows, _setNestedRows] = useState<any>([]);
   //Local testing
-  // const [_nestedRows, _setNestedRows] = useState<any>([
-  //   {
-  //     "1": {
-  //       fields: [
-  //         {
-  //           field: "TSDTem_C01_S01_date1",
-  //           condition: "IsEqualTo",
-  //           value: "10",
-  //           sort: 2,
-  //           level: 2,
-  //           hasNested: false,
-  //           expression: "AND",
-  //           innerConditions: [],
-  //           collapse: false,
-  //           actions: [],
-  //         },
-  //       ],
-  //       actions: [],
-  //     },
-  //   },
-  // ]);
+  const [_nestedRows, _setNestedRows] = useState<any>([
+    {
+      "1": {
+        fields: [
+          {
+            field: "TSDTem_C01_S01_date1",
+            condition: "IsEqualTo",
+            value: "10",
+            sort: 2,
+            level: 2,
+            hasNested: false,
+            expression: "AND",
+            innerConditions: [],
+            collapse: false,
+            actions: [],
+          },
+        ],
+        actions: [],
+      },
+    },
+  ]);
   const [_defaultRows, _setDefaultRows] = useState<any>([]);
   const [isNested, setIsNested] = useState<any>();
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
 
   //Local testing
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-  //   currentPosition: "question",
-  //   questionType: "List",
-  //   id: "ddd",
-  // });
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+    currentPosition: "question",
+    questionType: "List",
+    id: "ddd",
+  });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -116,7 +116,7 @@ const ParentComponent = ({
   const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
   const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
   //Local testing
-  const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>();
+  // const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>();
   const [minMaxCheckBoxEnabled, setMinMaxCheckboxEnabled] = useState<any>({
     minCheckbox: false,
     maxCheckbox: false,
@@ -125,16 +125,16 @@ const ParentComponent = ({
     useState();
 
   //Local testing
-  // const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
-  //   label: "TSDTem_C01_S01_date",
-  //   value: "TSDTem_C01_S01_date",
-  //   questionType: "List",
-  //   questionId: "b76bc889-6d66-ee11-9ae7-6045bdd0ef22",
-  //   questionLabel: "date",
-  // });
+  const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
+    label: "TSDTem_C01_S01_date",
+    value: "TSDTem_C01_S01_date",
+    questionType: "List",
+    questionId: "b76bc889-6d66-ee11-9ae7-6045bdd0ef22",
+    questionLabel: "date",
+  });
   const [selectedLanguage, setSelectedLanguage] = useState<any>("en");
   const [selectedTab, setSelectedTab] = useState<any>(generalConstants.VR);
-  const [localTest, setLocalTest] = useState(false);
+  const [localTest, setLocalTest] = useState(true);
   const [languageConstants, setLanguageConstants] = useState<any>(
     languageConstantsForCountry.en
   );
@@ -1652,7 +1652,9 @@ const ParentComponent = ({
           setLanguageConstants(originalConstants);
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Error in messageHandler", error);
+    }
   };
   const clearItems = async (): Promise<void> => {
     if (selectedTab === generalConstants.VR) {
@@ -1695,14 +1697,17 @@ const ParentComponent = ({
 
   const showPromiseConfirm: any = async () => {
     confirm({
-      title: "Do you want to clear the creation rule?",
+      title: languageConstantsForCountry.en.ExpressionBuilder_Message_Title,
       icon: <ExclamationCircleFilled />,
       content:
-        `When the OK button is clicked, all the rule associated with ${
+        `${languageConstantsForCountry.en.ExpressionBuilder_Common_Content} ${
           selectedTab === generalConstants.VR
-            ? " Validation rule "
-            : " Default rule"
-        }` + " will be deleted.",
+            ? languageConstantsForCountry.en
+                .ExpressionBuilder_Message_Validation_Rule
+            : languageConstantsForCountry.en
+                .ExpressionBuilder_Message_Default_Rule
+        }` +
+        languageConstantsForCountry.en.ExpressionBuilder_Message_WillBeDeleted,
       onOk() {
         return clearItems();
       },
