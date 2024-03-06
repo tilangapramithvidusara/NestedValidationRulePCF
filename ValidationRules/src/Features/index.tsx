@@ -59,39 +59,61 @@ const ParentComponent = ({
   // Get From XRM Requests
   const [sections, setSections] = useState<any[]>([]);
   const [defaultSections, setDefaultSections] = useState<any[]>([]);
-  // const [_nestedRows, _setNestedRows] = useState<any>([]);
-  //Local testing
-  const [_nestedRows, _setNestedRows] = useState<any>([
-    {
-      "1": {
-        fields: [
-          {
-            field: "TSDTem_C01_S01_date1",
-            condition: "IsEqualTo",
-            value: "10",
-            sort: 2,
-            level: 2,
-            hasNested: false,
-            expression: "AND",
-            innerConditions: [],
-            collapse: false,
-            actions: [],
-          },
-        ],
-        actions: [],
-      },
-    },
-  ]);
+  const [_nestedRows, _setNestedRows] = useState<any>([]);
+  // Local testing
+  // const [_nestedRows, _setNestedRows] = useState<any>([
+  //   {
+  //     "1": {
+  //       fields: [
+  //         {
+  //           field: "TSDTem_C01_S01_date1",
+  //           condition: "IsEqualTo",
+  //           value: "10",
+  //           sort: 2,
+  //           level: 2,
+  //           hasNested: false,
+  //           expression: "AND",
+  //           innerConditions: [],
+  //           collapse: false,
+  //           actions: [],
+  //         },
+  //       ],
+  //       actions: [],
+  //     },
+  //   },
+  // ]);
   const [_defaultRows, _setDefaultRows] = useState<any>([]);
+
+  // const [_defaultRows, _setDefaultRows] = useState<any>([
+  //   {
+  //     "1": {
+  //       fields: [
+  //         {
+  //           field: "TSDTem_C01_S01_date1",
+  //           condition: "IsEqualTo",
+  //           value: "30",
+  //           sort: 1,
+  //           level: 1,
+  //           expression: "",
+  //           innerConditions: [],
+  //           collapse: false,
+  //           actions: ["send_notification", "update_database"],
+  //         },
+  //       ],
+  //       actions: [],
+  //     },
+  //   },
+  // ]);
+
   const [isNested, setIsNested] = useState<any>();
-  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
+  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>();
 
   //Local testing
-  const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
-    currentPosition: "question",
-    questionType: "List",
-    id: "ddd",
-  });
+  // const [currentPossitionDetails, setCurrentPossitionDetails] = useState<any>({
+  //   currentPosition: "question",
+  //   questionType: "List",
+  //   id: "ddd",
+  // });
   const [_visibilityRulePrev, _setVisibilityRulePrev] = useState<any[]>([]);
   const [_enabledRulePrev, _setEnabledPrev] = useState<any[]>([]);
   const [_documentOutputRulePrev, _setDocumentOutputRulePrev] = useState<any[]>(
@@ -115,8 +137,10 @@ const ParentComponent = ({
   });
   const [saveAsIsNested, setSaveAsIsNested] = useState<boolean>(false);
   const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(false);
+
+  // const [suerveyIsPublished, setSuerveyIsPublished] = useState<boolean>(true);
   //Local testing
-  // const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>();
+  const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>();
   const [minMaxCheckBoxEnabled, setMinMaxCheckboxEnabled] = useState<any>({
     minCheckbox: false,
     maxCheckbox: false,
@@ -125,16 +149,16 @@ const ParentComponent = ({
     useState();
 
   //Local testing
-  const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
-    label: "TSDTem_C01_S01_date",
-    value: "TSDTem_C01_S01_date",
-    questionType: "List",
-    questionId: "b76bc889-6d66-ee11-9ae7-6045bdd0ef22",
-    questionLabel: "date",
-  });
+  // const [currentQuestionDetails, setCurrentQuestionDetails] = useState<any>({
+  //   label: "TSDTem_C01_S01_date",
+  //   value: "TSDTem_C01_S01_date",
+  //   questionType: "List",
+  //   questionId: "b76bc889-6d66-ee11-9ae7-6045bdd0ef22",
+  //   questionLabel: "date",
+  // });
   const [selectedLanguage, setSelectedLanguage] = useState<any>("en");
   const [selectedTab, setSelectedTab] = useState<any>(generalConstants.VR);
-  const [localTest, setLocalTest] = useState(true);
+  const [localTest, setLocalTest] = useState(false);
   const [languageConstants, setLanguageConstants] = useState<any>(
     languageConstantsForCountry.en
   );
@@ -604,7 +628,7 @@ const ParentComponent = ({
     }
   }, [_minMaxRulePrev]);
 
-  // This useEffect is responsible for Convert DB Format to our JSON format
+  // This useEffect is responsible for Convert DB Format to our JSON format //Default value
   useEffect(() => {
     if (_defaultValueRule && _defaultValueRule?.length) {
       let key = 100;
@@ -951,6 +975,7 @@ const ParentComponent = ({
       Object.keys(defaultValueRule?.data).length !== 0
     ) {
       let _defaultValueRule = JSON.parse(JSON.stringify(defaultValueRule));
+      console.log("_defaultValueRule from func", _defaultValueRule);
       _setDefaultValueRule((prevData: any) => [
         ...prevData,
         { defaultValRule: _defaultValueRule?.data },
@@ -966,10 +991,33 @@ const ParentComponent = ({
     // _setMinMaxRulePrev((prevData: any) => [...prevData, {minMax: [{"type":"MINIMUM","value":{"if":[{"or":[{"==":[{"var":"TDSwi_C01_S01_str"},"12"]},{"==":[{"var":"TDSwi_C01_S01_str"},"byr"]}]},2]}},{"type":"MAXIMUM","value":{"if":[{"or":[{"==":[{"var":"TDSwi_C01_S01_str"},"12"]},{"==":[{"var":"TDSwi_C01_S01_str"},"byr"]}]},5]}}]}]);
     // _setDocumentOutputRulePrev((prevData: any) => [...prevData, { docRuleOutput: [ { "if": [ { "and": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, "1111 " ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, " 1223" ] }, { "or": [ { "==": [ { "var": "NTemp_C01_s01_rd" }, " 4455" ] }, { "==": [ { "var": "NTemp_C01_s01_rd" }, "2445" ] } ] } ] } ] } ]}]);
     // _setDefaultValueRule((prevData: any) => [...prevData, { defaultValRule: {"triggers":[{"id":"trigger_1","rule":{"type":"QUESTION_RESPONSE","rule":{"==":[{"var":"TSDTem_C01_S01_list"},"2"]}}, "action": { "type": "SET_QUESTION_RESPONSE", "questionId": "Q_002", "value": { "+": [ { "var": "NTemp_C01_s01_rd" }, "NTemp_C01_s01_qr3" ] } } }]}  }] )
+    // _setDefaultValueRule((prevData: any) => [
+    //   ...prevData,
+    //   {
+    //     defaultValRule: {
+    //       triggers: [
+    //         {
+    //           id: "trigger_1",
+    //           rule: {
+    //             type: "QUESTION_RESPONSE",
+    //             rule: { "==": [{ var: "Tstr_C01_S01_Q1" }, 11] },
+    //           },
+    //           action: {
+    //             type: "SET_QUESTION_RESPONSE",
+    //             questionId: "Tstr_C01_S01_q2",
+    //             value: null,
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    // ]);
   };
   const getCurrentPublishedStatus = async () => {
     const { data = null } = await getPublishedStatus(currentPossitionDetails);
+    console.log("data from getCurrentPublishedStatus", data);
     if (data?.isPublished) setSuerveyIsPublished(data?.isPublished);
+    // setSuerveyIsPublished(true);
   };
 
   useEffect(() => {
@@ -1715,6 +1763,12 @@ const ParentComponent = ({
     });
   };
 
+  console.log("_defaultRowss", _defaultRows);
+
+  console.log("suerveyIsPublished", suerveyIsPublished);
+
+  console.log("_defaultValueRule", _defaultValueRule);
+
   return (
     <div>
       {contextHolder}
@@ -1747,7 +1801,9 @@ const ParentComponent = ({
       <div className="validation-wrap">
         <div style={{ textAlign: "right", position: "relative", top: "33px" }}>
           <Space wrap>
-            <Button onClick={showPromiseConfirm}>Reset</Button>
+            <Button onClick={showPromiseConfirm} disabled={suerveyIsPublished}>
+              Reset
+            </Button>
           </Space>
         </div>
         {selectedTab === generalConstants.VR ? (
