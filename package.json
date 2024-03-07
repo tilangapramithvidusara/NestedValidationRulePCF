@@ -10,7 +10,8 @@
     "rebuild": "pcf-scripts rebuild",
     "start": "pcf-scripts start",
     "start:watch": "pcf-scripts start watch",
-    "refreshTypes": "pcf-scripts refreshTypes"
+    "refreshTypes": "pcf-scripts refreshTypes",
+    "release": "cd ValidationRulesSoultion && pac solution add-reference --path ../ && dotnet msbuild /t:restore && dotnet msbuild /p:configuration=Release"
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.4",

@@ -277,6 +277,7 @@ const ParentComponent = ({
           ques?.questionId === currentPossitionDetails?.id?.toLowerCase()
       );
 
+      // console.log('currnetQuestionDetails **  ==> ', currnetQuestionDetails);
       setCurrentQuestionDetails(currnetQuestionDetails);
     }
   }, [questionList, currentPossitionDetails]);
@@ -1763,11 +1764,17 @@ const ParentComponent = ({
     });
   };
 
-  console.log("_defaultRowss", _defaultRows);
+  // console.log("_defaultRowss", _defaultRows);
 
-  console.log("suerveyIsPublished", suerveyIsPublished);
+  // console.log("suerveyIsPublished", suerveyIsPublished);
 
-  console.log("_defaultValueRule", _defaultValueRule);
+  // console.log("_defaultValueRule", _defaultValueRule);
+  // console.log('currentPossitionDetails => ', currentPossitionDetails);
+  // console.log('currentQuestionDetails ==> ', currentQuestionDetails);
+  
+  
+  // console.log('cccc ==> ', selectedTab, generalConstants.VR, defaultSections?.length, isApiDataLoaded, ((currentPossitionDetails && currentQuestionDetails) ||
+  // localTest))
 
   return (
     <div>
@@ -1907,7 +1914,7 @@ const ParentComponent = ({
           <>
             {!isApiDataLoaded ? (
               <div>
-                {((currentPossitionDetails && currentQuestionDetails) ||
+                {((currentPossitionDetails && (suerveyIsPublished || currentQuestionDetails)) ||
                   localTest) && (
                   <div>
                     <div className="nestedBtns">
