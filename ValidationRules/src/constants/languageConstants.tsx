@@ -56,6 +56,14 @@ export const languageConstantsForCountry: any = {
     ExpressionBuilder_SaveAndCloseButton: "Save & Close",
     ExpressionBuilder_SameQuestionNameAsFieldValue:
       "Field value cannot be the same as the question name",
+    ExpressionBuilder_Confirm_Content:
+      "When the OK button is clicked, all the rule associated with",
+    ExpressionBuilder_Message_Validation_Rule: " Validation rule ",
+    ExpressionBuilder_Message_Default_Rule: " Default rule",
+    ExpressionBuilder_Message_WillBeDeleted: " will be deleted.",
+    ExpressionBuilder_Message_Title: "Do you want to clear the creation rule?",
+    ExpressionBuilder_Common_Content:
+      "When the OK button is clicked, all the rule associated with ",
   },
   po: {
     saveButtonConstants: "Salvar",
