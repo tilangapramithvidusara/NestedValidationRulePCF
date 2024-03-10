@@ -112,6 +112,7 @@ const RowContainer: React.FC<TableRowProps> = ({
   const [listQuestionLoading, setListQuestionLoading] = useState<any>(false);
 
   const [listQuestionIds, setListQuestionIds] = useState<any>();
+  const [questionFieldChange, setQuestionFieldChange] = useState<any>(false);
 
   const findConditionByLevel = (
     level: any,
@@ -247,6 +248,9 @@ const RowContainer: React.FC<TableRowProps> = ({
   };
 
   useEffect(() => {
+    if(fieldValue?.fieldName === "expression" || fieldValue?.fieldName === "value") {
+      setQuestionFieldChange(false);
+    }
     if (fieldValue) {
       fieldValueSetToNestedRows(fieldValue);
     }
@@ -318,6 +322,7 @@ const RowContainer: React.FC<TableRowProps> = ({
 
   useEffect(() => {
     if (fieldValue?.fieldName === "field") {
+      setQuestionFieldChange(true);
       const resss: any = fetchFieldData(fieldValue?.input);
 
       // When the field value get change need to empty value field
@@ -1109,7 +1114,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                             )?.questionType ===
                             dbConstants.questionTypes.numericQuestion ? (
                               <NumberInputField
-                                selectedValue={condition?.value}
+                                selectedValue={questionFieldChange ? null : condition?.value}
                                 handleNumberChange={{}}
                                 defaultDisabled={
                                   suerveyIsPublished
@@ -1132,7 +1137,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                                   dropDownQuestionList.length &&
                                   dropDownQuestionList
                                 }
-                                selectedValue={condition?.value}
+                                selectedValue={questionFieldChange ? null : condition?.value}
                                 overrideSearch={false}
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}
@@ -1172,7 +1177,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}
                                 fieldName={"value"}
-                                selectedValue={condition?.value}
+                                selectedValue={questionFieldChange ? null : condition?.value}
                                 listDropDownData={answersDropDownData
                                   .concat(
                                     listAnsersWithQuestionIds?.find(
@@ -1189,7 +1194,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                                   dropDownQuestionList.length &&
                                   dropDownQuestionList
                                 }
-                                selectedValue={condition?.value}
+                                selectedValue={questionFieldChange ? null : condition?.value}
                                 overrideSearch={false}
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}

@@ -1773,7 +1773,7 @@ const ParentComponent = ({
                           <div className="text-right">
                             <Button
                               onClick={handleSaveLogic}
-                              className="btn-primary"
+                              className="btn-default"
                               disabled={suerveyIsPublished}
                             >
                               {
@@ -1784,7 +1784,7 @@ const ParentComponent = ({
                           <div className="save-close">
                             <Button
                               onClick={handleSaveAndClose}
-                              className="btn-primary"
+                              className="btn-default"
                               disabled={suerveyIsPublished}
                             >
                               {
@@ -1867,7 +1867,7 @@ const ParentComponent = ({
                       <div className="text-right">
                         <Button
                           onClick={handleSaveLogic}
-                          className="btn-primary"
+                          className="btn-default"
                           disabled={suerveyIsPublished}
                         >
                           {
@@ -1878,7 +1878,7 @@ const ParentComponent = ({
                       <div className="save-close">
                         <Button
                           onClick={handleSaveAndClose}
-                          className="btn-primary"
+                          className="btn-default"
                           disabled={suerveyIsPublished}
                         >
                           {

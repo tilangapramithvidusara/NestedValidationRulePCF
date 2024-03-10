@@ -201,12 +201,9 @@ export const getPublishedStatus = async (currentPositionDetails: any) : Promise<
         expectedStatusCodeForPublished = dbConstants.chapter.publishedStatus;
       }
 
-      console.log("currentFieldName", currentFieldName);
-      console.log("currentIdKey" , currentIdKey)
-
       if (currentFieldName && currentIdKey) {
         currentStatus = await window.parent.Xrm.WebApi.retrieveRecord(currentFieldName, currentPositionDetails?.id, "?$select=statuscode");
-        console.log("current Published Status", currentStatus )
+        console.log("current Published Status", currentStatus)
         currnetGuid = currentStatus[currentIdKey];
         statusCode = currentStatus[dbConstants.common.statusCode];
         isPublished = statusCode === expectedStatusCodeForPublished
