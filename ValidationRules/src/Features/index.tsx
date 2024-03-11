@@ -1195,25 +1195,30 @@ const ParentComponent = ({
     let minMaxExmptyIfTheCheckBoxIsEnabled = false;
     let isErrorOccurred = false;
 
-    const fieldValues: string[] = findFieldValues(_nestedRows);
-    console.log("fieldValues", fieldValues);
-
-    fieldValues.forEach((value: any) => {
-      if (value === currentQuestionDetails.value) {
-        openNotificationWithIcon(
-          "error",
-          languageConstantsForCountry.en
-            .ExpressionBuilder_SameQuesRefForCurrentQuestion
-        );
-        isErrorOccurred = true;
-
+    try {
+      const fieldValues: string[] = findFieldValues(_nestedRows);
+      console.log("fieldValues", fieldValues);
+  
+      fieldValues.forEach((value: any) => {
+        if (currentQuestionDetails && value === currentQuestionDetails?.value) {
+          openNotificationWithIcon(
+            "error",
+            languageConstantsForCountry.en
+              .ExpressionBuilder_SameQuesRefForCurrentQuestion
+          );
+          isErrorOccurred = true;
+  
+          return;
+        }
+      });
+  
+      if (isErrorOccurred) {
         return;
       }
-    });
-
-    if (isErrorOccurred) {
-      return;
+    } catch(e) {
+      console.log("Error occurred while looping question", e)
     }
+
 
     // Sorting for validation builder
     const sortedData = [..._nestedRows].sort((a, b) => {
