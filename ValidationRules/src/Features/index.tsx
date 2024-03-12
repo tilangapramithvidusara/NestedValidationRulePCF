@@ -1777,7 +1777,7 @@ const ParentComponent = ({
                           <div className="text-right">
                             <Button
                               onClick={handleSaveLogic}
-                              className="btn-default"
+                              className="btn-primary"
                               disabled={suerveyIsPublished}
                             >
                               {
