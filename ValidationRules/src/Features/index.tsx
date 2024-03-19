@@ -1198,7 +1198,7 @@ const ParentComponent = ({
     try {
       const fieldValues: string[] = findFieldValues(_nestedRows);
       console.log("fieldValues", fieldValues);
-  
+
       fieldValues.forEach((value: any) => {
         if (currentQuestionDetails && value === currentQuestionDetails?.value) {
           openNotificationWithIcon(
@@ -1207,18 +1207,17 @@ const ParentComponent = ({
               .ExpressionBuilder_SameQuesRefForCurrentQuestion
           );
           isErrorOccurred = true;
-  
+
           return;
         }
       });
-  
+
       if (isErrorOccurred) {
         return;
       }
-    } catch(e) {
-      console.log("Error occurred while looping question", e)
+    } catch (e) {
+      console.log("Error occurred while looping question", e);
     }
-
 
     // Sorting for validation builder
     const sortedData = [..._nestedRows].sort((a, b) => {
@@ -1778,7 +1777,7 @@ const ParentComponent = ({
                           <div className="text-right">
                             <Button
                               onClick={handleSaveLogic}
-                              className="btn-default"
+                              className="btn-primary"
                               disabled={suerveyIsPublished}
                             >
                               {
@@ -1789,7 +1788,7 @@ const ParentComponent = ({
                           <div className="save-close">
                             <Button
                               onClick={handleSaveAndClose}
-                              className="btn-default"
+                              className="btn-primary"
                               disabled={suerveyIsPublished}
                             >
                               {
@@ -1872,7 +1871,7 @@ const ParentComponent = ({
                       <div className="text-right">
                         <Button
                           onClick={handleSaveLogic}
-                          className="btn-default"
+                          className="btn-primary"
                           disabled={suerveyIsPublished}
                         >
                           {
@@ -1883,7 +1882,7 @@ const ParentComponent = ({
                       <div className="save-close">
                         <Button
                           onClick={handleSaveAndClose}
-                          className="btn-default"
+                          className="btn-primary"
                           disabled={suerveyIsPublished}
                         >
                           {
