@@ -248,7 +248,10 @@ const RowContainer: React.FC<TableRowProps> = ({
   };
 
   useEffect(() => {
-    if(fieldValue?.fieldName === "expression" || fieldValue?.fieldName === "value") {
+    if (
+      fieldValue?.fieldName === "expression" ||
+      fieldValue?.fieldName === "value"
+    ) {
       setQuestionFieldChange(false);
     }
     if (fieldValue) {
@@ -1114,7 +1117,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                             )?.questionType ===
                             dbConstants.questionTypes.numericQuestion ? (
                               <NumberInputField
-                                selectedValue={questionFieldChange ? null : condition?.value}
+                                selectedValue={condition?.value}
                                 handleNumberChange={{}}
                                 defaultDisabled={
                                   suerveyIsPublished
@@ -1137,7 +1140,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                                   dropDownQuestionList.length &&
                                   dropDownQuestionList
                                 }
-                                selectedValue={questionFieldChange ? null : condition?.value}
+                                selectedValue={condition?.value}
                                 overrideSearch={false}
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}
@@ -1177,7 +1180,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}
                                 fieldName={"value"}
-                                selectedValue={questionFieldChange ? null : condition?.value}
+                                selectedValue={condition?.value}
                                 listDropDownData={answersDropDownData
                                   .concat(
                                     listAnsersWithQuestionIds?.find(
@@ -1194,7 +1197,7 @@ const RowContainer: React.FC<TableRowProps> = ({
                                   dropDownQuestionList.length &&
                                   dropDownQuestionList
                                 }
-                                selectedValue={questionFieldChange ? null : condition?.value}
+                                selectedValue={condition?.value}
                                 overrideSearch={false}
                                 setFieldValue={setFieldValue}
                                 changedId={condition?.level}
