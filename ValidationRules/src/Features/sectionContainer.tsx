@@ -183,7 +183,7 @@ function SectionContainer({
           ])
         );
       }
-    }generalConstants
+    }
     if (minValue?.input && minValue?.input)
       setValidation((prev: any) => {
         return { ...prev, [generalConstants.MIN_MAX_VALIDATION]: true };
@@ -337,7 +337,7 @@ function SectionContainer({
       setDefaultActionSetWhenRetriving(
         radioDefaultValOption
           ? { type: radioDefaultValOption }
-          : { type: "disable" }
+          : { type: generalConstants.DISABLE }
       );
     }
   }, []);
@@ -670,7 +670,7 @@ function SectionContainer({
                             generalConstants.STRING ||
                           _nestedRows?.find((row: any) => row[sectionLevel])?.[
                             sectionLevel
-                          ]?.actions[0]?.minMax?.minValue === "0"
+                          ]?.actions[0]?.minMax?.minValue === generalConstants.ZERO
                         }
                       />
                     </div>
@@ -699,7 +699,7 @@ function SectionContainer({
                         }
                         setInputNumber={setMinValue}
                         changedId={undefined}
-                        fieldName={"minValue"}
+                        fieldName={generalConstants.MIN_VALUE}
                         validatingSuccess={minMaxValidation}
                       />
                     ) : (
@@ -761,7 +761,7 @@ function SectionContainer({
                             generalConstants.STRING ||
                           _nestedRows?.find((row: any) => row[sectionLevel])?.[
                             sectionLevel
-                          ]?.actions[0]?.minMax?.maxValue === "0"
+                          ]?.actions[0]?.minMax?.maxValue === generalConstants.ZERO
                         }
                       />
                     </div>
@@ -848,7 +848,7 @@ function SectionContainer({
                   }
                   defaultValue={defaultActionSetWhenRetriving?.type}
                 >
-                  <Radio value={generalConstants,
+                  <Radio value={generalConstants.
                     CLE_Q}>
                     {languageConstants?.ExpressionBuilder_ClrQues}
                   </Radio>
