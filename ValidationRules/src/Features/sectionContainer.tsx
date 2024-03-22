@@ -625,7 +625,7 @@ function SectionContainer({
             </div>
           </div>
           {currentPossitionDetails &&
-            currentPossitionDetails?.currentPosition === generalConstants.question &&
+            currentPossitionDetails?.currentPosition === generalConstants.QUESTION &&
             currentQuestionDetails?.questionType !== generalConstants.HEADER &&
             currentQuestionDetails?.questionType !== generalConstants.LIST &&
             currentQuestionDetails?.questionType !== generalConstants.DATE && (
