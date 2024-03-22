@@ -1734,14 +1734,14 @@ const ParentComponent = ({
                       >
                         {"+ " + languageConstants?.ExpressionBuilder_AddButton}
                       </Button>
-                      <Button
+                      {/* <Button
                         className="btn-default"
                         onClick={addNestedComponent}
                         disabled={suerveyIsPublished}
                       >
                         {"+ " +
                           languageConstants?.ExpressionBuilder_AddNestedButton}
-                      </Button>
+                      </Button> */}
                     </div>
                     {sections?.length > 0 &&
                       sections.map((section) => (
