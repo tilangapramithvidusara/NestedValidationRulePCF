@@ -21,7 +21,7 @@ import moment from "moment";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import mathOperators from "../configs/mathOperators";
-import {generalConstants} from "../constants/generalConstants"
+import { generalConstants } from "../constants/generalConstants";
 dayjs.extend(customParseFormat);
 
 const { Option } = Select;
@@ -152,7 +152,9 @@ function SectionContainer({
           {
             checkBoxValues: actions && actions.length ? actions : [],
             minMax:
-              releatedActions.map((action: { minMax: any }) => action?.minMax)[0] || null,
+              releatedActions.map(
+                (action: { minMax: any }) => action?.minMax
+              )[0] || null,
           },
         ])
       );
@@ -204,7 +206,8 @@ function SectionContainer({
 
   useEffect(() => {
     let releatedFields = _nestedRows?.find(
-      (relatedField: { [relatedField: string]: any }) => relatedField[sectionLevel]
+      (relatedField: { [relatedField: string]: any }) =>
+        relatedField[sectionLevel]
     );
     if (
       releatedFields &&
@@ -220,7 +223,9 @@ function SectionContainer({
               (relatedAction: any) => relatedAction?.checkBoxValues
             )[0],
             minMax:
-              releatedActions.map((relatedAction: { minMax: any }) => relatedAction?.minMax)[0] || null,
+              releatedActions.map(
+                (relatedAction: { minMax: any }) => relatedAction?.minMax
+              )[0] || null,
           },
         ])
       );
@@ -236,7 +241,9 @@ function SectionContainer({
         // setRadioDefaultValOption(defaultActionSetWhenRetriving?.type)
         setRadioDefaultValOption(releatedActionsForSefaultValue[0]?.type);
         setCheckedReferences(true);
-        if (releatedActionsForSefaultValue[0]?.type === generalConstants.MAT_F) {
+        if (
+          releatedActionsForSefaultValue[0]?.type === generalConstants.MAT_F
+        ) {
           if (!releatedActionsForSefaultValue?.[0]?.value) return;
           const operator: any = Object.keys(
             releatedActionsForSefaultValue[0]?.value
@@ -298,8 +305,9 @@ function SectionContainer({
           ?.actions[0]?.minMax?.minValue || false
       );
       setToggledEnableMin(
-        typeof _nestedRows?.find((row: any) => row[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.minValue !== generalConstants.STRING ||
+        typeof _nestedRows?.find((row: any) => row[sectionLevel])?.[
+          sectionLevel
+        ]?.actions[0]?.minMax?.minValue !== generalConstants.STRING ||
           _nestedRows?.find((row: any) => row[sectionLevel])?.[sectionLevel]
             ?.actions[0]?.minMax?.minValue === generalConstants.ZERO
       );
@@ -308,26 +316,31 @@ function SectionContainer({
           ?.actions[0]?.minMax?.maxValue || false
       );
       setToggledEnableMax(
-        typeof _nestedRows?.find((row: any) => row[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.maxValue !== generalConstants.STRING ||
+        typeof _nestedRows?.find((row: any) => row[sectionLevel])?.[
+          sectionLevel
+        ]?.actions[0]?.minMax?.maxValue !== generalConstants.STRING ||
           _nestedRows?.find((row: any) => row[sectionLevel])?.[sectionLevel]
             ?.actions[0]?.minMax?.minValue === generalConstants.ZERO
       );
       setMinMaxValue({
-        minValue: _nestedRows?.find((row: any) => row[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.minValue,
-        maxValue: _nestedRows?.find((row: any) => row[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.maxValue,
+        minValue: _nestedRows?.find((row: any) => row[sectionLevel])?.[
+          sectionLevel
+        ]?.actions[0]?.minMax?.minValue,
+        maxValue: _nestedRows?.find((row: any) => row[sectionLevel])?.[
+          sectionLevel
+        ]?.actions[0]?.minMax?.maxValue,
       });
       setMinValue({
-        input: _nestedRows?.find((row: any) => row[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.minValue,
+        input: _nestedRows?.find((row: any) => row[sectionLevel])?.[
+          sectionLevel
+        ]?.actions[0]?.minMax?.minValue,
         changedId: "",
         fieldName: generalConstants.MIN_VALUE,
       });
       setMaxValue({
-        input: _nestedRows?.find((row: any) => row[sectionLevel])?.[sectionLevel]
-          ?.actions[0]?.minMax?.maxValue,
+        input: _nestedRows?.find((row: any) => row[sectionLevel])?.[
+          sectionLevel
+        ]?.actions[0]?.minMax?.maxValue,
         changedId: "",
         fieldName: generalConstants.MAX_VALUE,
       });
@@ -388,13 +401,21 @@ function SectionContainer({
 
   const toggleEnableOnClickMin = () => {
     setToggledEnableMin(!toggleEnableMin);
-    setMinValue({ input: "", changedId: "", fieldName: generalConstants.MIN_VALUE });
+    setMinValue({
+      input: "",
+      changedId: "",
+      fieldName: generalConstants.MIN_VALUE,
+    });
     handleMinMaxWhenToggleChanged(null, null);
   };
 
   const toggleEnableOnClickMax = () => {
     setToggledEnableMax(!toggleEnableMax);
-    setMaxValue({ input: "", changedId: "", fieldName: generalConstants.MAX_VALUE });
+    setMaxValue({
+      input: "",
+      changedId: "",
+      fieldName: generalConstants.MAX_VALUE,
+    });
     handleMinMaxWhenToggleChanged(null, null);
   };
 
@@ -405,7 +426,11 @@ function SectionContainer({
     });
 
     if (!e.target.checked) {
-      setMinValue({ input: "", changedId: "", fieldName: generalConstants.MIN_VALUE });
+      setMinValue({
+        input: "",
+        changedId: "",
+        fieldName: generalConstants.MIN_VALUE,
+      });
       handleMinMaxWhenToggleChanged(null, null);
     } else {
       if (!minValue?.input) {
@@ -422,7 +447,11 @@ function SectionContainer({
       return { ...prev, [generalConstants.MAX_CHECKBOX]: e.target.checked };
     });
     if (!e.target.checked) {
-      setMaxValue({ input: "", changedId: "", fieldName: generalConstants.MAX_VALUE });
+      setMaxValue({
+        input: "",
+        changedId: "",
+        fieldName: generalConstants.MAX_VALUE,
+      });
       handleMinMaxWhenToggleChanged(null, null);
     } else {
       if (!maxValue?.input) {
@@ -517,7 +546,10 @@ function SectionContainer({
           },
         ])
       );
-    } else if (radioDefaultValOption === generalConstants.MAT_F && addValue?.length) {
+    } else if (
+      radioDefaultValOption === generalConstants.MAT_F &&
+      addValue?.length
+    ) {
       _setNestedRows(
         updateAllLevelActionsArray(_nestedRows, sectionLevel, [
           {
@@ -564,7 +596,9 @@ function SectionContainer({
           if (action?.type === generalConstants.ADD_V) {
             const utcDateString: any = action.value;
             const utcDate: any = moment.utc(utcDateString);
-            const formattedDate: any = utcDate.local().format(generalConstants.DATE_FORMAT);
+            const formattedDate: any = utcDate
+              .local()
+              .format(generalConstants.DATE_FORMAT);
             action.value = formattedDate;
             setAddValue(formattedDate);
           }
@@ -572,7 +606,6 @@ function SectionContainer({
       });
     });
   }, []);
-
 
   return (
     <div>
@@ -625,13 +658,15 @@ function SectionContainer({
             </div>
           </div>
           {currentPossitionDetails &&
-            currentPossitionDetails?.currentPosition === generalConstants.QUESTION &&
+            currentPossitionDetails?.currentPosition ===
+              generalConstants.QUESTION &&
             currentQuestionDetails?.questionType !== generalConstants.HEADER &&
             currentQuestionDetails?.questionType !== generalConstants.LIST &&
             currentQuestionDetails?.questionType !== generalConstants.DATE && (
               <div className="subTitle mt-10 mb-30 w-100 flex-start">
                 <div className="subTitle w-10 ml-10">
-                  {currentQuestionDetails?.questionType === generalConstants.STRING
+                  {currentQuestionDetails?.questionType ===
+                  generalConstants.SSTRING
                     ? `${languageConstants?.ExpressionBuilder_MinMaxFieldStringConstants}  `
                     : `${languageConstants?.ExpressionBuilder_MinMaxFieldConstants}  `}{" "}
                 </div>
@@ -670,13 +705,15 @@ function SectionContainer({
                             generalConstants.STRING ||
                           _nestedRows?.find((row: any) => row[sectionLevel])?.[
                             sectionLevel
-                          ]?.actions[0]?.minMax?.minValue === generalConstants.ZERO
+                          ]?.actions[0]?.minMax?.minValue ===
+                            generalConstants.ZERO
                         }
                       />
                     </div>
 
                     <div className="minmaxText">
-                      {currentQuestionDetails?.questionType === generalConstants.SSTRING
+                      {currentQuestionDetails?.questionType ===
+                      generalConstants.SSTRING
                         ? `${
                             languageConstants?.ExpressionBuilder_MinLengthStringConstants +
                             ":"
@@ -707,7 +744,9 @@ function SectionContainer({
                         dropDownData={
                           questionList && questionList?.length
                             ? questionList.filter(
-                                (ques: any) => ques?.questionType === generalConstants.NUMERIC
+                                (ques: any) =>
+                                  ques?.questionType ===
+                                  generalConstants.NUMERIC
                               )
                             : []
                         }
@@ -761,13 +800,15 @@ function SectionContainer({
                             generalConstants.STRING ||
                           _nestedRows?.find((row: any) => row[sectionLevel])?.[
                             sectionLevel
-                          ]?.actions[0]?.minMax?.maxValue === generalConstants.ZERO
+                          ]?.actions[0]?.minMax?.maxValue ===
+                            generalConstants.ZERO
                         }
                       />
                     </div>
 
                     <div className="minmaxText">
-                      {currentQuestionDetails?.questionType === generalConstants.SSTRING
+                      {currentQuestionDetails?.questionType ===
+                      generalConstants.SSTRING
                         ? `${languageConstants?.ExpressionBuilder_MaxLengthStringConstants}`
                         : `${languageConstants?.ExpressionBuilder_MaxLengthConstants}` +
                           " :"}
@@ -795,7 +836,9 @@ function SectionContainer({
                         dropDownData={
                           questionList && questionList?.length
                             ? questionList.filter(
-                                (ques: any) => ques?.questionType === generalConstants.NUMERIC
+                                (ques: any) =>
+                                  ques?.questionType ===
+                                  generalConstants.NUMERIC
                               )
                             : []
                         }
@@ -830,7 +873,8 @@ function SectionContainer({
                 <div>
                   <Switch
                     defaultChecked={
-                      defaultActionSetWhenRetriving?.type === generalConstants.DISABLE
+                      defaultActionSetWhenRetriving?.type ===
+                      generalConstants.DISABLE
                         ? false
                         : true
                     }
@@ -848,8 +892,7 @@ function SectionContainer({
                   }
                   defaultValue={defaultActionSetWhenRetriving?.type}
                 >
-                  <Radio value={generalConstants.
-                    CLE_Q}>
+                  <Radio value={generalConstants.CLE_Q}>
                     {languageConstants?.ExpressionBuilder_ClrQues}
                   </Radio>
                   <Radio value={generalConstants.ADD_V}>
@@ -1060,7 +1103,8 @@ function SectionContainer({
                       defaultValue={defaultActionSetWhenRetriving?.value}
                       value={addValue}
                     />
-                  ) : currentQuestionDetails?.questionType === generalConstants.DATE ? (
+                  ) : currentQuestionDetails?.questionType ===
+                    generalConstants.DATE ? (
                     <Space direction="vertical" size={17}>
                       <DatePicker
                         disabled={suerveyIsPublished}
@@ -1112,7 +1156,8 @@ function SectionContainer({
                         setAddValue(e?.target?.value);
                       }}
                       defaultValue={
-                        defaultActionSetWhenRetriving?.type === generalConstants.ADD_V
+                        defaultActionSetWhenRetriving?.type ===
+                        generalConstants.ADD_V
                           ? defaultActionSetWhenRetriving?.value
                           : null
                       }
@@ -1138,7 +1183,8 @@ function SectionContainer({
                         onChange={(e: any) => setAddValue(e)}
                         disabled={suerveyIsPublished}
                         options={
-                          currentQuestionDetails?.questionType === generalConstants.NUMERIC
+                          currentQuestionDetails?.questionType ===
+                          generalConstants.NUMERIC
                             ? questionList?.filter(
                                 (ques: any) =>
                                   ques["questionType"] ===
@@ -1147,7 +1193,8 @@ function SectionContainer({
                                   ques["questionType"] !==
                                     dbConstants?.questionTypes?.gridQuestion
                               )
-                            : currentQuestionDetails?.questionType === generalConstants.DATE
+                            : currentQuestionDetails?.questionType ===
+                              generalConstants.DATE
                             ? questionList?.filter(
                                 (ques: any) =>
                                   ques["questionType"] ===
